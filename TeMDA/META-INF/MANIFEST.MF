@@ -1,0 +1,8 @@
+Manifest-Version: 1.0
+Bundle-ManifestVersion: 2
+Bundle-Name: TeMDA
+Bundle-SymbolicName: TeMDA
+Bundle-Version: 1.0.0.qualifier
+Require-Bundle: org.eclipse.emf.ecore;bundle-version="2.35.0",
+ PrivacyModel;bundle-version="0.1.0"
+Automatic-Module-Name: TeMDA

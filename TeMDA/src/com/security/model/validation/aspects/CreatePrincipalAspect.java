@@ -1,0 +1,79 @@
+package com.security.model.validation.aspects;
+
+import java.lang.reflect.Method;
+
+import org.aspectj.lang.ProceedingJoinPoint;
+import org.aspectj.lang.annotation.Around;
+import org.aspectj.lang.annotation.Aspect;
+import org.aspectj.lang.annotation.Pointcut;
+import org.aspectj.lang.reflect.MethodSignature;
+
+import com.security.model.validation.annotations.PrincipalAnnotation;
+import com.security.model.validation.annotations.creators.CreatePrincipalAnnotation;
+import com.security.model.validation.annotations.enums.Constants;
+import com.security.model.validation.creators.FieldCreator;
+
+@Aspect
+public class CreatePrincipalAspect {
+
+	@Pointcut("execution(* *..*(..)) && @annotation(com.security.model.validation.annotations.creators.CreatePrincipalAnnotation)")
+	void function() {}
+	@Around("function()")
+	public Object aroundOkoF(ProceedingJoinPoint thisJoinPoint) throws Throwable {
+		Object[] args = thisJoinPoint.getArgs();
+		Object ret = thisJoinPoint.proceed(args);
+		Object obj = thisJoinPoint.getThis();
+	    MethodSignature signature = (MethodSignature) thisJoinPoint.getSignature();
+	    Method method = signature.getMethod();
+		CreatePrincipalAnnotation createPrincipal = method.getAnnotation(CreatePrincipalAnnotation.class);
+		if(createPrincipal == null)
+		{
+			System.out.println("There is no create principal statement annotation");
+			return ret;
+		}
+		Object retFromObj = FieldCreator.getObjectToReadFrom(ret, obj, createPrincipal.createdObjectLocation(), createPrincipal.name(), thisJoinPoint);
+		if(retFromObj == null)
+		{
+			System.out.println("Read from object is null = CreatePrincipalAspect");
+			return ret;
+		}
+		Class<? extends Object> retClass = retFromObj.getClass();
+		PrincipalAnnotation principal = retClass.getAnnotation(PrincipalAnnotation.class);
+		if(principal == null)
+		{
+			System.out.println("There is no principal annotation");
+			return ret;
+		}
+
+		try 
+		{
+			System.out.println("PrincipalId: " + FieldCreator.getFieldValue(principal.id(), retFromObj, retClass));
+			if(!principal.birthday().equals(Constants.Unassigned))
+			{
+				
+			}
+			if(!principal.parent().equals(Constants.Undefined)) 
+			{
+				
+			}
+			if(!principal.parentId().equals(Constants.Undefined))
+			{
+				
+			}
+			if(!principal.childrens().equals(Constants.Undefined))
+			{
+				
+			}
+			if(!principal.childrensIds().equals(Constants.Undefined))
+			{
+				
+			}
+		}
+		catch(Exception ex)
+		{
+			System.out.println(ex);
+		}
+		
+		return ret;
+	}
+}

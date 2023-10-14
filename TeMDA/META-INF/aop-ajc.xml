@@ -1,0 +1,15 @@
+<aspectj>
+  <aspects>
+	<aspect name="com.security.model.validation.aspects.CreateComplaintBasedOnActionAspect"/>
+	<aspect name="com.security.model.validation.aspects.CreateComplaintBasedOnDataAspect"/>
+	<aspect name="com.security.model.validation.aspects.CreateConsentAspect"/>
+	<aspect name="com.security.model.validation.aspects.CreateDenialAspect"/>
+	<aspect name="com.security.model.validation.aspects.CreateDocumentAspect"/>
+	<aspect name="com.security.model.validation.aspects.CreateLocationAspect"/>
+	<aspect name="com.security.model.validation.aspects.CreateNotificationAspect"/>
+    <aspect name="com.security.model.validation.aspects.CreatePolicyStatementAspect"/>
+    <aspect name="com.security.model.validation.aspects.CreatePrincipalAspect"/>
+    <aspect name="com.security.model.validation.aspects.CreateWithdrawAspect"/>
+  </aspects>
+  <weaver options="-Xset:weaveJavaxPackages=true"/>
+</aspectj>
