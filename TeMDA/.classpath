@@ -7,8 +7,8 @@
 	</classpathentry>
 	<classpathentry kind="con" path="org.eclipse.pde.core.requiredPlugins"/>
 	<classpathentry kind="src" path="src"/>
-	<classpathentry kind="lib" path="lib/aspectjrt.jar"/>
-	<classpathentry kind="lib" path="lib/aspectjtools.jar"/>
-	<classpathentry kind="lib" path="lib/aspectjweaver.jar"/>
+	<classpathentry kind="lib" path="lib/java21/aspectjrt-1.9.20.1.jar"/>
+	<classpathentry kind="lib" path="lib/java21/aspectjtools-1.9.20.1.jar"/>
+	<classpathentry kind="lib" path="lib/java21/aspectjweaver-1.9.20.1.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>
