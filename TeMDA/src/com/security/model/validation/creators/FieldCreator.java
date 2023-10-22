@@ -14,6 +14,11 @@ public class FieldCreator {
 	{
 		try 
 		{
+			if(fieldName.equals(Constants.Empty))
+			{
+				System.out.println("Parameter name is empty");
+				return null;
+			}
 			Field field = c.getDeclaredField(fieldName);
 			field.setAccessible(true);
 			return field.get(annotationObject);

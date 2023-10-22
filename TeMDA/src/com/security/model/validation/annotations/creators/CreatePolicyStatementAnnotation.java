@@ -16,6 +16,7 @@ public @interface CreatePolicyStatementAnnotation {
 	CreatedObjectLocation createdObjectLocation() default CreatedObjectLocation.Return;
 	String name() default Constants.Empty;
 	String who();
+	String whom();
 	String whose();
 	String why();
 	String when();
