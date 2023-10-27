@@ -12,6 +12,11 @@ import com.security.model.validation.annotations.PrincipalAnnotation;
 import com.security.model.validation.annotations.creators.CreatePrincipalAnnotation;
 import com.security.model.validation.annotations.enums.Constants;
 import com.security.model.validation.creators.FieldCreator;
+import com.security.model.validation.helper.ObjectFinder;
+
+import privacyModel.Principal;
+import privacyModel.PrivacyPolicy;
+import utility.PrivacyModelRepository;
 
 @Aspect
 public class CreatePrincipalAspect {
@@ -47,7 +52,13 @@ public class CreatePrincipalAspect {
 
 		try 
 		{
-			System.out.println("PrincipalId: " + FieldCreator.getFieldValue(principal.id(), retFromObj, retClass));
+			PrivacyModelRepository repo = new PrivacyModelRepository();
+			var model = repo.getModel();
+			var principalObject = repo.getFactory().createPrincipal();
+			var name = (String)FieldCreator.getFieldValue(principal.id(), retFromObj, retClass);
+			principalObject.setName(name);
+			principalObject.setScope(createPrincipal.scope());
+			principalObject.setType(createPrincipal.type());
 			if(!principal.birthday().equals(Constants.Unassigned))
 			{
 				
@@ -58,7 +69,7 @@ public class CreatePrincipalAspect {
 			}
 			if(!principal.parentId().equals(Constants.Undefined))
 			{
-				
+				setParentById(retFromObj, retClass, principal, principalObject, model);
 			}
 			if(!principal.childrens().equals(Constants.Undefined))
 			{
@@ -68,6 +79,8 @@ public class CreatePrincipalAspect {
 			{
 				
 			}
+			model.getAllPrincipals().add(principalObject);
+			repo.saveModel(model);
 		}
 		catch(Exception ex)
 		{
@@ -75,5 +88,14 @@ public class CreatePrincipalAspect {
 		}
 		
 		return ret;
+	}
+	private void setParentById(Object retFromObj, Class<? extends Object> retClass, PrincipalAnnotation principal,
+			Principal principalObject, PrivacyPolicy model) {
+		var parentId = (String)FieldCreator.getFieldValue(principal.parentId(), retFromObj, retClass);
+		var parent = ObjectFinder.checkIfPrincipalExists(parentId, model);
+		if(parent.isPresent())
+		{
+			parent.get().getSubPrincipals().add(principalObject);
+		}
 	}
 }

@@ -8,7 +8,7 @@ import com.security.model.validation.annotations.enums.Constants;
 
 public class PurposeCreator {
 
-	public static void CreatePurpose(Class<?> objectClass, Object obj, String why)
+	public static void createPurpose(Class<?> objectClass, Object obj, String why)
 	{
 		if(obj == null)
 		{
@@ -22,11 +22,11 @@ public class PurposeCreator {
 			if(purposeAnnotation == null)
 			{
 				System.out.println("There is no purpose annotation");
+				return;
 			}
 			else
 			{
-
-				ReadComplexType(purpose, obj, purposeAnnotation);
+				readComplexType(purpose, obj, purposeAnnotation);
 			}
 		}
 		catch(Exception e)
@@ -35,7 +35,7 @@ public class PurposeCreator {
 		}
 	}
 
-	private static void ReadComplexType(Field field, Object obj, PurposeAnnotation purposeAnnotation)
+	private static void readComplexType(Field field, Object obj, PurposeAnnotation purposeAnnotation)
 			throws NoSuchFieldException, IllegalAccessException {
 		Field details = field.getType().getDeclaredField(purposeAnnotation.details());
 		System.out.println("Details: " + details.get(obj));
@@ -52,7 +52,7 @@ public class PurposeCreator {
 		{
 			System.out.println("List item");
 			PurposeAnnotation purposeAnnotation1 = purpose.getClass().getAnnotation(PurposeAnnotation.class);
-			ReadComplexType(field, purpose, purposeAnnotation1);
+			readComplexType(field, purpose, purposeAnnotation1);
 		}
 	}
 }

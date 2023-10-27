@@ -12,6 +12,11 @@ import com.security.model.validation.annotations.LocationAnnotation;
 import com.security.model.validation.annotations.creators.CreateLocationAnnotation;
 import com.security.model.validation.annotations.enums.Constants;
 import com.security.model.validation.creators.FieldCreator;
+import com.security.model.validation.helper.ObjectFinder;
+
+import privacyModel.Location;
+import privacyModel.PrivacyPolicy;
+import utility.PrivacyModelRepository;
 
 @Aspect
 public class CreateLocationAspect {
@@ -19,7 +24,7 @@ public class CreateLocationAspect {
 	@Pointcut("execution(* *..*(..)) && @annotation(com.security.model.validation.annotations.creators.CreateLocationAnnotation)")
 	void function() {}
 	@Around("function()")
-	public Object aroundOkoF(ProceedingJoinPoint thisJoinPoint) throws Throwable {
+	public Object createLocation(ProceedingJoinPoint thisJoinPoint) throws Throwable {
 		Object[] args = thisJoinPoint.getArgs();
 		Object ret = thisJoinPoint.proceed(args);
 		Object obj = thisJoinPoint.getThis();
@@ -48,15 +53,21 @@ public class CreateLocationAspect {
 		
 		try 
 		{
-			System.out.println("LocationId: " + FieldCreator.getFieldValue(location.id(), retFromObj, retClass));
-			System.out.println("Type " + createLocation.locationType());
+			PrivacyModelRepository repo = new PrivacyModelRepository();
+			var model = repo.getModel();
+			var locationObject = repo.getFactory().createLocation();
+			var locationName = (String)FieldCreator.getFieldValue(location.id(), retFromObj, retClass);
+			locationObject.setName(locationName);
+			locationObject.setType(createLocation.locationType());
+			locationObject.setIsEUMember(createLocation.isEUMember());
+			locationObject.setLegalAgeLimit(createLocation.legalAgeLimit());
 			if(!location.parent().equals(Constants.Undefined)) 
 			{
 				
 			}
 			if(!location.parentId().equals(Constants.Undefined))
 			{
-				
+				setParentById(retFromObj, retClass, location, locationObject, model);
 			}
 			if(!location.childrens().equals(Constants.Undefined))
 			{
@@ -66,6 +77,9 @@ public class CreateLocationAspect {
 			{
 				
 			}
+			
+			model.getLocations().add(locationObject);
+			repo.saveModel(model);
 		}
 		catch(Exception ex)
 		{
@@ -73,5 +87,15 @@ public class CreateLocationAspect {
 		}
 		
 		return ret;
+	}
+	
+	private void setParentById(Object retFromObj, Class<? extends Object> retClass, LocationAnnotation location,
+			Location locationObject, PrivacyPolicy model) {
+		var parentId = (String)FieldCreator.getFieldValue(location.parentId(), retFromObj, retClass);
+		var parent = ObjectFinder.checkIfLocationExists(parentId, model);
+		if(parent.isPresent())
+		{
+			parent.get().getSubLocations().add(locationObject);
+		}
 	}
 }

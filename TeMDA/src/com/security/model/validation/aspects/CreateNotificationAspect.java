@@ -1,6 +1,7 @@
 package com.security.model.validation.aspects;
 
 import java.lang.reflect.Method;
+import java.util.Date;
 
 import org.aspectj.lang.ProceedingJoinPoint;
 import org.aspectj.lang.annotation.Around;
@@ -12,6 +13,8 @@ import com.security.model.validation.annotations.NotificationAnnotation;
 import com.security.model.validation.annotations.creators.CreateNotificationAnnotation;
 import com.security.model.validation.annotations.enums.Constants;
 import com.security.model.validation.creators.FieldCreator;
+
+import utility.PrivacyModelRepository;
 
 @Aspect
 public class CreateNotificationAspect {
@@ -48,10 +51,14 @@ public class CreateNotificationAspect {
 
 		try 
 		{
-			System.out.println("NotificationId: " + FieldCreator.getFieldValue(notification.id(), retFromObj, retClass));
-			System.out.println("Date: " + FieldCreator.getFieldValue(notification.when(), retFromObj, retClass));
-			System.out.println("NotificationType: " + createNotification.type());
-
+			PrivacyModelRepository repo = new PrivacyModelRepository();
+			var model = repo.getModel();
+			var notificationObject = repo.getFactory().createNotification();
+			var name = (String)FieldCreator.getFieldValue(notification.id(), retFromObj, retClass);
+			notificationObject.setName(name);
+			var date = (Date)FieldCreator.getFieldValue(notification.when(), retFromObj, retClass);
+			notificationObject.setWhen(date);
+			notificationObject.setType(createNotification.type());
 			if(createNotification.causedBy() != Constants.Empty)
 			{
 				createNotification.causedByType();
@@ -76,6 +83,8 @@ public class CreateNotificationAspect {
 			{
 				
 			}
+			model.getNotifications().add(notificationObject);
+			repo.saveModel(model);
 		}
 		catch(Exception ex)
 		{

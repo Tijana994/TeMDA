@@ -1,7 +1,6 @@
 package com.security.model.validation.aspects;
 
 import java.lang.reflect.Method;
-import java.util.Optional;
 
 import org.aspectj.lang.ProceedingJoinPoint;
 import org.aspectj.lang.annotation.Around;
@@ -14,8 +13,8 @@ import com.security.model.validation.annotations.creators.CreatePolicyStatementA
 import com.security.model.validation.creators.FieldCreator;
 import com.security.model.validation.creators.PurposeCreator;
 import com.security.model.validation.creators.WhenCreator;
+import com.security.model.validation.helper.ObjectFinder;
 
-import privacyModel.Principal;
 import utility.PrivacyModelRepository;
 
 @Aspect
@@ -55,33 +54,34 @@ public class CreatePolicyStatementAspect {
 		try
 		{
 			PrivacyModelRepository repo = new PrivacyModelRepository();
+			var model = repo.getModel();
 			var policyStatementObject = repo.getFactory().createPolicyStatement();
 			var name = (String)FieldCreator.getFieldValue(policyStatement.id(), ret, retClass);
 			policyStatementObject.setName(name);
 			var whoId = (String)FieldCreator.getFieldValue(createPolicyStatement.who(), obj, objectClass);
-			var whoPrincipal = checkIfPrincipalExists(whoId,repo);
+			var whoPrincipal = ObjectFinder.checkIfPrincipalExists(whoId,model);
 			if(whoPrincipal.isPresent())
 			{
 				policyStatementObject.setWho(whoPrincipal.get());
-				System.out.println("There is principal with id " + whoId +" who");
 			}
 			var whoseId = (String)FieldCreator.getFieldValue(createPolicyStatement.whose(), obj, objectClass);
-			var whosePrincipal = checkIfPrincipalExists(whoseId,repo);
+			var whosePrincipal = ObjectFinder.checkIfPrincipalExists(whoseId,model);
 			if(whosePrincipal.isPresent())
 			{
-				policyStatementObject.setWho(whosePrincipal.get());
-				System.out.println("There is principal with id " + whoId +" whose");
+				policyStatementObject.setWhose(whosePrincipal.get());
 			}
 			var whomId = (String)FieldCreator.getFieldValue(createPolicyStatement.whom(), obj, objectClass);
-			var whomPrincipal = checkIfPrincipalExists(whomId,repo);
+			var whomPrincipal = ObjectFinder.checkIfPrincipalExists(whomId,model);
 			if(whomPrincipal.isPresent())
 			{
-				policyStatementObject.setWho(whomPrincipal.get());
-				System.out.println("There is principal with id " + whoId +" whom");
+				policyStatementObject.setWhom(whomPrincipal.get());
 			}
 			
-			PurposeCreator.CreatePurpose(objectClass, obj, createPolicyStatement.why()); //Ovako mogu procitati kompozicije
-			WhenCreator.CreateWhen(objectClass, obj, createPolicyStatement.when());
+			PurposeCreator.createPurpose(objectClass, obj, createPolicyStatement.why()); //Ovako mogu procitati kompozicije
+			WhenCreator.createWhen(objectClass, obj, createPolicyStatement.when());
+			
+			model.getPolicyStatements().add(policyStatementObject);
+			repo.saveModel(model);
 		}
 		catch(Exception e)
 		{
@@ -89,25 +89,5 @@ public class CreatePolicyStatementAspect {
 		}
 		
 		return ret;
-	}
-	
-	private Optional<Principal> findPrincipal(String principalId, PrivacyModelRepository repo)
-	{
-		return repo.getModel().getAllPrincipals().stream()
-		   .filter(principal -> principal.getName().equals(principalId)).findFirst();
-	}
-	
-	private Optional<Principal> checkIfPrincipalExists(String fieldId, PrivacyModelRepository repo) 
-	{
-		if(fieldId == null)
-		{
-			return Optional.empty();
-		}
-		var principal = findPrincipal(fieldId, repo);
-		if(principal.isEmpty())
-		{
-			System.out.println("There is no prinipal with id " + fieldId);
-		}
-		return principal;
 	}
 }

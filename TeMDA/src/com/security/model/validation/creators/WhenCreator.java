@@ -6,7 +6,7 @@ import java.util.Date;
 import com.security.model.validation.annotations.TimeStatementAnnotation;
 
 public class WhenCreator {
-	public static void CreateWhen(Class<?> c, Object obj, String when)
+	public static void createWhen(Class<?> c, Object obj, String when)
 	{
 		try
 		{
@@ -14,7 +14,7 @@ public class WhenCreator {
 			for (String date : whens) 
 			{ 
 				Field start = c.getDeclaredField(date);
-				CreateTimeStatement(start, start.get(obj));
+				createTimeStatement(start, start.get(obj));
 			}
 		}
 		catch(Exception e)
@@ -23,7 +23,7 @@ public class WhenCreator {
 		}
 	}
 	
-	private static void CreateTimeStatement(Field field, Object obj)
+	private static void createTimeStatement(Field field, Object obj)
 	{
 		if(obj == null || !(obj instanceof  Date))
 		{
