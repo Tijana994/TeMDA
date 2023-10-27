@@ -19,7 +19,7 @@ public class CreateConsentAspect {
 	@Pointcut("execution(* *..*(..)) && @annotation(com.security.model.validation.annotations.creators.CreateConsentAnnotation)")
 	void function() {}
 	@Around("function()")
-	public Object aroundOkoF(ProceedingJoinPoint thisJoinPoint) throws Throwable {
+	public Object createConsent(ProceedingJoinPoint thisJoinPoint) throws Throwable {
 		Object[] args = thisJoinPoint.getArgs();
 		Object ret = thisJoinPoint.proceed(args);
 		Object obj = thisJoinPoint.getThis();

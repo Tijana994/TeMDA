@@ -12,7 +12,7 @@ import com.security.model.validation.annotations.PrincipalAnnotation;
 import com.security.model.validation.annotations.creators.CreatePrincipalAnnotation;
 import com.security.model.validation.annotations.enums.Constants;
 import com.security.model.validation.creators.FieldCreator;
-import com.security.model.validation.helper.ObjectFinder;
+import com.security.model.validation.helpers.ObjectFinder;
 
 import privacyModel.Principal;
 import privacyModel.PrivacyPolicy;
@@ -24,7 +24,7 @@ public class CreatePrincipalAspect {
 	@Pointcut("execution(* *..*(..)) && @annotation(com.security.model.validation.annotations.creators.CreatePrincipalAnnotation)")
 	void function() {}
 	@Around("function()")
-	public Object aroundOkoF(ProceedingJoinPoint thisJoinPoint) throws Throwable {
+	public Object createPrincipal(ProceedingJoinPoint thisJoinPoint) throws Throwable {
 		Object[] args = thisJoinPoint.getArgs();
 		Object ret = thisJoinPoint.proceed(args);
 		Object obj = thisJoinPoint.getThis();

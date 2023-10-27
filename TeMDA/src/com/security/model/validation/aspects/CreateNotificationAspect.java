@@ -22,7 +22,7 @@ public class CreateNotificationAspect {
 	@Pointcut("execution(* *..*(..)) && @annotation(com.security.model.validation.annotations.creators.CreateNotificationAnnotation)")
 	void function() {}
 	@Around("function()")
-	public Object aroundOkoF(ProceedingJoinPoint thisJoinPoint) throws Throwable {
+	public Object createNotification(ProceedingJoinPoint thisJoinPoint) throws Throwable {
 		Object[] args = thisJoinPoint.getArgs();
 		Object ret = thisJoinPoint.proceed(args);
 		Object obj = thisJoinPoint.getThis();

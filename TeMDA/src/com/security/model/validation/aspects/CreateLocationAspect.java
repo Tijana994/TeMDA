@@ -12,7 +12,7 @@ import com.security.model.validation.annotations.LocationAnnotation;
 import com.security.model.validation.annotations.creators.CreateLocationAnnotation;
 import com.security.model.validation.annotations.enums.Constants;
 import com.security.model.validation.creators.FieldCreator;
-import com.security.model.validation.helper.ObjectFinder;
+import com.security.model.validation.helpers.ObjectFinder;
 
 import privacyModel.Location;
 import privacyModel.PrivacyPolicy;

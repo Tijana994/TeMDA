@@ -13,7 +13,7 @@ import com.security.model.validation.annotations.creators.CreatePolicyStatementA
 import com.security.model.validation.creators.FieldCreator;
 import com.security.model.validation.creators.PurposeCreator;
 import com.security.model.validation.creators.WhenCreator;
-import com.security.model.validation.helper.ObjectFinder;
+import com.security.model.validation.helpers.ObjectFinder;
 
 import utility.PrivacyModelRepository;
 
