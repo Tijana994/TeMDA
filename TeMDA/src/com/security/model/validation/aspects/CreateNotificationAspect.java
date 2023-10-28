@@ -12,7 +12,7 @@ import org.aspectj.lang.reflect.MethodSignature;
 import com.security.model.validation.annotations.NotificationAnnotation;
 import com.security.model.validation.annotations.creators.CreateNotificationAnnotation;
 import com.security.model.validation.annotations.enums.Constants;
-import com.security.model.validation.creators.FieldCreator;
+import com.security.model.validation.helpers.FieldFinder;
 
 import utility.PrivacyModelRepository;
 
@@ -34,7 +34,7 @@ public class CreateNotificationAspect {
 			System.out.println("There is no create notification statement annotation");
 			return ret;
 		}
-		Object retFromObj = FieldCreator.getObjectToReadFrom(ret, obj, createNotification.createdObjectLocation(), createNotification.name(), thisJoinPoint);
+		Object retFromObj = FieldFinder.getObjectToReadFrom(ret, obj, createNotification.createdObjectLocation(), createNotification.name(), thisJoinPoint);
 		if(retFromObj == null)
 		{
 			System.out.println("Read from object is null = CreateNotificationAspect");
@@ -54,9 +54,9 @@ public class CreateNotificationAspect {
 			PrivacyModelRepository repo = new PrivacyModelRepository();
 			var model = repo.getModel();
 			var notificationObject = repo.getFactory().createNotification();
-			var name = (String)FieldCreator.getFieldValue(notification.id(), retFromObj, retClass);
+			var name = (String)FieldFinder.getFieldValue(notification.id(), retFromObj, retClass);
 			notificationObject.setName(name);
-			var date = (Date)FieldCreator.getFieldValue(notification.when(), retFromObj, retClass);
+			var date = (Date)FieldFinder.getFieldValue(notification.when(), retFromObj, retClass);
 			notificationObject.setWhen(date);
 			notificationObject.setType(createNotification.type());
 			if(createNotification.causedBy() != Constants.Empty)

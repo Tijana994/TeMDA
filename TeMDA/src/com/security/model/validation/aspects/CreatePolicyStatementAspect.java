@@ -10,9 +10,9 @@ import org.aspectj.lang.reflect.MethodSignature;
 
 import com.security.model.validation.annotations.PolicyStatementAnnotation;
 import com.security.model.validation.annotations.creators.CreatePolicyStatementAnnotation;
-import com.security.model.validation.creators.FieldCreator;
 import com.security.model.validation.creators.PurposeCreator;
 import com.security.model.validation.creators.WhenCreator;
+import com.security.model.validation.helpers.FieldFinder;
 import com.security.model.validation.helpers.ObjectFinder;
 
 import utility.PrivacyModelRepository;
@@ -36,7 +36,7 @@ public class CreatePolicyStatementAspect {
 			System.out.println("There is no create policy statement annotation");
 			return ret;
 		}
-		Object retFromObj = FieldCreator.getObjectToReadFrom(ret, obj, createPolicyStatement.createdObjectLocation(), createPolicyStatement.name(), thisJoinPoint);
+		Object retFromObj = FieldFinder.getObjectToReadFrom(ret, obj, createPolicyStatement.createdObjectLocation(), createPolicyStatement.name(), thisJoinPoint);
 		if(retFromObj == null)
 		{
 			System.out.println("Read from object is null = CreatePolicyStatementAspect");
@@ -56,21 +56,21 @@ public class CreatePolicyStatementAspect {
 			PrivacyModelRepository repo = new PrivacyModelRepository();
 			var model = repo.getModel();
 			var policyStatementObject = repo.getFactory().createPolicyStatement();
-			var name = (String)FieldCreator.getFieldValue(policyStatement.id(), ret, retClass);
+			var name = (String)FieldFinder.getFieldValue(policyStatement.id(), ret, retClass);
 			policyStatementObject.setName(name);
-			var whoId = (String)FieldCreator.getFieldValue(createPolicyStatement.who(), obj, objectClass);
+			var whoId = (String)FieldFinder.getFieldValue(createPolicyStatement.who(), obj, objectClass);
 			var whoPrincipal = ObjectFinder.checkIfPrincipalExists(whoId,model);
 			if(whoPrincipal.isPresent())
 			{
 				policyStatementObject.setWho(whoPrincipal.get());
 			}
-			var whoseId = (String)FieldCreator.getFieldValue(createPolicyStatement.whose(), obj, objectClass);
+			var whoseId = (String)FieldFinder.getFieldValue(createPolicyStatement.whose(), obj, objectClass);
 			var whosePrincipal = ObjectFinder.checkIfPrincipalExists(whoseId,model);
 			if(whosePrincipal.isPresent())
 			{
 				policyStatementObject.setWhose(whosePrincipal.get());
 			}
-			var whomId = (String)FieldCreator.getFieldValue(createPolicyStatement.whom(), obj, objectClass);
+			var whomId = (String)FieldFinder.getFieldValue(createPolicyStatement.whom(), obj, objectClass);
 			var whomPrincipal = ObjectFinder.checkIfPrincipalExists(whomId,model);
 			if(whomPrincipal.isPresent())
 			{

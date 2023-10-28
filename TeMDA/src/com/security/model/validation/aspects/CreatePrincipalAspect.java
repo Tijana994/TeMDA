@@ -11,7 +11,7 @@ import org.aspectj.lang.reflect.MethodSignature;
 import com.security.model.validation.annotations.PrincipalAnnotation;
 import com.security.model.validation.annotations.creators.CreatePrincipalAnnotation;
 import com.security.model.validation.annotations.enums.Constants;
-import com.security.model.validation.creators.FieldCreator;
+import com.security.model.validation.helpers.FieldFinder;
 import com.security.model.validation.helpers.ObjectFinder;
 
 import privacyModel.Principal;
@@ -36,7 +36,7 @@ public class CreatePrincipalAspect {
 			System.out.println("There is no create principal statement annotation");
 			return ret;
 		}
-		Object retFromObj = FieldCreator.getObjectToReadFrom(ret, obj, createPrincipal.createdObjectLocation(), createPrincipal.name(), thisJoinPoint);
+		Object retFromObj = FieldFinder.getObjectToReadFrom(ret, obj, createPrincipal.createdObjectLocation(), createPrincipal.name(), thisJoinPoint);
 		if(retFromObj == null)
 		{
 			System.out.println("Read from object is null = CreatePrincipalAspect");
@@ -55,7 +55,7 @@ public class CreatePrincipalAspect {
 			PrivacyModelRepository repo = new PrivacyModelRepository();
 			var model = repo.getModel();
 			var principalObject = repo.getFactory().createPrincipal();
-			var name = (String)FieldCreator.getFieldValue(principal.id(), retFromObj, retClass);
+			var name = (String)FieldFinder.getFieldValue(principal.id(), retFromObj, retClass);
 			principalObject.setName(name);
 			principalObject.setScope(createPrincipal.scope());
 			principalObject.setType(createPrincipal.type());
@@ -91,7 +91,7 @@ public class CreatePrincipalAspect {
 	}
 	private void setParentById(Object retFromObj, Class<? extends Object> retClass, PrincipalAnnotation principal,
 			Principal principalObject, PrivacyPolicy model) {
-		var parentId = (String)FieldCreator.getFieldValue(principal.parentId(), retFromObj, retClass);
+		var parentId = (String)FieldFinder.getFieldValue(principal.parentId(), retFromObj, retClass);
 		var parent = ObjectFinder.checkIfPrincipalExists(parentId, model);
 		if(parent.isPresent())
 		{

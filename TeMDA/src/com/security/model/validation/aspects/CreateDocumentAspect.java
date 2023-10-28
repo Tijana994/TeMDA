@@ -1,6 +1,7 @@
 package com.security.model.validation.aspects;
 
 import java.lang.reflect.Method;
+import java.util.Date;
 
 import org.aspectj.lang.ProceedingJoinPoint;
 import org.aspectj.lang.annotation.Around;
@@ -11,7 +12,9 @@ import org.aspectj.lang.reflect.MethodSignature;
 import com.security.model.validation.annotations.PaperAnnotation;
 import com.security.model.validation.annotations.creators.CreateDocumentAnnotation;
 import com.security.model.validation.annotations.enums.Constants;
-import com.security.model.validation.creators.FieldCreator;
+import com.security.model.validation.helpers.FieldFinder;
+
+import utility.PrivacyModelRepository;
 
 @Aspect
 public class CreateDocumentAspect {
@@ -31,7 +34,7 @@ public class CreateDocumentAspect {
 			System.out.println("There is no create document statement annotation");
 			return ret;
 		}
-		Object retFromObj = FieldCreator.getObjectToReadFrom(ret, obj, createDocument.createdObjectLocation(), createDocument.name(), thisJoinPoint);
+		Object retFromObj = FieldFinder.getObjectToReadFrom(ret, obj, createDocument.createdObjectLocation(), createDocument.name(), thisJoinPoint);
 		if(retFromObj == null)
 		{
 			System.out.println("Read from object is null - CreateDocumentAspect");
@@ -48,22 +51,33 @@ public class CreateDocumentAspect {
 		
 		try 
 		{
-			System.out.println("DocumentId: " + FieldCreator.getFieldValue(paper.id(), retFromObj, retClass));
-			System.out.println("Type " + createDocument.documentType());
-			System.out.println("StartDate: " + FieldCreator.getFieldValue(paper.startDate(), retFromObj, retClass));
-			System.out.println("Location: " + FieldCreator.getFieldValue(paper.location(), retFromObj, retClass));
-			if(paper.terminantionExplanation() != Constants.Empty)
+			PrivacyModelRepository repo = new PrivacyModelRepository();
+			var model = repo.getModel();
+			var documentObject = repo.getFactory().createDocument();
+			var name = (String)FieldFinder.getFieldValue(paper.id(), retFromObj, retClass);
+			documentObject.setName(name);
+			documentObject.setDocumentType(createDocument.documentType());
+			var startDate = (Date)FieldFinder.getFieldValue(paper.startDate(), retFromObj, retClass);
+			documentObject.setStartDate(startDate);
+			var location = (String)FieldFinder.getFieldValue(paper.location(), retFromObj, retClass);
+			documentObject.setLocation(location);
+			if(!paper.terminantionExplanation().equals(Constants.Empty))
 			{
-				
+				var terminantionExplanation = (String)FieldFinder.getFieldValue(paper.terminantionExplanation(), retFromObj, retClass);
+				documentObject.setTerminationExplanation(terminantionExplanation);
 			}
-			if(paper.terminantionDate() != Constants.Empty)
+			if(!paper.terminantionDate().equals(Constants.Empty))
 			{
-				
+				var terminantionDate = (Date)FieldFinder.getFieldValue(paper.terminantionDate(), retFromObj, retClass);
+				documentObject.setTerminationDate(terminantionDate);
 			}
-			if(paper.description() != Constants.Empty)
+			if(!paper.description().equals(Constants.Empty))
 			{
-				
+				var description = (String)FieldFinder.getFieldValue(paper.description(), retFromObj, retClass);
+				documentObject.setDescription(description);
 			}
+			model.getAllDocuments().add(documentObject);
+			repo.saveModel(model);
 		}
 		catch(Exception ex)
 		{

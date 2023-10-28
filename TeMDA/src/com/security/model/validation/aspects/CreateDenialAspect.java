@@ -11,7 +11,7 @@ import org.aspectj.lang.reflect.MethodSignature;
 import com.security.model.validation.annotations.DenialAnnotation;
 import com.security.model.validation.annotations.creators.CreateDenialAnnotation;
 import com.security.model.validation.annotations.enums.Constants;
-import com.security.model.validation.creators.FieldCreator;
+import com.security.model.validation.helpers.FieldFinder;
 
 @Aspect
 public class CreateDenialAspect {
@@ -31,7 +31,7 @@ public class CreateDenialAspect {
 			System.out.println("There is no create denial annotation");
 			return ret;
 		}
-		Object retFromObj = FieldCreator.getObjectToReadFrom(ret, obj, createDenial.createdObjectLocation(), createDenial.name(), thisJoinPoint);
+		Object retFromObj = FieldFinder.getObjectToReadFrom(ret, obj, createDenial.createdObjectLocation(), createDenial.name(), thisJoinPoint);
 		if(retFromObj == null)
 		{
 			System.out.println("Read from object is null - CreateDenialAspect");
@@ -48,12 +48,12 @@ public class CreateDenialAspect {
 
 		try 
 		{
-			System.out.println("DenialId: " + FieldCreator.getFieldValue(denial.id(), retFromObj, retClass));
-			System.out.println("Date: " + FieldCreator.getFieldValue(denial.when(), retFromObj, retClass));
+			System.out.println("DenialId: " + FieldFinder.getFieldValue(denial.id(), retFromObj, retClass));
+			System.out.println("Date: " + FieldFinder.getFieldValue(denial.when(), retFromObj, retClass));
 			
 			if(denial.reason() != Constants.Empty)
 			{
-				System.out.println("Reason: " + FieldCreator.getFieldValue(denial.reason(), retFromObj, retClass));
+				System.out.println("Reason: " + FieldFinder.getFieldValue(denial.reason(), retFromObj, retClass));
 			}
 			if(createDenial.basedOnStatemets() != Constants.Empty)
 			{

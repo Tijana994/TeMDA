@@ -1,4 +1,4 @@
-package com.security.model.validation.creators;
+package com.security.model.validation.helpers;
 
 import java.lang.reflect.Field;
 
@@ -8,7 +8,7 @@ import org.aspectj.lang.reflect.MethodSignature;
 import com.security.model.validation.annotations.enums.Constants;
 import com.security.model.validation.annotations.enums.CreatedObjectLocation;
 
-public class FieldCreator {
+public class FieldFinder {
 
 	public static Object getFieldValue(String fieldName, Object annotationObject, Class<? extends Object> c)
 	{

@@ -11,7 +11,7 @@ import org.aspectj.lang.reflect.MethodSignature;
 import com.security.model.validation.annotations.ComplaintAnnotation;
 import com.security.model.validation.annotations.creators.CreateComplaintBasedOnDataAnnotation;
 import com.security.model.validation.annotations.enums.Constants;
-import com.security.model.validation.creators.FieldCreator;
+import com.security.model.validation.helpers.FieldFinder;
 
 @Aspect
 public class CreateComplaintBasedOnDataAspect {
@@ -31,7 +31,7 @@ public class CreateComplaintBasedOnDataAspect {
 			System.out.println("There is no create complaint based on data annotation");
 			return ret;
 		}
-		Object retFromObj = FieldCreator.getObjectToReadFrom(ret, obj, createComplaintBasedOnData.createdObjectLocation(), createComplaintBasedOnData.name(), thisJoinPoint);
+		Object retFromObj = FieldFinder.getObjectToReadFrom(ret, obj, createComplaintBasedOnData.createdObjectLocation(), createComplaintBasedOnData.name(), thisJoinPoint);
 		if(retFromObj == null)
 		{
 			System.out.println("Read from object is null - CreateComplaintBasedOnDataAspect");
@@ -48,12 +48,12 @@ public class CreateComplaintBasedOnDataAspect {
 		
 		try 
 		{
-			System.out.println("ComplaintId: " + FieldCreator.getFieldValue(complaint.id(), retFromObj, retClass));
-			System.out.println("Date: " + FieldCreator.getFieldValue(complaint.when(), retFromObj, retClass));
+			System.out.println("ComplaintId: " + FieldFinder.getFieldValue(complaint.id(), retFromObj, retClass));
+			System.out.println("Date: " + FieldFinder.getFieldValue(complaint.when(), retFromObj, retClass));
 			
 			if(complaint.reason() != Constants.Empty)
 			{
-				System.out.println("Reason: " + FieldCreator.getFieldValue(complaint.reason(), retFromObj, retClass));
+				System.out.println("Reason: " + FieldFinder.getFieldValue(complaint.reason(), retFromObj, retClass));
 			}
 			System.out.println("Type: " + createComplaintBasedOnData.type());
 			if(createComplaintBasedOnData.subjects() != Constants.Empty)

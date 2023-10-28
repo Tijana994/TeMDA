@@ -11,7 +11,7 @@ import org.aspectj.lang.reflect.MethodSignature;
 import com.security.model.validation.annotations.LocationAnnotation;
 import com.security.model.validation.annotations.creators.CreateLocationAnnotation;
 import com.security.model.validation.annotations.enums.Constants;
-import com.security.model.validation.creators.FieldCreator;
+import com.security.model.validation.helpers.FieldFinder;
 import com.security.model.validation.helpers.ObjectFinder;
 
 import privacyModel.Location;
@@ -36,7 +36,7 @@ public class CreateLocationAspect {
 			System.out.println("There is no create location statement annotation");
 			return ret;
 		}
-		Object retFromObj = FieldCreator.getObjectToReadFrom(ret, obj, createLocation.createdObjectLocation(), createLocation.name(), thisJoinPoint);
+		Object retFromObj = FieldFinder.getObjectToReadFrom(ret, obj, createLocation.createdObjectLocation(), createLocation.name(), thisJoinPoint);
 		if(retFromObj == null)
 		{
 			System.out.println("Read from object is null - CreateLocationAspect");
@@ -56,8 +56,8 @@ public class CreateLocationAspect {
 			PrivacyModelRepository repo = new PrivacyModelRepository();
 			var model = repo.getModel();
 			var locationObject = repo.getFactory().createLocation();
-			var locationName = (String)FieldCreator.getFieldValue(location.id(), retFromObj, retClass);
-			locationObject.setName(locationName);
+			var name = (String)FieldFinder.getFieldValue(location.id(), retFromObj, retClass);
+			locationObject.setName(name);
 			locationObject.setType(createLocation.locationType());
 			locationObject.setIsEUMember(createLocation.isEUMember());
 			locationObject.setLegalAgeLimit(createLocation.legalAgeLimit());
@@ -91,7 +91,7 @@ public class CreateLocationAspect {
 	
 	private void setParentById(Object retFromObj, Class<? extends Object> retClass, LocationAnnotation location,
 			Location locationObject, PrivacyPolicy model) {
-		var parentId = (String)FieldCreator.getFieldValue(location.parentId(), retFromObj, retClass);
+		var parentId = (String)FieldFinder.getFieldValue(location.parentId(), retFromObj, retClass);
 		var parent = ObjectFinder.checkIfLocationExists(parentId, model);
 		if(parent.isPresent())
 		{

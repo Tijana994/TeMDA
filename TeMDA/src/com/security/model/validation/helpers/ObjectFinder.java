@@ -2,6 +2,7 @@ package com.security.model.validation.helpers;
 
 import java.util.Optional;
 
+import privacyModel.Consent;
 import privacyModel.Location;
 import privacyModel.Principal;
 import privacyModel.PrivacyPolicy;
@@ -36,6 +37,20 @@ public class ObjectFinder {
 		return location;
 	}
 	
+	public static Optional<Consent> checkIfConsentExists(String consentId, PrivacyPolicy model) 
+	{
+		if(consentId == null)
+		{
+			return Optional.empty();
+		}
+		var consent = findConsent(consentId, model);
+		if(consent.isEmpty())
+		{
+			System.out.println("There is no consent with id " + consentId);
+		}
+		return consent;
+	}
+	
 	private static Optional<Principal> findPrincipal(String principalId, PrivacyPolicy model)
 	{
 		return model.getAllPrincipals().stream()
@@ -46,5 +61,11 @@ public class ObjectFinder {
 	{
 		return model.getLocations().stream()
 		   .filter(location -> location.getName().equals(locationId)).findFirst();
+	}
+	
+	private static Optional<Consent> findConsent(String consentId, PrivacyPolicy model)
+	{
+		return model.getAllConsents().stream()
+		   .filter(consent -> consent.getName().equals(consentId)).findFirst();
 	}
 }
