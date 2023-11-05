@@ -54,10 +54,8 @@ public class CreateNotificationAspect {
 			PrivacyModelRepository repo = new PrivacyModelRepository();
 			var model = repo.getModel();
 			var notificationObject = repo.getFactory().createNotification();
-			var name = (String)FieldFinder.getFieldValue(notification.id(), retFromObj, retClass);
-			notificationObject.setName(name);
-			var date = (Date)FieldFinder.getFieldValue(notification.when(), retFromObj, retClass);
-			notificationObject.setWhen(date);
+			notificationObject.setName((String)FieldFinder.getFieldValue(notification.id(), retFromObj, retClass));
+			notificationObject.setWhen((Date)FieldFinder.getFieldValue(notification.when(), retFromObj, retClass));
 			notificationObject.setType(createNotification.type());
 			if(createNotification.causedBy() != Constants.Empty)
 			{

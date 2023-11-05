@@ -54,27 +54,21 @@ public class CreateDocumentAspect {
 			PrivacyModelRepository repo = new PrivacyModelRepository();
 			var model = repo.getModel();
 			var documentObject = repo.getFactory().createDocument();
-			var name = (String)FieldFinder.getFieldValue(paper.id(), retFromObj, retClass);
-			documentObject.setName(name);
+			documentObject.setName((String)FieldFinder.getFieldValue(paper.id(), retFromObj, retClass));
 			documentObject.setDocumentType(createDocument.documentType());
-			var startDate = (Date)FieldFinder.getFieldValue(paper.startDate(), retFromObj, retClass);
-			documentObject.setStartDate(startDate);
-			var location = (String)FieldFinder.getFieldValue(paper.location(), retFromObj, retClass);
-			documentObject.setLocation(location);
+			documentObject.setStartDate((Date)FieldFinder.getFieldValue(paper.startDate(), retFromObj, retClass));
+			documentObject.setLocation((String)FieldFinder.getFieldValue(paper.location(), retFromObj, retClass));
 			if(!paper.terminantionExplanation().equals(Constants.Empty))
 			{
-				var terminantionExplanation = (String)FieldFinder.getFieldValue(paper.terminantionExplanation(), retFromObj, retClass);
-				documentObject.setTerminationExplanation(terminantionExplanation);
+				documentObject.setTerminationExplanation((String)FieldFinder.getFieldValue(paper.terminantionExplanation(), retFromObj, retClass));
 			}
 			if(!paper.terminantionDate().equals(Constants.Empty))
 			{
-				var terminantionDate = (Date)FieldFinder.getFieldValue(paper.terminantionDate(), retFromObj, retClass);
-				documentObject.setTerminationDate(terminantionDate);
+				documentObject.setTerminationDate((Date)FieldFinder.getFieldValue(paper.terminantionDate(), retFromObj, retClass));
 			}
 			if(!paper.description().equals(Constants.Empty))
 			{
-				var description = (String)FieldFinder.getFieldValue(paper.description(), retFromObj, retClass);
-				documentObject.setDescription(description);
+				documentObject.setDescription((String)FieldFinder.getFieldValue(paper.description(), retFromObj, retClass));
 			}
 			model.getAllDocuments().add(documentObject);
 			repo.saveModel(model);

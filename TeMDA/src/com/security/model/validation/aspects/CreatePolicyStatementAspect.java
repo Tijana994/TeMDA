@@ -56,22 +56,21 @@ public class CreatePolicyStatementAspect {
 			PrivacyModelRepository repo = new PrivacyModelRepository();
 			var model = repo.getModel();
 			var policyStatementObject = repo.getFactory().createPolicyStatement();
-			var name = (String)FieldFinder.getFieldValue(policyStatement.id(), ret, retClass);
-			policyStatementObject.setName(name);
+			policyStatementObject.setName((String)FieldFinder.getFieldValue(policyStatement.id(), ret, retClass));
 			var whoId = (String)FieldFinder.getFieldValue(createPolicyStatement.who(), obj, objectClass);
-			var whoPrincipal = ObjectFinder.checkIfPrincipalExists(whoId,model);
+			var whoPrincipal = ObjectFinder.checkIfPrincipalExists(whoId, model);
 			if(whoPrincipal.isPresent())
 			{
 				policyStatementObject.setWho(whoPrincipal.get());
 			}
 			var whoseId = (String)FieldFinder.getFieldValue(createPolicyStatement.whose(), obj, objectClass);
-			var whosePrincipal = ObjectFinder.checkIfPrincipalExists(whoseId,model);
+			var whosePrincipal = ObjectFinder.checkIfPrincipalExists(whoseId, model);
 			if(whosePrincipal.isPresent())
 			{
 				policyStatementObject.setWhose(whosePrincipal.get());
 			}
 			var whomId = (String)FieldFinder.getFieldValue(createPolicyStatement.whom(), obj, objectClass);
-			var whomPrincipal = ObjectFinder.checkIfPrincipalExists(whomId,model);
+			var whomPrincipal = ObjectFinder.checkIfPrincipalExists(whomId, model);
 			if(whomPrincipal.isPresent())
 			{
 				policyStatementObject.setWhom(whomPrincipal.get());

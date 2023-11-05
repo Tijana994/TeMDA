@@ -1,6 +1,7 @@
 package com.security.model.validation.aspects;
 
 import java.lang.reflect.Method;
+import java.util.Date;
 
 import org.aspectj.lang.ProceedingJoinPoint;
 import org.aspectj.lang.annotation.Around;
@@ -12,6 +13,8 @@ import com.security.model.validation.annotations.ComplaintAnnotation;
 import com.security.model.validation.annotations.creators.CreateComplaintBasedOnDataAnnotation;
 import com.security.model.validation.annotations.enums.Constants;
 import com.security.model.validation.helpers.FieldFinder;
+
+import utility.PrivacyModelRepository;
 
 @Aspect
 public class CreateComplaintBasedOnDataAspect {
@@ -48,14 +51,17 @@ public class CreateComplaintBasedOnDataAspect {
 		
 		try 
 		{
-			System.out.println("ComplaintId: " + FieldFinder.getFieldValue(complaint.id(), retFromObj, retClass));
-			System.out.println("Date: " + FieldFinder.getFieldValue(complaint.when(), retFromObj, retClass));
-			
+			PrivacyModelRepository repo = new PrivacyModelRepository();
+			var model = repo.getModel();
+			var complaintTypeObject = repo.getFactory().createComplaintBasedOnData();
+			var complaintObject = repo.getFactory().createComplaint();
+			complaintObject.setName((String)FieldFinder.getFieldValue(complaint.id(), retFromObj, retClass));
+			complaintObject.setWhen((Date)FieldFinder.getFieldValue(complaint.when(), retFromObj, retClass));
+			complaintTypeObject.setType(createComplaintBasedOnData.type());
 			if(complaint.reason() != Constants.Empty)
 			{
-				System.out.println("Reason: " + FieldFinder.getFieldValue(complaint.reason(), retFromObj, retClass));
+				complaintObject.setReason((String)FieldFinder.getFieldValue(complaint.reason(), retFromObj, retClass));
 			}
-			System.out.println("Type: " + createComplaintBasedOnData.type());
 			if(createComplaintBasedOnData.subjects() != Constants.Empty)
 			{
 				
@@ -64,7 +70,9 @@ public class CreateComplaintBasedOnDataAspect {
 			{
 				
 			}
-			
+			complaintObject.setAction(complaintTypeObject);
+			model.getAllComplaints().add(complaintObject);
+			repo.saveModel(model);
 		}
 		catch(Exception ex)
 		{

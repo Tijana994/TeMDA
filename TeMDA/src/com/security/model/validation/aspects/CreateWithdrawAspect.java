@@ -61,14 +61,11 @@ public class CreateWithdrawAspect {
 			var withdrawObject = repo.getFactory().createWithdraw();
 			var complaintObject = repo.getFactory().createComplaint();
 			complaintObject.setAction(withdrawObject);
-			var name = (String)FieldFinder.getFieldValue(withdraw.id(), retFromObj, retClass);
-			complaintObject.setName(name);
-			var date = (Date)FieldFinder.getFieldValue(withdraw.when(), retFromObj, retClass);
-			complaintObject.setWhen(date);
+			complaintObject.setName((String)FieldFinder.getFieldValue(withdraw.id(), retFromObj, retClass));
+			complaintObject.setWhen((Date)FieldFinder.getFieldValue(withdraw.when(), retFromObj, retClass));
 			if(!withdraw.reason().equals(Constants.Empty))
 			{
-				var reason = (String)FieldFinder.getFieldValue(withdraw.reason(), retFromObj, retClass);
-				complaintObject.setReason(reason);
+				complaintObject.setReason((String)FieldFinder.getFieldValue(withdraw.reason(), retFromObj, retClass));
 			}
 			if(!createWithdraw.consent().equals(Constants.Empty))
 			{

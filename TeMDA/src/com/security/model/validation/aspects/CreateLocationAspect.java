@@ -56,8 +56,7 @@ public class CreateLocationAspect {
 			PrivacyModelRepository repo = new PrivacyModelRepository();
 			var model = repo.getModel();
 			var locationObject = repo.getFactory().createLocation();
-			var name = (String)FieldFinder.getFieldValue(location.id(), retFromObj, retClass);
-			locationObject.setName(name);
+			locationObject.setName((String)FieldFinder.getFieldValue(location.id(), retFromObj, retClass));
 			locationObject.setType(createLocation.locationType());
 			locationObject.setIsEUMember(createLocation.isEUMember());
 			locationObject.setLegalAgeLimit(createLocation.legalAgeLimit());

@@ -1,6 +1,7 @@
 package com.security.model.validation.aspects;
 
 import java.lang.reflect.Method;
+import java.util.Date;
 
 import org.aspectj.lang.ProceedingJoinPoint;
 import org.aspectj.lang.annotation.Around;
@@ -12,6 +13,8 @@ import com.security.model.validation.annotations.ComplaintAnnotation;
 import com.security.model.validation.annotations.creators.CreateComplaintBasedOnActionAnnotation;
 import com.security.model.validation.annotations.enums.Constants;
 import com.security.model.validation.helpers.FieldFinder;
+
+import utility.PrivacyModelRepository;
 
 @Aspect
 public class CreateComplaintBasedOnActionAspect {
@@ -48,12 +51,16 @@ public class CreateComplaintBasedOnActionAspect {
 		
 		try 
 		{
-			System.out.println("ComplaintId: " + FieldFinder.getFieldValue(complaint.id(), retFromObj, retClass));
-			System.out.println("Date: " + FieldFinder.getFieldValue(complaint.when(), retFromObj, retClass));
+			PrivacyModelRepository repo = new PrivacyModelRepository();
+			var model = repo.getModel();
+			var complaintTypeObject = repo.getFactory().createComplaintBasedOnAction();
+			var complaintObject = repo.getFactory().createComplaint();
+			complaintObject.setName((String)FieldFinder.getFieldValue(complaint.id(), retFromObj, retClass));
+			complaintObject.setWhen((Date)FieldFinder.getFieldValue(complaint.when(), retFromObj, retClass));
 			
 			if(complaint.reason() != Constants.Empty)
 			{
-				System.out.println("Reason: " + FieldFinder.getFieldValue(complaint.reason(), retFromObj, retClass));
+				complaintObject.setReason((String)FieldFinder.getFieldValue(complaint.reason(), retFromObj, retClass));
 			}
 			if(createComplaintBasedOnAction.policyStatemets() != Constants.Empty)
 			{
@@ -63,6 +70,9 @@ public class CreateComplaintBasedOnActionAspect {
 			{
 				
 			}
+			complaintObject.setAction(complaintTypeObject);
+			model.getAllComplaints().add(complaintObject);
+			repo.saveModel(model);
 		}
 		catch(Exception ex)
 		{

@@ -54,28 +54,22 @@ public class CreateConsentAspect {
 			PrivacyModelRepository repo = new PrivacyModelRepository();
 			var model = repo.getModel();
 			var consentObject = repo.getFactory().createConsent();
-			var name = (String)FieldFinder.getFieldValue(paper.id(), retFromObj, retClass);
-			consentObject.setName(name);
+			consentObject.setName((String)FieldFinder.getFieldValue(paper.id(), retFromObj, retClass));
 			consentObject.setType(createConsent.consentType());
 			consentObject.setFormat(createConsent.consentFormat());
-			var startDate = (Date)FieldFinder.getFieldValue(paper.startDate(), retFromObj, retClass);
-			consentObject.setStartDate(startDate);
-			var location = (String)FieldFinder.getFieldValue(paper.location(), retFromObj, retClass);
-			consentObject.setLocation(location);
+			consentObject.setStartDate((Date)FieldFinder.getFieldValue(paper.startDate(), retFromObj, retClass));
+			consentObject.setLocation((String)FieldFinder.getFieldValue(paper.location(), retFromObj, retClass));
 			if(!paper.terminantionExplanation().equals(Constants.Empty))
 			{
-				var terminantionExplanation = (String)FieldFinder.getFieldValue(paper.terminantionExplanation(), retFromObj, retClass);
-				consentObject.setTerminationExplanation(terminantionExplanation);
+				consentObject.setTerminationExplanation((String)FieldFinder.getFieldValue(paper.terminantionExplanation(), retFromObj, retClass));
 			}
 			if(!paper.terminantionDate().equals(Constants.Empty))
 			{
-				var terminantionDate = (Date)FieldFinder.getFieldValue(paper.terminantionDate(), retFromObj, retClass);
-				consentObject.setTerminationDate(terminantionDate);
+				consentObject.setTerminationDate((Date)FieldFinder.getFieldValue(paper.terminantionDate(), retFromObj, retClass));
 			}
 			if(!paper.description().equals(Constants.Empty))
 			{
-				var description = (String)FieldFinder.getFieldValue(paper.description(), retFromObj, retClass);
-				consentObject.setDescription(description);
+				consentObject.setDescription((String)FieldFinder.getFieldValue(paper.description(), retFromObj, retClass));
 			}
 			model.getAllConsents().add(consentObject);
 			repo.saveModel(model);

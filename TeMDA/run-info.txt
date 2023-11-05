@@ -1,0 +1,1 @@
+-javaagent:lib\java21\aspectjweaver-1.9.20.1.jar --add-opens java.base/java.lang=ALL-UNNAMED

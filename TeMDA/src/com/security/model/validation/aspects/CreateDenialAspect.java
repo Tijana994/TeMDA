@@ -1,6 +1,7 @@
 package com.security.model.validation.aspects;
 
 import java.lang.reflect.Method;
+import java.util.Date;
 
 import org.aspectj.lang.ProceedingJoinPoint;
 import org.aspectj.lang.annotation.Around;
@@ -12,6 +13,8 @@ import com.security.model.validation.annotations.DenialAnnotation;
 import com.security.model.validation.annotations.creators.CreateDenialAnnotation;
 import com.security.model.validation.annotations.enums.Constants;
 import com.security.model.validation.helpers.FieldFinder;
+
+import utility.PrivacyModelRepository;
 
 @Aspect
 public class CreateDenialAspect {
@@ -48,12 +51,14 @@ public class CreateDenialAspect {
 
 		try 
 		{
-			System.out.println("DenialId: " + FieldFinder.getFieldValue(denial.id(), retFromObj, retClass));
-			System.out.println("Date: " + FieldFinder.getFieldValue(denial.when(), retFromObj, retClass));
-			
+			PrivacyModelRepository repo = new PrivacyModelRepository();
+			var model = repo.getModel();
+			var denialObject = repo.getFactory().createDenial();
+			denialObject.setName((String)FieldFinder.getFieldValue(denial.id(), retFromObj, retClass));
+			denialObject.setWhen((Date)FieldFinder.getFieldValue(denial.when(), retFromObj, retClass));
 			if(denial.reason() != Constants.Empty)
 			{
-				System.out.println("Reason: " + FieldFinder.getFieldValue(denial.reason(), retFromObj, retClass));
+				denialObject.setReason((String)FieldFinder.getFieldValue(denial.reason(), retFromObj, retClass));
 			}
 			if(createDenial.basedOnStatemets() != Constants.Empty)
 			{
@@ -71,6 +76,8 @@ public class CreateDenialAspect {
 			{
 				
 			}
+			model.getAllDenials().add(denialObject);
+			repo.saveModel(model);
 		}
 		catch(Exception ex)
 		{

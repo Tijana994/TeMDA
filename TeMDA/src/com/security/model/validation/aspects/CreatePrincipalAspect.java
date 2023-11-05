@@ -55,8 +55,7 @@ public class CreatePrincipalAspect {
 			PrivacyModelRepository repo = new PrivacyModelRepository();
 			var model = repo.getModel();
 			var principalObject = repo.getFactory().createPrincipal();
-			var name = (String)FieldFinder.getFieldValue(principal.id(), retFromObj, retClass);
-			principalObject.setName(name);
+			principalObject.setName((String)FieldFinder.getFieldValue(principal.id(), retFromObj, retClass));
 			principalObject.setScope(createPrincipal.scope());
 			principalObject.setType(createPrincipal.type());
 			if(!principal.birthday().equals(Constants.Unassigned))
