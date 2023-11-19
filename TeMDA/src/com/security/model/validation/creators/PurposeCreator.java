@@ -5,54 +5,71 @@ import java.util.List;
 
 import com.security.model.validation.annotations.PurposeAnnotation;
 import com.security.model.validation.annotations.enums.Constants;
+import com.security.model.validation.helpers.FieldFinder;
+
+import privacyModel.PrivacyModelFactory;
+import privacyModel.Purpose;
 
 public class PurposeCreator {
 
-	public static void createPurpose(Class<?> objectClass, Object obj, String why)
+	public static Purpose createPurpose(Class<?> objectClass, Object obj,
+			String why, PrivacyModelFactory factory)
 	{
 		if(obj == null)
 		{
 			System.out.println("Object is not instantiated.");
-			return;
+			return null;
 		}
 		try
 		{
 			Field purpose = objectClass.getDeclaredField(why);
+			Object purposeObject = purpose.get(obj);
 			PurposeAnnotation purposeAnnotation = purpose.getType().getAnnotation(PurposeAnnotation.class);
 			if(purposeAnnotation == null)
 			{
 				System.out.println("There is no purpose annotation");
-				return;
+				return null;
 			}
 			else
 			{
-				readComplexType(purpose, obj, purposeAnnotation);
+				return readComplexType(purpose, purposeObject, purposeAnnotation, factory);
 			}
 		}
 		catch(Exception e)
 		{
-			System.out.println(e);
+			System.out.println("Field with name " + why + " in purpose attribute caused an exception " + e);
 		}
+		return null;
 	}
 
-	private static void readComplexType(Field field, Object obj, PurposeAnnotation purposeAnnotation)
+	private static Purpose readComplexType(Field field, Object obj, 
+			PurposeAnnotation purposeAnnotation, PrivacyModelFactory factory)
 			throws NoSuchFieldException, IllegalAccessException {
-		Field details = field.getType().getDeclaredField(purposeAnnotation.details());
-		System.out.println("Details: " + details.get(obj));
-		if(purposeAnnotation.subPurposes().equals(Constants.Empty)) return;
+		String details = (String)FieldFinder.getFieldValue(purposeAnnotation.details(), obj, field.getType());
+		var purposeObject = factory.createPurpose();
+		purposeObject.setDetails(details);
+		if(purposeAnnotation.subPurposes().equals(Constants.Empty)) return purposeObject;
 		
 		Field sub = field.getType().getDeclaredField(purposeAnnotation.subPurposes());
-		if(!sub.getType().equals(List.class)) return;
+		if(!sub.getType().equals(List.class)) 
+		{
+			System.out.println("Subpurpose should be a list type.");
+			return purposeObject;
+		}
 
 		Object value = sub.get(obj);
-		if(value == null) return;
+		if(value == null)
+		{
+			return purposeObject;
+		}
 		var list = (List<?>) value;
 		
 		for(var purpose : list)
 		{
-			System.out.println("List item");
 			PurposeAnnotation purposeAnnotation1 = purpose.getClass().getAnnotation(PurposeAnnotation.class);
-			readComplexType(field, purpose, purposeAnnotation1);
+			var subPurposeObject = readComplexType(field, purpose, purposeAnnotation1, factory);
+			purposeObject.getSubPurposes().add(subPurposeObject);
 		}
+		return purposeObject;
 	}
 }

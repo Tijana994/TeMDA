@@ -76,7 +76,8 @@ public class CreatePolicyStatementAspect {
 				policyStatementObject.setWhom(whomPrincipal.get());
 			}
 			
-			PurposeCreator.createPurpose(objectClass, obj, createPolicyStatement.why()); //Ovako mogu procitati kompozicije
+			var purpose = PurposeCreator.createPurpose(objectClass, obj, createPolicyStatement.why(),repo.getFactory()); //Ovako mogu procitati kompozicije
+			policyStatementObject.setWhy(purpose);
 			WhenCreator.createWhen(objectClass, obj, createPolicyStatement.when());
 			
 			model.getPolicyStatements().add(policyStatementObject);

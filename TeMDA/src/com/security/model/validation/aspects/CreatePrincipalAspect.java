@@ -1,6 +1,7 @@
 package com.security.model.validation.aspects;
 
 import java.lang.reflect.Method;
+import java.util.Date;
 
 import org.aspectj.lang.ProceedingJoinPoint;
 import org.aspectj.lang.annotation.Around;
@@ -60,7 +61,8 @@ public class CreatePrincipalAspect {
 			principalObject.setType(createPrincipal.type());
 			if(!principal.birthday().equals(Constants.Unassigned))
 			{
-				
+				principalObject.setBirthdate((Date)FieldFinder.getFieldValue(principal.birthday(), retFromObj, retClass));
+				System.out.println("Birth day" + principalObject.getBirthdate());
 			}
 			if(!principal.parent().equals(Constants.Undefined)) 
 			{

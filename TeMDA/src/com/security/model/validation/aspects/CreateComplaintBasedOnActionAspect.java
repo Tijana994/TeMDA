@@ -22,7 +22,7 @@ public class CreateComplaintBasedOnActionAspect {
 	@Pointcut("execution(* *..*(..)) && @annotation(com.security.model.validation.annotations.creators.CreateComplaintBasedOnActionAnnotation)")
 	void function() {}
 	@Around("function()")
-	public Object aroundOkoF(ProceedingJoinPoint thisJoinPoint) throws Throwable {
+	public Object createComplaintBasedOnAction(ProceedingJoinPoint thisJoinPoint) throws Throwable {
 		Object[] args = thisJoinPoint.getArgs();
 		Object ret = thisJoinPoint.proceed(args);
 		Object obj = thisJoinPoint.getThis();
