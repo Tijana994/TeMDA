@@ -73,7 +73,8 @@ public class CreateWithdrawAspect {
 			}
 			if(!createWithdraw.consentId().equals(Constants.Empty))
 			{
-				
+				var consentId = (String)FieldFinder.getFieldValue(createWithdraw.consentId(), obj, objectClass);
+				trySetConsentId(model, withdrawObject, consentId);
 			}
 			model.getAllComplaints().add(complaintObject);
 			repo.saveModel(model);
@@ -91,11 +92,17 @@ public class CreateWithdrawAspect {
 		var consentId = ReadTypeByAttribute.getConsentIdFromObject(objectClass, obj, createWithdraw.consent(), createWithdraw.parametersLocation());
 		if(consentId.isPresent())
 		{
-			var consent = ObjectFinder.checkIfConsentExists(consentId.get(),model);
-			if(consent.isPresent())
-			{
-				withdrawObject.setSubject(consent.get());
-			}
+			var consentName = consentId.get();
+			trySetConsentId(model, withdrawObject, consentName);
 		}
 	}
+	private void trySetConsentId(PrivacyPolicy model, Withdraw withdrawObject, String consentName) {
+		var consent = ObjectFinder.checkIfConsentExists(consentName,model);
+		if(consent.isPresent())
+		{
+			withdrawObject.setSubject(consent.get());
+		}
+	}
+	
+	
 }
