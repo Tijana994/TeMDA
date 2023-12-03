@@ -11,7 +11,7 @@ import com.security.model.validation.annotations.enums.Constants;
 @Target(ElementType.TYPE)
 public @interface PrincipalAnnotation {
 	String id();
-	String birthday() default Constants.Unassigned;
+	String birthday() default Constants.Undefined;
 	String parent() default Constants.Undefined;
 	String parentId() default Constants.Undefined;
 	String childrens() default Constants.Undefined;

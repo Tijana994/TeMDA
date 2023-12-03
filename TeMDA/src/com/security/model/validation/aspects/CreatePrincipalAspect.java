@@ -59,7 +59,7 @@ public class CreatePrincipalAspect {
 			principalObject.setName((String)FieldFinder.getFieldValue(principal.id(), retFromObj, retClass));
 			principalObject.setScope(createPrincipal.scope());
 			principalObject.setType(createPrincipal.type());
-			if(!principal.birthday().equals(Constants.Unassigned))
+			if(!principal.birthday().equals(Constants.Undefined))
 			{
 				principalObject.setBirthdate((Date)FieldFinder.getFieldValue(principal.birthday(), retFromObj, retClass));
 				System.out.println("Birth day" + principalObject.getBirthdate());

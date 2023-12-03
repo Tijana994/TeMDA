@@ -22,9 +22,9 @@ public class PurposeCreator {
 		}
 		try
 		{
-			Field purpose = objectClass.getDeclaredField(why);
-			Object purposeObject = purpose.get(obj);
-			PurposeAnnotation purposeAnnotation = purpose.getType().getAnnotation(PurposeAnnotation.class);
+			//Field purpose = objectClass.getDeclaredField(why);
+			Object purposeObject = FieldFinder.getFieldValue(why,obj,objectClass);//purpose.get(obj);
+			PurposeAnnotation purposeAnnotation = purposeObject.getClass().getAnnotation(PurposeAnnotation.class);
 			if(purposeAnnotation == null)
 			{
 				System.out.println("There is no purpose annotation");
@@ -32,7 +32,7 @@ public class PurposeCreator {
 			}
 			else
 			{
-				return readComplexType(purpose, purposeObject, purposeAnnotation, factory);
+				return readComplexType(purposeObject, purposeAnnotation, factory);
 			}
 		}
 		catch(Exception e)
@@ -42,15 +42,15 @@ public class PurposeCreator {
 		return null;
 	}
 
-	private static Purpose readComplexType(Field field, Object obj, 
+	private static Purpose readComplexType(Object obj, 
 			PurposeAnnotation purposeAnnotation, PrivacyModelFactory factory)
 			throws NoSuchFieldException, IllegalAccessException {
-		String details = (String)FieldFinder.getFieldValue(purposeAnnotation.details(), obj, field.getType());
+		String details = (String)FieldFinder.getFieldValue(purposeAnnotation.details(), obj, obj.getClass());
 		var purposeObject = factory.createPurpose();
 		purposeObject.setDetails(details);
 		if(purposeAnnotation.subPurposes().equals(Constants.Empty)) return purposeObject;
 		
-		Field sub = field.getType().getDeclaredField(purposeAnnotation.subPurposes());
+		Field sub = obj.getClass().getDeclaredField(purposeAnnotation.subPurposes());
 		if(!sub.getType().equals(List.class)) 
 		{
 			System.out.println("Subpurpose should be a list type.");
@@ -67,7 +67,7 @@ public class PurposeCreator {
 		for(var purpose : list)
 		{
 			PurposeAnnotation purposeAnnotation1 = purpose.getClass().getAnnotation(PurposeAnnotation.class);
-			var subPurposeObject = readComplexType(field, purpose, purposeAnnotation1, factory);
+			var subPurposeObject = readComplexType(purpose, purposeAnnotation1, factory);
 			purposeObject.getSubPurposes().add(subPurposeObject);
 		}
 		return purposeObject;

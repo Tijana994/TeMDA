@@ -3,6 +3,7 @@ package com.security.model.validation.aspects;
 import java.lang.reflect.Method;
 import java.util.Date;
 
+import org.aspectj.lang.JoinPoint;
 import org.aspectj.lang.ProceedingJoinPoint;
 import org.aspectj.lang.annotation.Around;
 import org.aspectj.lang.annotation.Aspect;
@@ -67,11 +68,11 @@ public class CreateWithdrawAspect {
 			{
 				complaintObject.setReason((String)FieldFinder.getFieldValue(withdraw.reason(), retFromObj, retClass));
 			}
-			if(!createWithdraw.consent().equals(Constants.Empty))
+			if(!createWithdraw.consent().equals(Constants.Undefined))
 			{
-				setConsentFromObject(obj, objectClass, createWithdraw, model, withdrawObject);
+				setConsentFromObject(obj, objectClass, createWithdraw, model, withdrawObject,thisJoinPoint);
 			}
-			if(!createWithdraw.consentId().equals(Constants.Empty))
+			if(!createWithdraw.consentId().equals(Constants.Undefined))
 			{
 				var consentId = (String)FieldFinder.getFieldValue(createWithdraw.consentId(), obj, objectClass);
 				trySetConsentId(model, withdrawObject, consentId);
@@ -88,8 +89,9 @@ public class CreateWithdrawAspect {
 	}
 	
 	private void setConsentFromObject(Object obj, Class<? extends Object> objectClass,
-			CreateWithdrawAnnotation createWithdraw, PrivacyPolicy model, Withdraw withdrawObject) {
-		var consentId = ReadTypeByAttribute.getConsentIdFromObject(objectClass, obj, createWithdraw.consent(), createWithdraw.parametersLocation());
+			CreateWithdrawAnnotation createWithdraw, PrivacyPolicy model, 
+			Withdraw withdrawObject, JoinPoint jp) {
+		var consentId = ReadTypeByAttribute.getConsentIdFromObject(objectClass, obj, createWithdraw.consent(), createWithdraw.parametersLocation(), jp);
 		if(consentId.isPresent())
 		{
 			var consentName = consentId.get();
