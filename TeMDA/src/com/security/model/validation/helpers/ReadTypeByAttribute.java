@@ -1,11 +1,16 @@
 package com.security.model.validation.helpers;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Optional;
 
 import org.aspectj.lang.JoinPoint;
 
 import com.security.model.validation.annotations.PaperAnnotation;
 import com.security.model.validation.annotations.enums.ParametersObjectsLocation;
+
+import privacyModel.Principal;
+import privacyModel.PrivacyPolicy;
 
 public class ReadTypeByAttribute {
 
@@ -41,5 +46,22 @@ public class ReadTypeByAttribute {
 		}
 
 		return Optional.empty();
+	}
+
+	public static List<Principal> getPrincipalsById(Object retFromObj, Class<? extends Object> retClass, 
+			String propertyName, PrivacyPolicy model)
+	{
+		var principals = new ArrayList<Principal>();
+		var principalsIds = FieldFinder.getFieldValue(propertyName, retFromObj, retClass);
+		var list = (List<String>) principalsIds;
+		for(var principalId : list)
+		{
+			var principal = ObjectFinder.checkIfPrincipalExists(principalId, model);
+			if(principal.isPresent())
+			{
+				principals.add(principal.get());
+			}
+		}
+		return principals;
 	}
 }

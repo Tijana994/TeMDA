@@ -14,6 +14,7 @@ import com.security.model.validation.annotations.creators.CreatePrincipalAnnotat
 import com.security.model.validation.annotations.enums.Constants;
 import com.security.model.validation.helpers.FieldFinder;
 import com.security.model.validation.helpers.ObjectFinder;
+import com.security.model.validation.helpers.ReadTypeByAttribute;
 
 import privacyModel.Principal;
 import privacyModel.PrivacyPolicy;
@@ -62,7 +63,6 @@ public class CreatePrincipalAspect {
 			if(!principal.birthday().equals(Constants.Undefined))
 			{
 				principalObject.setBirthdate((Date)FieldFinder.getFieldValue(principal.birthday(), retFromObj, retClass));
-				System.out.println("Birth day" + principalObject.getBirthdate());
 			}
 			if(!principal.parent().equals(Constants.Undefined)) 
 			{
@@ -70,7 +70,7 @@ public class CreatePrincipalAspect {
 			}
 			if(!principal.parentId().equals(Constants.Undefined))
 			{
-				setParentById(retFromObj, retClass, principal, principalObject, model);
+				setParentById(retFromObj, retClass, principal.parentId(), principalObject, model);
 			}
 			if(!principal.childrens().equals(Constants.Undefined))
 			{
@@ -78,7 +78,11 @@ public class CreatePrincipalAspect {
 			}
 			if(!principal.childrensIds().equals(Constants.Undefined))
 			{
-				
+				var childrens = ReadTypeByAttribute.getPrincipalsById(retFromObj, retClass, principal.childrensIds(), model);
+				if(!childrens.isEmpty())
+				{
+					principalObject.getSubPrincipals().addAll(childrens);
+				}
 			}
 			model.getAllPrincipals().add(principalObject);
 			repo.saveModel(model);
@@ -90,9 +94,9 @@ public class CreatePrincipalAspect {
 		
 		return ret;
 	}
-	private void setParentById(Object retFromObj, Class<? extends Object> retClass, PrincipalAnnotation principal,
+	private void setParentById(Object retFromObj, Class<? extends Object> retClass, String propertyName,
 			Principal principalObject, PrivacyPolicy model) {
-		var parentId = (String)FieldFinder.getFieldValue(principal.parentId(), retFromObj, retClass);
+		var parentId = (String)FieldFinder.getFieldValue(propertyName, retFromObj, retClass);
 		var parent = ObjectFinder.checkIfPrincipalExists(parentId, model);
 		if(parent.isPresent())
 		{

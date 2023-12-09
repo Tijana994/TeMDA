@@ -13,6 +13,7 @@ import com.security.model.validation.annotations.NotificationAnnotation;
 import com.security.model.validation.annotations.creators.CreateNotificationAnnotation;
 import com.security.model.validation.annotations.enums.Constants;
 import com.security.model.validation.helpers.FieldFinder;
+import com.security.model.validation.helpers.ReadTypeByAttribute;
 
 import utility.PrivacyModelRepository;
 
@@ -71,7 +72,11 @@ public class CreateNotificationAspect {
 			}
 			if(createNotification.receiversIds() != Constants.Empty)
 			{
-				
+				var reveivers = ReadTypeByAttribute.getPrincipalsById(retFromObj, retClass, createNotification.receiversIds(), model);
+				if(!reveivers.isEmpty())
+				{
+					notificationObject.getReceivers().addAll(reveivers);
+				}
 			}
 			if(createNotification.notifiers() != Constants.Empty)
 			{
@@ -79,7 +84,11 @@ public class CreateNotificationAspect {
 			}
 			if(createNotification.notifiersIds() != Constants.Empty)
 			{
-				
+				var notifiers = ReadTypeByAttribute.getPrincipalsById(retFromObj, retClass, createNotification.notifiersIds(), model);
+				if(!notifiers.isEmpty())
+				{
+					notificationObject.getNotifiers().addAll(notifiers);
+				}
 			}
 			model.getNotifications().add(notificationObject);
 			repo.saveModel(model);
