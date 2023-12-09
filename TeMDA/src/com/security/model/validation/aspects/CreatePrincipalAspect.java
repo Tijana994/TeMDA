@@ -94,6 +94,7 @@ public class CreatePrincipalAspect {
 		
 		return ret;
 	}
+	
 	private void setParentById(Object retFromObj, Class<? extends Object> retClass, String propertyName,
 			Principal principalObject, PrivacyPolicy model) {
 		var parentId = (String)FieldFinder.getFieldValue(propertyName, retFromObj, retClass);

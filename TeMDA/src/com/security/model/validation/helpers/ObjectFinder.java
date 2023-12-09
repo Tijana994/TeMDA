@@ -4,6 +4,7 @@ import java.util.Optional;
 
 import privacyModel.Consent;
 import privacyModel.Location;
+import privacyModel.PolicyStatement;
 import privacyModel.Principal;
 import privacyModel.PrivacyPolicy;
 
@@ -51,6 +52,20 @@ public class ObjectFinder {
 		return consent;
 	}
 	
+	public static Optional<PolicyStatement> checkIfPolicyStatementExists(String fieldId, PrivacyPolicy model) 
+	{
+		if(fieldId == null)
+		{
+			return Optional.empty();
+		}
+		var policyStatement = findPolicyStatement(fieldId, model);
+		if(policyStatement.isEmpty())
+		{
+			System.out.println("There is no policy statement with id " + fieldId);
+		}
+		return policyStatement;
+	}
+	
 	private static Optional<Principal> findPrincipal(String principalId, PrivacyPolicy model)
 	{
 		return model.getAllPrincipals().stream()
@@ -67,5 +82,11 @@ public class ObjectFinder {
 	{
 		return model.getAllConsents().stream()
 		   .filter(consent -> consent.getName().equals(consentId)).findFirst();
+	}
+	
+	private static Optional<PolicyStatement> findPolicyStatement(String policyStatementId, PrivacyPolicy model)
+	{
+		return model.getPolicyStatements().stream()
+		   .filter(policyStatement -> policyStatement.getName().equals(policyStatementId)).findFirst();
 	}
 }

@@ -13,7 +13,10 @@ import com.security.model.validation.annotations.ComplaintAnnotation;
 import com.security.model.validation.annotations.creators.CreateComplaintBasedOnActionAnnotation;
 import com.security.model.validation.annotations.enums.Constants;
 import com.security.model.validation.helpers.FieldFinder;
+import com.security.model.validation.helpers.ObjectFinder;
 
+import privacyModel.ComplaintBasedOnAction;
+import privacyModel.PrivacyPolicy;
 import utility.PrivacyModelRepository;
 
 @Aspect
@@ -62,13 +65,13 @@ public class CreateComplaintBasedOnActionAspect {
 			{
 				complaintObject.setReason((String)FieldFinder.getFieldValue(complaint.reason(), retFromObj, retClass));
 			}
-			if(createComplaintBasedOnAction.policyStatemets() != Constants.Empty)
+			if(createComplaintBasedOnAction.policyStatemet() != Constants.Empty)
 			{
 				
 			}
-			if(createComplaintBasedOnAction.policyStatemetsIds() != Constants.Empty)
+			if(createComplaintBasedOnAction.policyStatemetId() != Constants.Empty)
 			{
-				
+				setPolicyStatemetById(retFromObj, retClass, createComplaintBasedOnAction.policyStatemetId(), complaintTypeObject, model);
 			}
 			complaintObject.setAction(complaintTypeObject);
 			model.getAllComplaints().add(complaintObject);
@@ -80,5 +83,15 @@ public class CreateComplaintBasedOnActionAspect {
 		}
 		
 		return ret;
+	}
+	
+	private void setPolicyStatemetById(Object retFromObj, Class<? extends Object> retClass, String propertyName,
+			ComplaintBasedOnAction complaintTypeObject, PrivacyPolicy model) {
+		var policyStatementId = (String)FieldFinder.getFieldValue(propertyName, retFromObj, retClass);
+		var policyStatement = ObjectFinder.checkIfPolicyStatementExists(policyStatementId, model);
+		if(policyStatement.isPresent())
+		{
+			complaintTypeObject.setStatement(policyStatement.get());
+		}
 	}
 }
