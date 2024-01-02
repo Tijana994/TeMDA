@@ -13,6 +13,6 @@ import com.security.model.validation.annotations.enums.CreatedObjectLocation;
 public @interface CreateComplaintBasedOnActionAnnotation {
 	CreatedObjectLocation createdObjectLocation() default CreatedObjectLocation.Return;
 	String name() default Constants.Empty;
-	String policyStatemet() default Constants.Undefined;
-	String policyStatemetId() default Constants.Undefined;
+	String policyStatement() default Constants.Undefined;
+	String policyStatementId() default Constants.Undefined;
 }

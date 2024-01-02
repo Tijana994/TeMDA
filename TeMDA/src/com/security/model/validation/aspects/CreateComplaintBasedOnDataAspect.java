@@ -13,6 +13,7 @@ import com.security.model.validation.annotations.ComplaintAnnotation;
 import com.security.model.validation.annotations.creators.CreateComplaintBasedOnDataAnnotation;
 import com.security.model.validation.annotations.enums.Constants;
 import com.security.model.validation.helpers.FieldFinder;
+import com.security.model.validation.helpers.ReadTypeByAttribute;
 
 import utility.PrivacyModelRepository;
 
@@ -68,7 +69,11 @@ public class CreateComplaintBasedOnDataAspect {
 			}
 			if(createComplaintBasedOnData.subjectsIds() != Constants.Empty)
 			{
-				
+				var datas = ReadTypeByAttribute.getPrivacyDatasById(retFromObj, retClass, createComplaintBasedOnData.subjectsIds(), model);
+				if(!datas.isEmpty())
+				{
+					complaintTypeObject.getSubject().addAll(datas);
+				}
 			}
 			complaintObject.setAction(complaintTypeObject);
 			model.getAllComplaints().add(complaintObject);

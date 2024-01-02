@@ -65,13 +65,13 @@ public class CreateComplaintBasedOnActionAspect {
 			{
 				complaintObject.setReason((String)FieldFinder.getFieldValue(complaint.reason(), retFromObj, retClass));
 			}
-			if(createComplaintBasedOnAction.policyStatemet() != Constants.Empty)
+			if(createComplaintBasedOnAction.policyStatement() != Constants.Empty)
 			{
 				
 			}
-			if(createComplaintBasedOnAction.policyStatemetId() != Constants.Empty)
+			if(createComplaintBasedOnAction.policyStatementId() != Constants.Empty)
 			{
-				setPolicyStatemetById(retFromObj, retClass, createComplaintBasedOnAction.policyStatemetId(), complaintTypeObject, model);
+				setPolicyStatemetById(retFromObj, retClass, createComplaintBasedOnAction.policyStatementId(), complaintTypeObject, model);
 			}
 			complaintObject.setAction(complaintTypeObject);
 			model.getAllComplaints().add(complaintObject);

@@ -1,6 +1,7 @@
 package com.security.model.validation.aspects;
 
 import java.lang.reflect.Method;
+import java.util.Arrays;
 
 import org.aspectj.lang.ProceedingJoinPoint;
 import org.aspectj.lang.annotation.Around;
@@ -14,6 +15,7 @@ import com.security.model.validation.creators.PurposeCreator;
 import com.security.model.validation.creators.WhenCreator;
 import com.security.model.validation.helpers.FieldFinder;
 import com.security.model.validation.helpers.ObjectFinder;
+import com.security.model.validation.helpers.ReadTypeByAttribute;
 
 import utility.PrivacyModelRepository;
 
@@ -80,6 +82,17 @@ public class CreatePolicyStatementAspect {
 			policyStatementObject.setWhy(purpose);
 			var when = WhenCreator.createWhen(objectClass, obj, createPolicyStatement.when(), repo.getFactory());
 			policyStatementObject.setWhen(when);
+			
+		    var what = repo.getFactory().createWhat();
+		    if(createPolicyStatement.actions().length != 0)
+		    {
+		      what.getActions().addAll(Arrays.asList(createPolicyStatement.actions()));
+		    }
+
+    		var datas = ReadTypeByAttribute.getSharedPrivacyDataById(createPolicyStatement.datas(), model);
+    		what.getDatas().addAll(datas);
+
+		    policyStatementObject.setWhat(what);
 			
 			model.getPolicyStatements().add(policyStatementObject);
 			repo.saveModel(model);

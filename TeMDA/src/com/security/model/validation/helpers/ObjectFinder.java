@@ -6,7 +6,9 @@ import privacyModel.Consent;
 import privacyModel.Location;
 import privacyModel.PolicyStatement;
 import privacyModel.Principal;
+import privacyModel.PrivacyData;
 import privacyModel.PrivacyPolicy;
+import privacyModel.SharedPrivacyData;
 
 public class ObjectFinder {
 
@@ -66,6 +68,34 @@ public class ObjectFinder {
 		return policyStatement;
 	}
 	
+	public static Optional<SharedPrivacyData> checkIfSharedPrivacyDataExists(String fieldId, PrivacyPolicy model) 
+	{
+		if(fieldId == null)
+		{
+			return Optional.empty();
+		}
+		var sharedPrivacyData = findSharedPrivacyData(fieldId, model);
+		if(sharedPrivacyData.isEmpty())
+		{
+			System.out.println("There is no shared privacy data with id " + fieldId);
+		}
+		return sharedPrivacyData;
+	}
+	
+	public static Optional<PrivacyData> checkIfPrivacyDataExists(String fieldId, PrivacyPolicy model) 
+	{
+		if(fieldId == null)
+		{
+			return Optional.empty();
+		}
+		var privacyData = findPrivacyData(fieldId, model);
+		if(privacyData.isEmpty())
+		{
+			System.out.println("There is no privacy data with id " + fieldId);
+		}
+		return privacyData;
+	}
+	
 	private static Optional<Principal> findPrincipal(String principalId, PrivacyPolicy model)
 	{
 		return model.getAllPrincipals().stream()
@@ -88,5 +118,17 @@ public class ObjectFinder {
 	{
 		return model.getPolicyStatements().stream()
 		   .filter(policyStatement -> policyStatement.getName().equals(policyStatementId)).findFirst();
+	}
+	
+	private static Optional<SharedPrivacyData> findSharedPrivacyData(String sharedPrivacyDataId, PrivacyPolicy model)
+	{
+		return model.getAllSharedPrivacyData().stream()
+		   .filter(sharedPrivacyData -> sharedPrivacyData.getName().equals(sharedPrivacyDataId)).findFirst();
+	}
+	
+	private static Optional<PrivacyData> findPrivacyData(String privacyDataId, PrivacyPolicy model)
+	{
+		return model.getAllDatas().stream()
+		   .filter(privacyData -> privacyData.getName().equals(privacyDataId)).findFirst();
 	}
 }

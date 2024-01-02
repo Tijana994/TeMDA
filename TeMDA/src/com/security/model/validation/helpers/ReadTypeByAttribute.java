@@ -10,7 +10,9 @@ import com.security.model.validation.annotations.PaperAnnotation;
 import com.security.model.validation.annotations.enums.ParametersObjectsLocation;
 
 import privacyModel.Principal;
+import privacyModel.PrivacyData;
 import privacyModel.PrivacyPolicy;
+import privacyModel.SharedPrivacyData;
 
 public class ReadTypeByAttribute {
 
@@ -63,5 +65,36 @@ public class ReadTypeByAttribute {
 			}
 		}
 		return principals;
+	}
+	
+	public static List<SharedPrivacyData> getSharedPrivacyDataById(String[] datasId, PrivacyPolicy model)
+	{
+		var datas = new ArrayList<SharedPrivacyData>();
+		for(var dataId : datasId)
+		{
+			var data = ObjectFinder.checkIfSharedPrivacyDataExists(dataId, model);
+			if(data.isPresent())
+			{
+				datas.add(data.get());
+			}
+		}
+		return datas;
+	}
+	
+	public static List<PrivacyData> getPrivacyDatasById(Object retFromObj, Class<? extends Object> retClass, 
+			String propertyName, PrivacyPolicy model)
+	{
+		var datas = new ArrayList<PrivacyData>();
+		var datasIds = FieldFinder.getFieldValue(propertyName, retFromObj, retClass);
+		var list = (List<String>) datasIds;
+		for(var dataId : list)
+		{
+			var data = ObjectFinder.checkIfPrivacyDataExists(dataId, model);
+			if(data.isPresent())
+			{
+				datas.add(data.get());
+			}
+		}
+		return datas;
 	}
 }
