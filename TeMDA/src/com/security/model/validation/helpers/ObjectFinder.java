@@ -4,6 +4,7 @@ import java.util.Optional;
 
 import privacyModel.Complaint;
 import privacyModel.Consent;
+import privacyModel.Document;
 import privacyModel.Location;
 import privacyModel.PolicyStatement;
 import privacyModel.Principal;
@@ -111,6 +112,20 @@ public class ObjectFinder {
 		return complaint;
 	}
 	
+	public static Optional<Document> checkIfDocumentExists(String fieldId, PrivacyPolicy model) 
+	{
+		if(fieldId == null)
+		{
+			return Optional.empty();
+		}
+		var document = findDocument(fieldId, model);
+		if(document.isEmpty())
+		{
+			System.out.println("There is no document with id " + fieldId);
+		}
+		return document;
+	}
+	
 	private static Optional<Principal> findPrincipal(String principalId, PrivacyPolicy model)
 	{
 		return model.getAllPrincipals().stream()
@@ -151,5 +166,11 @@ public class ObjectFinder {
 	{
 		return model.getAllComplaints().stream()
 		   .filter(complaint -> complaint.getName().equals(complaintId)).findFirst();
+	}
+	
+	private static Optional<Document> findDocument(String documentId, PrivacyPolicy model)
+	{
+		return model.getAllDocuments().stream()
+		   .filter(complaint -> complaint.getName().equals(documentId)).findFirst();
 	}
 }

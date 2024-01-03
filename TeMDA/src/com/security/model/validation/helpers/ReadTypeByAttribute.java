@@ -9,6 +9,7 @@ import org.aspectj.lang.JoinPoint;
 import com.security.model.validation.annotations.PaperAnnotation;
 import com.security.model.validation.annotations.enums.ParametersObjectsLocation;
 
+import privacyModel.Document;
 import privacyModel.Location;
 import privacyModel.PolicyStatement;
 import privacyModel.Principal;
@@ -152,5 +153,27 @@ public class ReadTypeByAttribute {
 			}
 		}
 		return policyStatments;
+	}
+	
+	public static List<Document> getDocumentsById(Object retFromObj, Class<? extends Object> retClass, 
+			String propertyName, PrivacyPolicy model)
+	{
+		var documents = new ArrayList<Document>();
+		var documentIds = FieldFinder.getFieldValue(propertyName, retFromObj, retClass);
+		if(!(documentIds instanceof List))
+		{
+			System.out.println("Property" + propertyName + "should be type of List.");
+			return documents;
+		}
+		var list = (List<?>) documentIds;
+		for(var documentId : list)
+		{
+			var document = ObjectFinder.checkIfDocumentExists((String)documentId, model);
+			if(document.isPresent())
+			{
+				documents.add(document.get());
+			}
+		}
+		return documents;
 	}
 }

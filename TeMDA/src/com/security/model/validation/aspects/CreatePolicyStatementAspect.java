@@ -11,12 +11,16 @@ import org.aspectj.lang.reflect.MethodSignature;
 
 import com.security.model.validation.annotations.PolicyStatementAnnotation;
 import com.security.model.validation.annotations.creators.CreatePolicyStatementAnnotation;
+import com.security.model.validation.annotations.enums.Constants;
 import com.security.model.validation.creators.PurposeCreator;
 import com.security.model.validation.creators.WhenCreator;
 import com.security.model.validation.helpers.FieldFinder;
 import com.security.model.validation.helpers.ObjectFinder;
 import com.security.model.validation.helpers.ReadTypeByAttribute;
 
+import privacyModel.How;
+import privacyModel.PrivacyPolicy;
+import privacyModel.What;
 import utility.PrivacyModelRepository;
 
 @Aspect
@@ -83,16 +87,11 @@ public class CreatePolicyStatementAspect {
 			var when = WhenCreator.createWhen(objectClass, obj, createPolicyStatement.when(), repo.getFactory());
 			policyStatementObject.setWhen(when);
 			
-		    var what = repo.getFactory().createWhat();
-		    if(createPolicyStatement.actions().length != 0)
-		    {
-		      what.getActions().addAll(Arrays.asList(createPolicyStatement.actions()));
-		    }
-
-    		var datas = ReadTypeByAttribute.getSharedPrivacyDataById(createPolicyStatement.datas(), model);
-    		what.getDatas().addAll(datas);
-
+		    var what = createWhat(createPolicyStatement, repo, model);
 		    policyStatementObject.setWhat(what);
+		    
+		    var how = createHow(createPolicyStatement, retFromObj, retClass, repo, model);
+			policyStatementObject.setHow(how);
 			
 			model.getPolicyStatements().add(policyStatementObject);
 			repo.saveModel(model);
@@ -103,5 +102,48 @@ public class CreatePolicyStatementAspect {
 		}
 		
 		return ret;
+	}
+	private How createHow(CreatePolicyStatementAnnotation createPolicyStatement, Object retFromObj,
+			Class<? extends Object> retClass, PrivacyModelRepository repo, PrivacyPolicy model) {
+		var how = repo.getFactory().createHow();
+		
+		if(createPolicyStatement.howDocuments() != Constants.Empty)
+		{
+			
+		}
+		if(createPolicyStatement.howDocumentsIds() != Constants.Empty)
+		{
+			var documents = ReadTypeByAttribute.getDocumentsById(retFromObj, retClass, createPolicyStatement.howDocumentsIds(), model);
+			if(!documents.isEmpty())
+			{
+				how.getDocuments().addAll(documents);
+			}
+		}
+		if(createPolicyStatement.howConsent() != Constants.Empty)
+		{
+			
+		}
+		if(createPolicyStatement.howConsentId() != Constants.Empty)
+		{
+			var consentId = (String)FieldFinder.getFieldValue(createPolicyStatement.howConsentId(), retFromObj, retClass);
+			var consent = ObjectFinder.checkIfConsentExists(consentId, model);
+			if(consent.isPresent())
+			{
+				how.setConsent(consent.get());
+			}
+		}
+		return how;
+	}
+	private What createWhat(CreatePolicyStatementAnnotation createPolicyStatement, PrivacyModelRepository repo,
+			PrivacyPolicy model) {
+		var what = repo.getFactory().createWhat();
+		if(createPolicyStatement.actions().length != 0)
+		{
+		  what.getActions().addAll(Arrays.asList(createPolicyStatement.actions()));
+		}
+
+		var datas = ReadTypeByAttribute.getSharedPrivacyDataById(createPolicyStatement.datas(), model);
+		what.getDatas().addAll(datas);
+		return what;
 	}
 }
