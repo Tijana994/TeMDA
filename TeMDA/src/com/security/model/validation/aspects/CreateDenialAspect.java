@@ -13,7 +13,12 @@ import com.security.model.validation.annotations.DenialAnnotation;
 import com.security.model.validation.annotations.creators.CreateDenialAnnotation;
 import com.security.model.validation.annotations.enums.Constants;
 import com.security.model.validation.helpers.FieldFinder;
+import com.security.model.validation.helpers.ObjectFinder;
+import com.security.model.validation.helpers.ReadTypeByAttribute;
 
+import privacyModel.AbstractComplaint;
+import privacyModel.Denial;
+import privacyModel.PrivacyPolicy;
 import utility.PrivacyModelRepository;
 
 @Aspect
@@ -66,7 +71,11 @@ public class CreateDenialAspect {
 			}
 			if(createDenial.basedOnStatemetsIds() != Constants.Empty)
 			{
-				
+				var policyStatements = ReadTypeByAttribute.getPolicyStatementsById(retFromObj, retClass, createDenial.basedOnStatemetsIds(), model);
+				if(!policyStatements.isEmpty())
+				{
+					denialObject.getBasedOnStatements().addAll(policyStatements);
+				}
 			}
 			if(createDenial.forComplaint() != Constants.Empty)
 			{
@@ -74,7 +83,7 @@ public class CreateDenialAspect {
 			}
 			if(createDenial.forComplaintId() != Constants.Empty)
 			{
-				
+				setComplaintById(retFromObj, retClass, createDenial.forComplaintId(), denialObject, model);
 			}
 			model.getAllDenials().add(denialObject);
 			repo.saveModel(model);
@@ -85,6 +94,19 @@ public class CreateDenialAspect {
 		}
 		
 		return ret;
+	}
+	
+	private void setComplaintById(Object retFromObj, Class<? extends Object> retClass, String  propertyName,
+			Denial denialObject, PrivacyPolicy model) {
+		var complaintId = (String)FieldFinder.getFieldValue(propertyName, retFromObj, retClass);
+		var complaint = ObjectFinder.checkIfComplaintExists(complaintId, model);
+		if(complaint.isPresent())
+		{
+			if(complaint.get().getAction() instanceof AbstractComplaint)
+			{
+				((AbstractComplaint)complaint.get().getAction()).setDenialReason(denialObject);
+			}
+		}
 	}
 }
 

@@ -13,6 +13,6 @@ public @interface LocationAnnotation {
 	String id();
 	String parent() default Constants.Undefined;
 	String parentId() default Constants.Undefined;
-	String childrens() default Constants.Undefined;
-	String childrensIds() default Constants.Undefined;
+	String subLocations() default Constants.Undefined;
+	String subLocationsIds() default Constants.Undefined;
 }

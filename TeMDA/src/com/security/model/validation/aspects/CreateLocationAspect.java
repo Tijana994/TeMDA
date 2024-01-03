@@ -13,6 +13,7 @@ import com.security.model.validation.annotations.creators.CreateLocationAnnotati
 import com.security.model.validation.annotations.enums.Constants;
 import com.security.model.validation.helpers.FieldFinder;
 import com.security.model.validation.helpers.ObjectFinder;
+import com.security.model.validation.helpers.ReadTypeByAttribute;
 
 import privacyModel.Location;
 import privacyModel.PrivacyPolicy;
@@ -66,15 +67,19 @@ public class CreateLocationAspect {
 			}
 			if(!location.parentId().equals(Constants.Undefined))
 			{
-				setParentById(retFromObj, retClass, location, locationObject, model);
+				setParentById(retFromObj, retClass, location.parentId(), locationObject, model);
 			}
-			if(!location.childrens().equals(Constants.Undefined))
+			if(!location.subLocations().equals(Constants.Undefined))
 			{
 				
 			}
-			if(!location.childrensIds().equals(Constants.Undefined))
+			if(!location.subLocationsIds().equals(Constants.Undefined))
 			{
-				
+				var locations = ReadTypeByAttribute.getLocationsById(retFromObj, retClass, location.subLocationsIds(), model);
+				if(!locations.isEmpty())
+				{
+					locationObject.getSubLocations().addAll(locations);
+				}
 			}
 			
 			model.getLocations().add(locationObject);
@@ -88,9 +93,9 @@ public class CreateLocationAspect {
 		return ret;
 	}
 	
-	private void setParentById(Object retFromObj, Class<? extends Object> retClass, LocationAnnotation location,
+	private void setParentById(Object retFromObj, Class<? extends Object> retClass, String propertyName,
 			Location locationObject, PrivacyPolicy model) {
-		var parentId = (String)FieldFinder.getFieldValue(location.parentId(), retFromObj, retClass);
+		var parentId = (String)FieldFinder.getFieldValue(propertyName, retFromObj, retClass);
 		var parent = ObjectFinder.checkIfLocationExists(parentId, model);
 		if(parent.isPresent())
 		{

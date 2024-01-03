@@ -2,6 +2,7 @@ package com.security.model.validation.helpers;
 
 import java.util.Optional;
 
+import privacyModel.Complaint;
 import privacyModel.Consent;
 import privacyModel.Location;
 import privacyModel.PolicyStatement;
@@ -96,6 +97,20 @@ public class ObjectFinder {
 		return privacyData;
 	}
 	
+	public static Optional<Complaint> checkIfComplaintExists(String fieldId, PrivacyPolicy model) 
+	{
+		if(fieldId == null)
+		{
+			return Optional.empty();
+		}
+		var complaint = findComplaint(fieldId, model);
+		if(complaint.isEmpty())
+		{
+			System.out.println("There is no complaint with id " + fieldId);
+		}
+		return complaint;
+	}
+	
 	private static Optional<Principal> findPrincipal(String principalId, PrivacyPolicy model)
 	{
 		return model.getAllPrincipals().stream()
@@ -130,5 +145,11 @@ public class ObjectFinder {
 	{
 		return model.getAllDatas().stream()
 		   .filter(privacyData -> privacyData.getName().equals(privacyDataId)).findFirst();
+	}
+	
+	private static Optional<Complaint> findComplaint(String complaintId, PrivacyPolicy model)
+	{
+		return model.getAllComplaints().stream()
+		   .filter(complaint -> complaint.getName().equals(complaintId)).findFirst();
 	}
 }

@@ -9,6 +9,8 @@ import org.aspectj.lang.JoinPoint;
 import com.security.model.validation.annotations.PaperAnnotation;
 import com.security.model.validation.annotations.enums.ParametersObjectsLocation;
 
+import privacyModel.Location;
+import privacyModel.PolicyStatement;
 import privacyModel.Principal;
 import privacyModel.PrivacyData;
 import privacyModel.PrivacyPolicy;
@@ -16,7 +18,7 @@ import privacyModel.SharedPrivacyData;
 
 public class ReadTypeByAttribute {
 
-	public static Optional<String> getConsentIdFromObject(Class<?> objectClass, Object obj, String consentName, 
+	public static Optional<String> getConsentIdFromObject(Class<?> objectClass, Object obj, String propertyame, 
 			ParametersObjectsLocation parametersLocation, JoinPoint jp)
 	{
 		if(obj == null)
@@ -26,7 +28,7 @@ public class ReadTypeByAttribute {
 		}
 		try
 		{
-			var value = FieldFinder.getObjectToReadFrom(objectClass, obj, parametersLocation, consentName, jp);
+			var value = FieldFinder.getObjectToReadFrom(objectClass, obj, parametersLocation, propertyame, jp);
 			if(!value.isPresent())
 			{
 				return Optional.empty();
@@ -55,10 +57,15 @@ public class ReadTypeByAttribute {
 	{
 		var principals = new ArrayList<Principal>();
 		var principalsIds = FieldFinder.getFieldValue(propertyName, retFromObj, retClass);
-		var list = (List<String>) principalsIds;
+		if(!(principalsIds instanceof List))
+		{
+			System.out.println("Property" + propertyName + "should be type of List.");
+			return principals;
+		}
+		var list = (List<?>) principalsIds;
 		for(var principalId : list)
 		{
-			var principal = ObjectFinder.checkIfPrincipalExists(principalId, model);
+			var principal = ObjectFinder.checkIfPrincipalExists((String)principalId, model);
 			if(principal.isPresent())
 			{
 				principals.add(principal.get());
@@ -85,16 +92,65 @@ public class ReadTypeByAttribute {
 			String propertyName, PrivacyPolicy model)
 	{
 		var datas = new ArrayList<PrivacyData>();
-		var datasIds = FieldFinder.getFieldValue(propertyName, retFromObj, retClass);
-		var list = (List<String>) datasIds;
+		var dataIds = FieldFinder.getFieldValue(propertyName, retFromObj, retClass);
+		if(!(dataIds instanceof List))
+		{
+			System.out.println("Property" + propertyName + "should be type of List.");
+			return datas;
+		}
+		var list = (List<?>) dataIds;
 		for(var dataId : list)
 		{
-			var data = ObjectFinder.checkIfPrivacyDataExists(dataId, model);
+			var data = ObjectFinder.checkIfPrivacyDataExists((String)dataId, model);
 			if(data.isPresent())
 			{
 				datas.add(data.get());
 			}
 		}
 		return datas;
+	}
+	
+	public static List<Location> getLocationsById(Object retFromObj, Class<? extends Object> retClass, 
+			String propertyName, PrivacyPolicy model)
+	{
+		var locations = new ArrayList<Location>();
+		var locationIds = FieldFinder.getFieldValue(propertyName, retFromObj, retClass);
+		if(!(locationIds instanceof List))
+		{
+			System.out.println("Property" + propertyName + "should be type of List.");
+			return locations;
+		}
+		var list = (List<?>) locationIds;
+		for(var locationId : list)
+		{
+			var location = ObjectFinder.checkIfLocationExists((String)locationId, model);
+			if(location.isPresent())
+			{
+				locations.add(location.get());
+			}
+		}
+		return locations;
+	}
+	
+	public static List<PolicyStatement> getPolicyStatementsById(Object retFromObj, Class<? extends Object> retClass, 
+			String propertyName, PrivacyPolicy model)
+	{
+		var policyStatments = new ArrayList<PolicyStatement>();
+		var policyStatmentIds = FieldFinder.getFieldValue(propertyName, retFromObj, retClass);
+		if(!(policyStatmentIds instanceof List))
+		{
+			System.out.println("Property" + propertyName + "should be type of List.");
+			return policyStatments;
+		}
+		var list = (List<?>) policyStatmentIds;
+		for(var policyStatmentId : list)
+		{
+			var location = ObjectFinder.checkIfPolicyStatementExists((String)policyStatmentId, model);
+			if(location.isPresent())
+			{
+				policyStatments.add(location.get());
+			}
+		}
+		return policyStatments;
 	}
 }
