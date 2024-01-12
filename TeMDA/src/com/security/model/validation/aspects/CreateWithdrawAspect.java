@@ -29,30 +29,30 @@ public class CreateWithdrawAspect {
 	@Around("function()")
 	public Object createWithdraw(ProceedingJoinPoint thisJoinPoint) throws Throwable {
 		Object[] args = thisJoinPoint.getArgs();
-		Object ret = thisJoinPoint.proceed(args);
-		Object obj = thisJoinPoint.getThis();
-		Class<? extends Object> objectClass = obj.getClass();
+		Object returnedObject = thisJoinPoint.proceed(args);
+		Object originalObject = thisJoinPoint.getThis();
+		Class<? extends Object> originalObjectClass = originalObject.getClass();
 	    MethodSignature signature = (MethodSignature) thisJoinPoint.getSignature();
 	    Method method = signature.getMethod();
 		CreateWithdrawAnnotation createWithdraw = method.getAnnotation(CreateWithdrawAnnotation.class);
 		if(createWithdraw == null)
 		{
 			System.out.println("There is no create withdraw statement annotation");
-			return ret;
+			return returnedObject;
 		}
-		Object retFromObj = FieldFinder.getObjectToReadFrom(ret, obj, createWithdraw.createdObjectLocation(), createWithdraw.name(), thisJoinPoint);
-		if(retFromObj == null)
+		Object createdObject = FieldFinder.getObjectToReadFrom(returnedObject, originalObject, createWithdraw.createdObjectLocation(), createWithdraw.name(), thisJoinPoint);
+		if(createdObject == null)
 		{
 			System.out.println("Read from object is null = CreateWithdrawAspect");
-			return ret;
+			return returnedObject;
 		}
-		Class<? extends Object> retClass = retFromObj.getClass();
-		WithdrawAnnotation withdraw = retClass.getAnnotation(WithdrawAnnotation.class);
+		Class<? extends Object> createdObjectClass = createdObject.getClass();
+		WithdrawAnnotation withdraw = createdObjectClass.getAnnotation(WithdrawAnnotation.class);
 		
 		if(withdraw == null)
 		{
 			System.out.println("There is no withdraw annotation");
-			return ret;
+			return returnedObject;
 		}
 		
 		try 
@@ -62,19 +62,19 @@ public class CreateWithdrawAspect {
 			var withdrawObject = repo.getFactory().createWithdraw();
 			var complaintObject = repo.getFactory().createComplaint();
 			complaintObject.setAction(withdrawObject);
-			complaintObject.setName((String)FieldFinder.getFieldValue(withdraw.id(), retFromObj, retClass));
-			complaintObject.setWhen((Date)FieldFinder.getFieldValue(withdraw.when(), retFromObj, retClass));
+			complaintObject.setName((String)FieldFinder.getFieldValue(withdraw.id(), createdObject, createdObjectClass));
+			complaintObject.setWhen((Date)FieldFinder.getFieldValue(withdraw.when(), createdObject, createdObjectClass));
 			if(!withdraw.reason().equals(Constants.Empty))
 			{
-				complaintObject.setReason((String)FieldFinder.getFieldValue(withdraw.reason(), retFromObj, retClass));
+				complaintObject.setReason((String)FieldFinder.getFieldValue(withdraw.reason(), createdObject, createdObjectClass));
 			}
 			if(!createWithdraw.consent().equals(Constants.Undefined))
 			{
-				setConsentFromObject(obj, objectClass, createWithdraw, model, withdrawObject,thisJoinPoint);
+				setConsentFromObject(originalObject, originalObjectClass, createWithdraw, model, withdrawObject, thisJoinPoint);
 			}
 			if(!createWithdraw.consentId().equals(Constants.Undefined))
 			{
-				var consentId = (String)FieldFinder.getFieldValue(createWithdraw.consentId(), obj, objectClass);
+				var consentId = (String)FieldFinder.getFieldValue(createWithdraw.consentId(), originalObject, originalObjectClass);
 				trySetConsentId(model, withdrawObject, consentId);
 			}
 			model.getAllComplaints().add(complaintObject);
@@ -85,7 +85,7 @@ public class CreateWithdrawAspect {
 			System.out.println(ex);
 		}
 		
-		return ret;
+		return returnedObject;
 	}
 	
 	private void setConsentFromObject(Object obj, Class<? extends Object> objectClass,

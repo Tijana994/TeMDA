@@ -103,6 +103,11 @@ public class FieldFinder {
 				}
 			}
 		}
+		else if (location == ParametersObjectsLocation.PropertyInReturnedObject)
+		{
+			//TODO
+			System.out.println("TO DO");
+		}
 		
 		return Optional.empty();
 	}

@@ -7,6 +7,7 @@ import java.lang.annotation.Target;
 
 import com.security.model.validation.annotations.enums.Constants;
 import com.security.model.validation.annotations.enums.CreatedObjectLocation;
+import com.security.model.validation.annotations.enums.ParametersObjectsLocation;
 
 import privacyModel.Action;
 
@@ -22,6 +23,7 @@ public @interface CreatePolicyStatementAnnotation {
 	String when();
 	Action[] actions();
 	String[] datas();
+	ParametersObjectsLocation parametersLocation() default ParametersObjectsLocation.Parameter;
 	String howDocuments() default Constants.Empty;
 	String howDocumentsIds() default Constants.Empty;
 	String howConsent()  default Constants.Empty;

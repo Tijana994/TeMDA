@@ -7,12 +7,14 @@ import java.lang.annotation.Target;
 
 import com.security.model.validation.annotations.enums.Constants;
 import com.security.model.validation.annotations.enums.CreatedObjectLocation;
+import com.security.model.validation.annotations.enums.ParametersObjectsLocation;
 
 @Retention(RetentionPolicy.RUNTIME)
 @Target(ElementType.METHOD)
 public @interface CreateDenialAnnotation {
 	CreatedObjectLocation createdObjectLocation() default CreatedObjectLocation.Return;
 	String name() default Constants.Empty;
+	ParametersObjectsLocation parametersLocation() default ParametersObjectsLocation.Parameter;
 	String basedOnStatemets() default Constants.Undefined;
 	String basedOnStatemetsIds() default Constants.Undefined;
 	String forComplaint() default Constants.Undefined;

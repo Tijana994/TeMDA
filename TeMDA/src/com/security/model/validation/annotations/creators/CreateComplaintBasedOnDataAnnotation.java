@@ -7,6 +7,7 @@ import java.lang.annotation.Target;
 
 import com.security.model.validation.annotations.enums.Constants;
 import com.security.model.validation.annotations.enums.CreatedObjectLocation;
+import com.security.model.validation.annotations.enums.ParametersObjectsLocation;
 
 import privacyModel.ComplaintBasedOnDataType;
 
@@ -15,7 +16,8 @@ import privacyModel.ComplaintBasedOnDataType;
 public @interface CreateComplaintBasedOnDataAnnotation {
 	CreatedObjectLocation createdObjectLocation() default CreatedObjectLocation.Return;
 	String name() default Constants.Empty;
+	ComplaintBasedOnDataType type();
+	ParametersObjectsLocation parametersLocation() default ParametersObjectsLocation.Parameter;
 	String subjects() default Constants.Undefined;
 	String subjectsIds() default Constants.Undefined;
-	ComplaintBasedOnDataType type();
 }

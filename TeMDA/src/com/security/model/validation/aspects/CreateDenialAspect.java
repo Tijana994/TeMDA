@@ -29,29 +29,30 @@ public class CreateDenialAspect {
 	@Around("function()")
 	public Object createDenial(ProceedingJoinPoint thisJoinPoint) throws Throwable {
 		Object[] args = thisJoinPoint.getArgs();
-		Object ret = thisJoinPoint.proceed(args);
-		Object obj = thisJoinPoint.getThis();
+		Object returnedObject = thisJoinPoint.proceed(args);
+		Object originalObject = thisJoinPoint.getThis();
+		Class<? extends Object> originalObjectClass = originalObject.getClass();
 	    MethodSignature signature = (MethodSignature) thisJoinPoint.getSignature();
 	    Method method = signature.getMethod();
 	    CreateDenialAnnotation createDenial = method.getAnnotation(CreateDenialAnnotation.class);
 		if(createDenial == null)
 		{
 			System.out.println("There is no create denial annotation");
-			return ret;
+			return returnedObject;
 		}
-		Object retFromObj = FieldFinder.getObjectToReadFrom(ret, obj, createDenial.createdObjectLocation(), createDenial.name(), thisJoinPoint);
-		if(retFromObj == null)
+		Object createdObject = FieldFinder.getObjectToReadFrom(returnedObject, originalObject, createDenial.createdObjectLocation(), createDenial.name(), thisJoinPoint);
+		if(createdObject == null)
 		{
 			System.out.println("Read from object is null - CreateDenialAspect");
-			return ret;
+			return returnedObject;
 		}
-		Class<? extends Object> retClass = retFromObj.getClass();
-		DenialAnnotation denial = retClass.getAnnotation(DenialAnnotation.class);
+		Class<? extends Object> createdObjectClass = createdObject.getClass();
+		DenialAnnotation denial = createdObjectClass.getAnnotation(DenialAnnotation.class);
 		
 		if(denial == null)
 		{
 			System.out.println("There is no denial annotation");
-			return ret;
+			return returnedObject;
 		}
 
 		try 
@@ -59,11 +60,11 @@ public class CreateDenialAspect {
 			PrivacyModelRepository repo = new PrivacyModelRepository();
 			var model = repo.getModel();
 			var denialObject = repo.getFactory().createDenial();
-			denialObject.setName((String)FieldFinder.getFieldValue(denial.id(), retFromObj, retClass));
-			denialObject.setWhen((Date)FieldFinder.getFieldValue(denial.when(), retFromObj, retClass));
+			denialObject.setName((String)FieldFinder.getFieldValue(denial.id(), createdObject, createdObjectClass));
+			denialObject.setWhen((Date)FieldFinder.getFieldValue(denial.when(), createdObject, createdObjectClass));
 			if(denial.reason() != Constants.Empty)
 			{
-				denialObject.setReason((String)FieldFinder.getFieldValue(denial.reason(), retFromObj, retClass));
+				denialObject.setReason((String)FieldFinder.getFieldValue(denial.reason(), createdObject, createdObjectClass));
 			}
 			if(createDenial.basedOnStatemets() != Constants.Empty)
 			{
@@ -71,7 +72,7 @@ public class CreateDenialAspect {
 			}
 			if(createDenial.basedOnStatemetsIds() != Constants.Empty)
 			{
-				var policyStatements = ReadTypeByAttribute.getPolicyStatementsById(retFromObj, retClass, createDenial.basedOnStatemetsIds(), model);
+				var policyStatements = ReadTypeByAttribute.getPolicyStatementsById(originalObject, originalObjectClass, createDenial.basedOnStatemetsIds(), model);
 				if(!policyStatements.isEmpty())
 				{
 					denialObject.getBasedOnStatements().addAll(policyStatements);
@@ -83,7 +84,7 @@ public class CreateDenialAspect {
 			}
 			if(createDenial.forComplaintId() != Constants.Empty)
 			{
-				setComplaintById(retFromObj, retClass, createDenial.forComplaintId(), denialObject, model);
+				setComplaintById(originalObject, originalObjectClass, createDenial.forComplaintId(), denialObject, model);
 			}
 			model.getAllDenials().add(denialObject);
 			repo.saveModel(model);
@@ -93,12 +94,12 @@ public class CreateDenialAspect {
 			System.out.println(ex);
 		}
 		
-		return ret;
+		return returnedObject;
 	}
 	
-	private void setComplaintById(Object retFromObj, Class<? extends Object> retClass, String  propertyName,
+	private void setComplaintById(Object createdobject, Class<? extends Object> createdobjectClass, String  propertyName,
 			Denial denialObject, PrivacyPolicy model) {
-		var complaintId = (String)FieldFinder.getFieldValue(propertyName, retFromObj, retClass);
+		var complaintId = (String)FieldFinder.getFieldValue(propertyName, createdobject, createdobjectClass);
 		var complaint = ObjectFinder.checkIfComplaintExists(complaintId, model);
 		if(complaint.isPresent())
 		{

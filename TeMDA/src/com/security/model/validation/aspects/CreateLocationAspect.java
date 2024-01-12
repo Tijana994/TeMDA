@@ -27,29 +27,29 @@ public class CreateLocationAspect {
 	@Around("function()")
 	public Object createLocation(ProceedingJoinPoint thisJoinPoint) throws Throwable {
 		Object[] args = thisJoinPoint.getArgs();
-		Object ret = thisJoinPoint.proceed(args);
-		Object obj = thisJoinPoint.getThis();
+		Object returnedObject = thisJoinPoint.proceed(args);
+		Object originalObject = thisJoinPoint.getThis();
 	    MethodSignature signature = (MethodSignature) thisJoinPoint.getSignature();
 	    Method method = signature.getMethod();
 		CreateLocationAnnotation createLocation = method.getAnnotation(CreateLocationAnnotation.class);
 		if(createLocation == null)
 		{
 			System.out.println("There is no create location statement annotation");
-			return ret;
+			return returnedObject;
 		}
-		Object retFromObj = FieldFinder.getObjectToReadFrom(ret, obj, createLocation.createdObjectLocation(), createLocation.name(), thisJoinPoint);
-		if(retFromObj == null)
+		Object createdObject = FieldFinder.getObjectToReadFrom(returnedObject, originalObject, createLocation.createdObjectLocation(), createLocation.name(), thisJoinPoint);
+		if(createdObject == null)
 		{
 			System.out.println("Read from object is null - CreateLocationAspect");
-			return ret;
+			return returnedObject;
 		}
-		Class<? extends Object> retClass = retFromObj.getClass();
-		LocationAnnotation location = retClass.getAnnotation(LocationAnnotation.class);
+		Class<? extends Object> createdObjectClass = createdObject.getClass();
+		LocationAnnotation location = createdObjectClass.getAnnotation(LocationAnnotation.class);
 		
 		if(location == null)
 		{
 			System.out.println("There is no location annotation");
-			return ret;
+			return returnedObject;
 		}
 		
 		try 
@@ -57,7 +57,7 @@ public class CreateLocationAspect {
 			PrivacyModelRepository repo = new PrivacyModelRepository();
 			var model = repo.getModel();
 			var locationObject = repo.getFactory().createLocation();
-			locationObject.setName((String)FieldFinder.getFieldValue(location.id(), retFromObj, retClass));
+			locationObject.setName((String)FieldFinder.getFieldValue(location.id(), createdObject, createdObjectClass));
 			locationObject.setType(createLocation.locationType());
 			locationObject.setIsEUMember(createLocation.isEUMember());
 			locationObject.setLegalAgeLimit(createLocation.legalAgeLimit());
@@ -67,7 +67,7 @@ public class CreateLocationAspect {
 			}
 			if(!location.parentId().equals(Constants.Undefined))
 			{
-				setParentById(retFromObj, retClass, location.parentId(), locationObject, model);
+				setParentById(createdObject, createdObjectClass, location.parentId(), locationObject, model);
 			}
 			if(!location.subLocations().equals(Constants.Undefined))
 			{
@@ -75,7 +75,7 @@ public class CreateLocationAspect {
 			}
 			if(!location.subLocationsIds().equals(Constants.Undefined))
 			{
-				var locations = ReadTypeByAttribute.getLocationsById(retFromObj, retClass, location.subLocationsIds(), model);
+				var locations = ReadTypeByAttribute.getLocationsById(createdObject, createdObjectClass, location.subLocationsIds(), model);
 				if(!locations.isEmpty())
 				{
 					locationObject.getSubLocations().addAll(locations);
@@ -90,7 +90,7 @@ public class CreateLocationAspect {
 			System.out.println(ex);
 		}
 		
-		return ret;
+		return returnedObject;
 	}
 	
 	private void setParentById(Object retFromObj, Class<? extends Object> retClass, String propertyName,

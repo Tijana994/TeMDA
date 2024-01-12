@@ -25,29 +25,30 @@ public class CreateNotificationAspect {
 	@Around("function()")
 	public Object createNotification(ProceedingJoinPoint thisJoinPoint) throws Throwable {
 		Object[] args = thisJoinPoint.getArgs();
-		Object ret = thisJoinPoint.proceed(args);
-		Object obj = thisJoinPoint.getThis();
+		Object returnedObject = thisJoinPoint.proceed(args);
+		Object originalObject = thisJoinPoint.getThis();
+		Class<? extends Object> originalObjectClass = originalObject.getClass();
 	    MethodSignature signature = (MethodSignature) thisJoinPoint.getSignature();
 	    Method method = signature.getMethod();
 	    CreateNotificationAnnotation createNotification = method.getAnnotation(CreateNotificationAnnotation.class);
 		if(createNotification == null)
 		{
 			System.out.println("There is no create notification statement annotation");
-			return ret;
+			return returnedObject;
 		}
-		Object retFromObj = FieldFinder.getObjectToReadFrom(ret, obj, createNotification.createdObjectLocation(), createNotification.name(), thisJoinPoint);
-		if(retFromObj == null)
+		Object createdObject = FieldFinder.getObjectToReadFrom(returnedObject, originalObject, createNotification.createdObjectLocation(), createNotification.name(), thisJoinPoint);
+		if(createdObject == null)
 		{
 			System.out.println("Read from object is null = CreateNotificationAspect");
-			return ret;
+			return returnedObject;
 		}
-		Class<? extends Object> retClass = retFromObj.getClass();
-		NotificationAnnotation notification = retClass.getAnnotation(NotificationAnnotation.class);
+		Class<? extends Object> createdObjectClass = createdObject.getClass();
+		NotificationAnnotation notification = createdObjectClass.getAnnotation(NotificationAnnotation.class);
 		
 		if(notification == null)
 		{
 			System.out.println("There is no notification annotation");
-			return ret;
+			return returnedObject;
 		}
 
 		try 
@@ -55,8 +56,8 @@ public class CreateNotificationAspect {
 			PrivacyModelRepository repo = new PrivacyModelRepository();
 			var model = repo.getModel();
 			var notificationObject = repo.getFactory().createNotification();
-			notificationObject.setName((String)FieldFinder.getFieldValue(notification.id(), retFromObj, retClass));
-			notificationObject.setWhen((Date)FieldFinder.getFieldValue(notification.when(), retFromObj, retClass));
+			notificationObject.setName((String)FieldFinder.getFieldValue(notification.id(), createdObject, createdObjectClass));
+			notificationObject.setWhen((Date)FieldFinder.getFieldValue(notification.when(), createdObject, createdObjectClass));
 			notificationObject.setType(createNotification.type());
 			if(createNotification.causedBy() != Constants.Empty)
 			{
@@ -72,7 +73,7 @@ public class CreateNotificationAspect {
 			}
 			if(createNotification.receiversIds() != Constants.Empty)
 			{
-				var reveivers = ReadTypeByAttribute.getPrincipalsById(retFromObj, retClass, createNotification.receiversIds(), model);
+				var reveivers = ReadTypeByAttribute.getPrincipalsById(originalObject, originalObjectClass, createNotification.receiversIds(), model);
 				if(!reveivers.isEmpty())
 				{
 					notificationObject.getReceivers().addAll(reveivers);
@@ -84,7 +85,7 @@ public class CreateNotificationAspect {
 			}
 			if(createNotification.notifiersIds() != Constants.Empty)
 			{
-				var notifiers = ReadTypeByAttribute.getPrincipalsById(retFromObj, retClass, createNotification.notifiersIds(), model);
+				var notifiers = ReadTypeByAttribute.getPrincipalsById(originalObject, originalObjectClass, createNotification.notifiersIds(), model);
 				if(!notifiers.isEmpty())
 				{
 					notificationObject.getNotifiers().addAll(notifiers);
@@ -98,7 +99,7 @@ public class CreateNotificationAspect {
 			System.out.println(ex);
 		}
 		
-		return ret;
+		return returnedObject;
 	}
 }
 

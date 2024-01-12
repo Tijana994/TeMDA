@@ -28,28 +28,28 @@ public class CreatePrincipalAspect {
 	@Around("function()")
 	public Object createPrincipal(ProceedingJoinPoint thisJoinPoint) throws Throwable {
 		Object[] args = thisJoinPoint.getArgs();
-		Object ret = thisJoinPoint.proceed(args);
-		Object obj = thisJoinPoint.getThis();
+		Object returnedObject = thisJoinPoint.proceed(args);
+		Object originalObject = thisJoinPoint.getThis();
 	    MethodSignature signature = (MethodSignature) thisJoinPoint.getSignature();
 	    Method method = signature.getMethod();
 		CreatePrincipalAnnotation createPrincipal = method.getAnnotation(CreatePrincipalAnnotation.class);
 		if(createPrincipal == null)
 		{
 			System.out.println("There is no create principal statement annotation");
-			return ret;
+			return returnedObject;
 		}
-		Object retFromObj = FieldFinder.getObjectToReadFrom(ret, obj, createPrincipal.createdObjectLocation(), createPrincipal.name(), thisJoinPoint);
-		if(retFromObj == null)
+		Object createdObject = FieldFinder.getObjectToReadFrom(returnedObject, originalObject, createPrincipal.createdObjectLocation(), createPrincipal.name(), thisJoinPoint);
+		if(createdObject == null)
 		{
 			System.out.println("Read from object is null = CreatePrincipalAspect");
-			return ret;
+			return returnedObject;
 		}
-		Class<? extends Object> retClass = retFromObj.getClass();
-		PrincipalAnnotation principal = retClass.getAnnotation(PrincipalAnnotation.class);
+		Class<? extends Object> createdObjectClass = createdObject.getClass();
+		PrincipalAnnotation principal = createdObjectClass.getAnnotation(PrincipalAnnotation.class);
 		if(principal == null)
 		{
 			System.out.println("There is no principal annotation");
-			return ret;
+			return returnedObject;
 		}
 
 		try 
@@ -57,12 +57,12 @@ public class CreatePrincipalAspect {
 			PrivacyModelRepository repo = new PrivacyModelRepository();
 			var model = repo.getModel();
 			var principalObject = repo.getFactory().createPrincipal();
-			principalObject.setName((String)FieldFinder.getFieldValue(principal.id(), retFromObj, retClass));
+			principalObject.setName((String)FieldFinder.getFieldValue(principal.id(), createdObject, createdObjectClass));
 			principalObject.setScope(createPrincipal.scope());
 			principalObject.setType(createPrincipal.type());
 			if(!principal.birthday().equals(Constants.Undefined))
 			{
-				principalObject.setBirthdate((Date)FieldFinder.getFieldValue(principal.birthday(), retFromObj, retClass));
+				principalObject.setBirthdate((Date)FieldFinder.getFieldValue(principal.birthday(), createdObject, createdObjectClass));
 			}
 			if(!principal.parent().equals(Constants.Undefined)) 
 			{
@@ -70,7 +70,7 @@ public class CreatePrincipalAspect {
 			}
 			if(!principal.parentId().equals(Constants.Undefined))
 			{
-				setParentById(retFromObj, retClass, principal.parentId(), principalObject, model);
+				setParentById(createdObject, createdObjectClass, principal.parentId(), principalObject, model);
 			}
 			if(!principal.childrens().equals(Constants.Undefined))
 			{
@@ -78,7 +78,7 @@ public class CreatePrincipalAspect {
 			}
 			if(!principal.childrensIds().equals(Constants.Undefined))
 			{
-				var childrens = ReadTypeByAttribute.getPrincipalsById(retFromObj, retClass, principal.childrensIds(), model);
+				var childrens = ReadTypeByAttribute.getPrincipalsById(createdObject, createdObjectClass, principal.childrensIds(), model);
 				if(!childrens.isEmpty())
 				{
 					principalObject.getSubPrincipals().addAll(childrens);
@@ -92,7 +92,7 @@ public class CreatePrincipalAspect {
 			System.out.println(ex);
 		}
 		
-		return ret;
+		return returnedObject;
 	}
 	
 	private void setParentById(Object retFromObj, Class<? extends Object> retClass, String propertyName,

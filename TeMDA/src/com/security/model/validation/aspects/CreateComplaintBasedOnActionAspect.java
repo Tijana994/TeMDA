@@ -27,29 +27,30 @@ public class CreateComplaintBasedOnActionAspect {
 	@Around("function()")
 	public Object createComplaintBasedOnAction(ProceedingJoinPoint thisJoinPoint) throws Throwable {
 		Object[] args = thisJoinPoint.getArgs();
-		Object ret = thisJoinPoint.proceed(args);
-		Object obj = thisJoinPoint.getThis();
+		Object returnedObject = thisJoinPoint.proceed(args);
+		Object originalObject = thisJoinPoint.getThis();
+		Class<? extends Object> originalObjectClass = originalObject.getClass();
 	    MethodSignature signature = (MethodSignature) thisJoinPoint.getSignature();
 	    Method method = signature.getMethod();
 	    CreateComplaintBasedOnActionAnnotation createComplaintBasedOnAction = method.getAnnotation(CreateComplaintBasedOnActionAnnotation.class);
 		if(createComplaintBasedOnAction == null)
 		{
 			System.out.println("There is no create complaint based on action annotation");
-			return ret;
+			return returnedObject;
 		}
-		Object retFromObj = FieldFinder.getObjectToReadFrom(ret, obj, createComplaintBasedOnAction.createdObjectLocation(), createComplaintBasedOnAction.name(), thisJoinPoint);
-		if(retFromObj == null)
+		Object createdObject = FieldFinder.getObjectToReadFrom(returnedObject, originalObject, createComplaintBasedOnAction.createdObjectLocation(), createComplaintBasedOnAction.name(), thisJoinPoint);
+		if(createdObject == null)
 		{
 			System.out.println("Read from object is null - CreateComplaintBasedOnActionAspect");
-			return ret;
+			return returnedObject;
 		}
-		Class<? extends Object> retClass = retFromObj.getClass();
-		ComplaintAnnotation complaint = retClass.getAnnotation(ComplaintAnnotation.class);
+		Class<? extends Object> createdObjectClass = createdObject.getClass();
+		ComplaintAnnotation complaint = createdObjectClass.getAnnotation(ComplaintAnnotation.class);
 		
 		if(complaint == null)
 		{
 			System.out.println("There is no complaint annotation");
-			return ret;
+			return returnedObject;
 		}
 		
 		try 
@@ -58,12 +59,12 @@ public class CreateComplaintBasedOnActionAspect {
 			var model = repo.getModel();
 			var complaintTypeObject = repo.getFactory().createComplaintBasedOnAction();
 			var complaintObject = repo.getFactory().createComplaint();
-			complaintObject.setName((String)FieldFinder.getFieldValue(complaint.id(), retFromObj, retClass));
-			complaintObject.setWhen((Date)FieldFinder.getFieldValue(complaint.when(), retFromObj, retClass));
+			complaintObject.setName((String)FieldFinder.getFieldValue(complaint.id(), createdObject, createdObjectClass));
+			complaintObject.setWhen((Date)FieldFinder.getFieldValue(complaint.when(), createdObject, createdObjectClass));
 			
 			if(complaint.reason() != Constants.Empty)
 			{
-				complaintObject.setReason((String)FieldFinder.getFieldValue(complaint.reason(), retFromObj, retClass));
+				complaintObject.setReason((String)FieldFinder.getFieldValue(complaint.reason(), createdObject, createdObjectClass));
 			}
 			if(createComplaintBasedOnAction.policyStatement() != Constants.Empty)
 			{
@@ -71,7 +72,7 @@ public class CreateComplaintBasedOnActionAspect {
 			}
 			if(createComplaintBasedOnAction.policyStatementId() != Constants.Empty)
 			{
-				setPolicyStatemetById(retFromObj, retClass, createComplaintBasedOnAction.policyStatementId(), complaintTypeObject, model);
+				setPolicyStatemetById(originalObject, originalObjectClass, createComplaintBasedOnAction.policyStatementId(), complaintTypeObject, model);
 			}
 			complaintObject.setAction(complaintTypeObject);
 			model.getAllComplaints().add(complaintObject);
@@ -82,12 +83,12 @@ public class CreateComplaintBasedOnActionAspect {
 			System.out.println(ex);
 		}
 		
-		return ret;
+		return returnedObject;
 	}
 	
-	private void setPolicyStatemetById(Object retFromObj, Class<? extends Object> retClass, String propertyName,
+	private void setPolicyStatemetById(Object createdobject, Class<? extends Object> createdobjectClass, String propertyName,
 			ComplaintBasedOnAction complaintTypeObject, PrivacyPolicy model) {
-		var policyStatementId = (String)FieldFinder.getFieldValue(propertyName, retFromObj, retClass);
+		var policyStatementId = (String)FieldFinder.getFieldValue(propertyName, createdobject, createdobjectClass);
 		var policyStatement = ObjectFinder.checkIfPolicyStatementExists(policyStatementId, model);
 		if(policyStatement.isPresent())
 		{

@@ -24,29 +24,29 @@ public class CreateConsentAspect {
 	@Around("function()")
 	public Object createConsent(ProceedingJoinPoint thisJoinPoint) throws Throwable {
 		Object[] args = thisJoinPoint.getArgs();
-		Object ret = thisJoinPoint.proceed(args);
-		Object obj = thisJoinPoint.getThis();
+		Object returnedObject = thisJoinPoint.proceed(args);
+		Object originalObject = thisJoinPoint.getThis();
 	    MethodSignature signature = (MethodSignature) thisJoinPoint.getSignature();
 	    Method method = signature.getMethod();
 	    CreateConsentAnnotation createConsent = method.getAnnotation(CreateConsentAnnotation.class);
 		if(createConsent == null)
 		{
 			System.out.println("There is no create consent statement annotation");
-			return ret;
+			return returnedObject;
 		}
-		Object retFromObj = FieldFinder.getObjectToReadFrom(ret, obj, createConsent.createdObjectLocation(), createConsent.name(), thisJoinPoint);
-		if(retFromObj == null)
+		Object createdObject = FieldFinder.getObjectToReadFrom(returnedObject, originalObject, createConsent.createdObjectLocation(), createConsent.name(), thisJoinPoint);
+		if(createdObject == null)
 		{
 			System.out.println("Read from object is null - CreateConsentAspect");
-			return ret;
+			return returnedObject;
 		}
-		Class<? extends Object> retClass = retFromObj.getClass();
-		PaperAnnotation paper = retClass.getAnnotation(PaperAnnotation.class);
+		Class<? extends Object> createdObjectClass = createdObject.getClass();
+		PaperAnnotation paper = createdObjectClass.getAnnotation(PaperAnnotation.class);
 		
 		if(paper == null)
 		{
 			System.out.println("There is no paper annotation");
-			return ret;
+			return returnedObject;
 		}
 
 		try 
@@ -54,22 +54,22 @@ public class CreateConsentAspect {
 			PrivacyModelRepository repo = new PrivacyModelRepository();
 			var model = repo.getModel();
 			var consentObject = repo.getFactory().createConsent();
-			consentObject.setName((String)FieldFinder.getFieldValue(paper.id(), retFromObj, retClass));
+			consentObject.setName((String)FieldFinder.getFieldValue(paper.id(), createdObject, createdObjectClass));
 			consentObject.setType(createConsent.consentType());
 			consentObject.setFormat(createConsent.consentFormat());
-			consentObject.setStartDate((Date)FieldFinder.getFieldValue(paper.startDate(), retFromObj, retClass));
-			consentObject.setLocation((String)FieldFinder.getFieldValue(paper.location(), retFromObj, retClass));
+			consentObject.setStartDate((Date)FieldFinder.getFieldValue(paper.startDate(), createdObject, createdObjectClass));
+			consentObject.setLocation((String)FieldFinder.getFieldValue(paper.location(), createdObject, createdObjectClass));
 			if(!paper.terminantionExplanation().equals(Constants.Empty))
 			{
-				consentObject.setTerminationExplanation((String)FieldFinder.getFieldValue(paper.terminantionExplanation(), retFromObj, retClass));
+				consentObject.setTerminationExplanation((String)FieldFinder.getFieldValue(paper.terminantionExplanation(), createdObject, createdObjectClass));
 			}
 			if(!paper.terminantionDate().equals(Constants.Empty))
 			{
-				consentObject.setTerminationDate((Date)FieldFinder.getFieldValue(paper.terminantionDate(), retFromObj, retClass));
+				consentObject.setTerminationDate((Date)FieldFinder.getFieldValue(paper.terminantionDate(), createdObject, createdObjectClass));
 			}
 			if(!paper.description().equals(Constants.Empty))
 			{
-				consentObject.setDescription((String)FieldFinder.getFieldValue(paper.description(), retFromObj, retClass));
+				consentObject.setDescription((String)FieldFinder.getFieldValue(paper.description(), createdObject, createdObjectClass));
 			}
 			model.getAllConsents().add(consentObject);
 			repo.saveModel(model);
@@ -79,7 +79,7 @@ public class CreateConsentAspect {
 			System.out.println(ex);
 		}
 		
-		return ret;
+		return returnedObject;
 	}
 }
 

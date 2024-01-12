@@ -7,6 +7,7 @@ import java.lang.annotation.Target;
 
 import com.security.model.validation.annotations.enums.Constants;
 import com.security.model.validation.annotations.enums.CreatedObjectLocation;
+import com.security.model.validation.annotations.enums.ParametersObjectsLocation;
 import com.security.model.validation.annotations.enums.TargetType;
 
 import privacyModel.NotificationType;
@@ -18,6 +19,7 @@ public @interface CreateNotificationAnnotation {
 	String name() default Constants.Empty;
 	NotificationType type();
 	TargetType causedByType();
+	ParametersObjectsLocation parametersLocation() default ParametersObjectsLocation.Parameter;
 	String causedBy() default Constants.Undefined;
 	String causedById() default Constants.Undefined;
 	String receivers() default Constants.Undefined;

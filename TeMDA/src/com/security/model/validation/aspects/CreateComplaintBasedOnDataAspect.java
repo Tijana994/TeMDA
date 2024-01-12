@@ -25,29 +25,30 @@ public class CreateComplaintBasedOnDataAspect {
 	@Around("function()")
 	public Object createComplaintBasedOnData(ProceedingJoinPoint thisJoinPoint) throws Throwable {
 		Object[] args = thisJoinPoint.getArgs();
-		Object ret = thisJoinPoint.proceed(args);
-		Object obj = thisJoinPoint.getThis();
+		Object returnedObject = thisJoinPoint.proceed(args);
+		Object originalObject = thisJoinPoint.getThis();
+		Class<? extends Object> originalObjectClass = originalObject.getClass();
 	    MethodSignature signature = (MethodSignature) thisJoinPoint.getSignature();
 	    Method method = signature.getMethod();
 	    CreateComplaintBasedOnDataAnnotation createComplaintBasedOnData = method.getAnnotation(CreateComplaintBasedOnDataAnnotation.class);
 		if(createComplaintBasedOnData == null)
 		{
 			System.out.println("There is no create complaint based on data annotation");
-			return ret;
+			return returnedObject;
 		}
-		Object retFromObj = FieldFinder.getObjectToReadFrom(ret, obj, createComplaintBasedOnData.createdObjectLocation(), createComplaintBasedOnData.name(), thisJoinPoint);
-		if(retFromObj == null)
+		Object createdObject = FieldFinder.getObjectToReadFrom(returnedObject, originalObject, createComplaintBasedOnData.createdObjectLocation(), createComplaintBasedOnData.name(), thisJoinPoint);
+		if(createdObject == null)
 		{
 			System.out.println("Read from object is null - CreateComplaintBasedOnDataAspect");
-			return ret;
+			return returnedObject;
 		}
-		Class<? extends Object> retClass = retFromObj.getClass();
-		ComplaintAnnotation complaint = retClass.getAnnotation(ComplaintAnnotation.class);
+		Class<? extends Object> createdObjectClass = createdObject.getClass();
+		ComplaintAnnotation complaint = createdObjectClass.getAnnotation(ComplaintAnnotation.class);
 		
 		if(complaint == null)
 		{
 			System.out.println("There is no complaint annotation");
-			return ret;
+			return returnedObject;
 		}
 		
 		try 
@@ -56,12 +57,12 @@ public class CreateComplaintBasedOnDataAspect {
 			var model = repo.getModel();
 			var complaintTypeObject = repo.getFactory().createComplaintBasedOnData();
 			var complaintObject = repo.getFactory().createComplaint();
-			complaintObject.setName((String)FieldFinder.getFieldValue(complaint.id(), retFromObj, retClass));
-			complaintObject.setWhen((Date)FieldFinder.getFieldValue(complaint.when(), retFromObj, retClass));
+			complaintObject.setName((String)FieldFinder.getFieldValue(complaint.id(), createdObject, createdObjectClass));
+			complaintObject.setWhen((Date)FieldFinder.getFieldValue(complaint.when(), createdObject, createdObjectClass));
 			complaintTypeObject.setType(createComplaintBasedOnData.type());
 			if(complaint.reason() != Constants.Empty)
 			{
-				complaintObject.setReason((String)FieldFinder.getFieldValue(complaint.reason(), retFromObj, retClass));
+				complaintObject.setReason((String)FieldFinder.getFieldValue(complaint.reason(), createdObject, createdObjectClass));
 			}
 			if(createComplaintBasedOnData.subjects() != Constants.Empty)
 			{
@@ -69,7 +70,7 @@ public class CreateComplaintBasedOnDataAspect {
 			}
 			if(createComplaintBasedOnData.subjectsIds() != Constants.Empty)
 			{
-				var datas = ReadTypeByAttribute.getPrivacyDatasById(retFromObj, retClass, createComplaintBasedOnData.subjectsIds(), model);
+				var datas = ReadTypeByAttribute.getPrivacyDatasById(originalObject, originalObjectClass, createComplaintBasedOnData.subjectsIds(), model);
 				if(!datas.isEmpty())
 				{
 					complaintTypeObject.getSubject().addAll(datas);
@@ -84,6 +85,6 @@ public class CreateComplaintBasedOnDataAspect {
 			System.out.println(ex);
 		}
 		
-		return ret;
+		return returnedObject;
 	}
 }
