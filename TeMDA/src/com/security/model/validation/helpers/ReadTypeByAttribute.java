@@ -7,6 +7,7 @@ import java.util.Optional;
 import org.aspectj.lang.JoinPoint;
 
 import com.security.model.validation.annotations.PaperAnnotation;
+import com.security.model.validation.annotations.PolicyStatementAnnotation;
 import com.security.model.validation.annotations.enums.ParametersObjectsLocation;
 
 import privacyModel.Document;
@@ -42,6 +43,40 @@ public class ReadTypeByAttribute {
 			else
 			{
 				var consentId = (String)FieldFinder.getFieldValue(paper.id(), value.get(), value.get().getClass());
+				return Optional.of(consentId);
+			}
+		}
+		catch(Exception e)
+		{
+			System.out.println(e);
+		}
+
+		return Optional.empty();
+	}
+	
+	public static Optional<String> getPolicyStatementIdFromObject(Class<?> objectClass, Object obj, String propertyame, 
+			ParametersObjectsLocation parametersLocation, JoinPoint jp)
+	{
+		if(obj == null)
+		{
+			System.out.println("Object is not instantiated.");
+			return Optional.empty();
+		}
+		try
+		{
+			var value = FieldFinder.getObjectToReadFrom(objectClass, obj, parametersLocation, propertyame, jp);
+			if(!value.isPresent())
+			{
+				return Optional.empty();
+			}
+			PolicyStatementAnnotation policyStatement = value.get().getClass().getAnnotation(PolicyStatementAnnotation.class);
+			if(policyStatement == null)
+			{
+				System.out.println("There is no policy statement annotation");
+			}
+			else
+			{
+				var consentId = (String)FieldFinder.getFieldValue(policyStatement.id(), value.get(), value.get().getClass());
 				return Optional.of(consentId);
 			}
 		}

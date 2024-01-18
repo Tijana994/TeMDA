@@ -3,6 +3,7 @@ package com.security.model.validation.aspects;
 import java.lang.reflect.Method;
 import java.util.Date;
 
+import org.aspectj.lang.JoinPoint;
 import org.aspectj.lang.ProceedingJoinPoint;
 import org.aspectj.lang.annotation.Around;
 import org.aspectj.lang.annotation.Aspect;
@@ -14,6 +15,7 @@ import com.security.model.validation.annotations.creators.CreateComplaintBasedOn
 import com.security.model.validation.annotations.enums.Constants;
 import com.security.model.validation.helpers.FieldFinder;
 import com.security.model.validation.helpers.ObjectFinder;
+import com.security.model.validation.helpers.ReadTypeByAttribute;
 
 import privacyModel.ComplaintBasedOnAction;
 import privacyModel.PrivacyPolicy;
@@ -68,11 +70,12 @@ public class CreateComplaintBasedOnActionAspect {
 			}
 			if(createComplaintBasedOnAction.policyStatement() != Constants.Empty)
 			{
-				
+				setPolicyStatementFromObject(originalObject, originalObjectClass, createComplaintBasedOnAction, model, complaintTypeObject, thisJoinPoint);
 			}
 			if(createComplaintBasedOnAction.policyStatementId() != Constants.Empty)
 			{
-				setPolicyStatemetById(originalObject, originalObjectClass, createComplaintBasedOnAction.policyStatementId(), complaintTypeObject, model);
+				var policyStatementId = (String)FieldFinder.getFieldValue(createComplaintBasedOnAction.policyStatementId(), originalObject, originalObjectClass);
+				setPolicyStatementById(model, complaintTypeObject, policyStatementId);
 			}
 			complaintObject.setAction(complaintTypeObject);
 			model.getAllComplaints().add(complaintObject);
@@ -86,10 +89,20 @@ public class CreateComplaintBasedOnActionAspect {
 		return returnedObject;
 	}
 	
-	private void setPolicyStatemetById(Object createdobject, Class<? extends Object> createdobjectClass, String propertyName,
-			ComplaintBasedOnAction complaintTypeObject, PrivacyPolicy model) {
-		var policyStatementId = (String)FieldFinder.getFieldValue(propertyName, createdobject, createdobjectClass);
-		var policyStatement = ObjectFinder.checkIfPolicyStatementExists(policyStatementId, model);
+	private void setPolicyStatementFromObject(Object obj, Class<? extends Object> objectClass,
+			CreateComplaintBasedOnActionAnnotation createComplaintBasedOnAction, PrivacyPolicy model, 
+			ComplaintBasedOnAction complaintTypeObject, JoinPoint jp) {
+		var policyStatementId = ReadTypeByAttribute.getPolicyStatementIdFromObject(objectClass, obj, createComplaintBasedOnAction.policyStatement(), createComplaintBasedOnAction.parametersLocation(), jp);
+		if(policyStatementId.isPresent())
+		{
+			var policyStatementName = policyStatementId.get();
+			setPolicyStatementById(model, complaintTypeObject, policyStatementName);
+		}
+	}
+	
+	private void setPolicyStatementById(PrivacyPolicy model, ComplaintBasedOnAction complaintTypeObject, String id) {
+		
+		var policyStatement = ObjectFinder.checkIfPolicyStatementExists(id, model);
 		if(policyStatement.isPresent())
 		{
 			complaintTypeObject.setStatement(policyStatement.get());
