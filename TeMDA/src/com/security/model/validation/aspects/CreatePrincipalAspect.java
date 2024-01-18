@@ -3,6 +3,7 @@ package com.security.model.validation.aspects;
 import java.lang.reflect.Method;
 import java.util.Date;
 
+import org.aspectj.lang.JoinPoint;
 import org.aspectj.lang.ProceedingJoinPoint;
 import org.aspectj.lang.annotation.Around;
 import org.aspectj.lang.annotation.Aspect;
@@ -12,6 +13,7 @@ import org.aspectj.lang.reflect.MethodSignature;
 import com.security.model.validation.annotations.PrincipalAnnotation;
 import com.security.model.validation.annotations.creators.CreatePrincipalAnnotation;
 import com.security.model.validation.annotations.enums.Constants;
+import com.security.model.validation.annotations.enums.ParametersObjectsLocation;
 import com.security.model.validation.helpers.FieldFinder;
 import com.security.model.validation.helpers.ObjectFinder;
 import com.security.model.validation.helpers.ReadTypeByAttribute;
@@ -66,11 +68,12 @@ public class CreatePrincipalAspect {
 			}
 			if(!principal.parent().equals(Constants.Undefined)) 
 			{
-				
+				setPolicyStatementFromObject(createdObject, createdObjectClass, principal, model, principalObject, thisJoinPoint);
 			}
 			if(!principal.parentId().equals(Constants.Undefined))
 			{
-				setParentById(createdObject, createdObjectClass, principal.parentId(), principalObject, model);
+				var parentId = (String)FieldFinder.getFieldValue(principal.parentId(), createdObject, createdObjectClass);
+				setParentById(model, principalObject, parentId);
 			}
 			if(!principal.childrens().equals(Constants.Undefined))
 			{
@@ -95,10 +98,19 @@ public class CreatePrincipalAspect {
 		return returnedObject;
 	}
 	
-	private void setParentById(Object retFromObj, Class<? extends Object> retClass, String propertyName,
-			Principal principalObject, PrivacyPolicy model) {
-		var parentId = (String)FieldFinder.getFieldValue(propertyName, retFromObj, retClass);
-		var parent = ObjectFinder.checkIfPrincipalExists(parentId, model);
+	private void setPolicyStatementFromObject(Object obj, Class<? extends Object> objectClass,
+			PrincipalAnnotation principal, PrivacyPolicy model, 
+			Principal principalObject, JoinPoint jp) {
+		var principalId = ReadTypeByAttribute.getPrincipalIdFromObject(objectClass, obj, principal.parent(), ParametersObjectsLocation.Property, jp);
+		if(principalId.isPresent())
+		{
+			var policyStatementName = principalId.get();
+			setParentById(model, principalObject, policyStatementName);
+		}
+	}
+	
+	private void setParentById(PrivacyPolicy model, Principal principalObject, String id) {
+		var parent = ObjectFinder.checkIfPrincipalExists(id, model);
 		if(parent.isPresent())
 		{
 			parent.get().getSubPrincipals().add(principalObject);

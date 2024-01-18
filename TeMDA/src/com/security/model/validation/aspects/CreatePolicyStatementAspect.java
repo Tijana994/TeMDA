@@ -122,21 +122,25 @@ public class CreatePolicyStatementAspect {
 		}
 		if(createPolicyStatement.howConsent() != Constants.Empty)
 		{
-			var consentId = ReadTypeByAttribute.getConsentIdFromObject(objectClass, obj, createPolicyStatement.howConsent(), createPolicyStatement.parametersLocation(), jp);
-			if(consentId.isPresent())
-			{
-				var consentName = consentId.get();
-				trySetConsentId(model, how, consentName);
-			}
+			setConsentFromObject(createPolicyStatement, obj, objectClass, model, jp, how);
 		}
 		if(createPolicyStatement.howConsentId() != Constants.Empty)
 		{
 			var consentId = (String)FieldFinder.getFieldValue(createPolicyStatement.howConsentId(), obj, objectClass);
-			trySetConsentId(model, how, consentId);
+			setConsentById(model, how, consentId);
 		}
 		return how;
 	}
-	private void trySetConsentId(PrivacyPolicy model, How how, String consentId) {
+	private void setConsentFromObject(CreatePolicyStatementAnnotation createPolicyStatement, Object obj,
+			Class<? extends Object> objectClass, PrivacyPolicy model, JoinPoint jp, How how) {
+		var consentId = ReadTypeByAttribute.getConsentIdFromObject(objectClass, obj, createPolicyStatement.howConsent(), createPolicyStatement.parametersLocation(), jp);
+		if(consentId.isPresent())
+		{
+			var consentName = consentId.get();
+			setConsentById(model, how, consentName);
+		}
+	}
+	private void setConsentById(PrivacyPolicy model, How how, String consentId) {
 		var consent = ObjectFinder.checkIfConsentExists(consentId, model);
 		if(consent.isPresent())
 		{

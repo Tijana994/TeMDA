@@ -6,8 +6,10 @@ import java.util.Optional;
 
 import org.aspectj.lang.JoinPoint;
 
+import com.security.model.validation.annotations.LocationAnnotation;
 import com.security.model.validation.annotations.PaperAnnotation;
 import com.security.model.validation.annotations.PolicyStatementAnnotation;
+import com.security.model.validation.annotations.PrincipalAnnotation;
 import com.security.model.validation.annotations.enums.ParametersObjectsLocation;
 
 import privacyModel.Document;
@@ -20,7 +22,7 @@ import privacyModel.SharedPrivacyData;
 
 public class ReadTypeByAttribute {
 
-	public static Optional<String> getConsentIdFromObject(Class<?> objectClass, Object obj, String propertyame, 
+	public static Optional<String> getConsentIdFromObject(Class<?> objectClass, Object obj, String propertyName, 
 			ParametersObjectsLocation parametersLocation, JoinPoint jp)
 	{
 		if(obj == null)
@@ -30,7 +32,7 @@ public class ReadTypeByAttribute {
 		}
 		try
 		{
-			var value = FieldFinder.getObjectToReadFrom(objectClass, obj, parametersLocation, propertyame, jp);
+			var value = FieldFinder.getObjectToReadFrom(objectClass, obj, parametersLocation, propertyName, jp);
 			if(!value.isPresent())
 			{
 				return Optional.empty();
@@ -42,8 +44,8 @@ public class ReadTypeByAttribute {
 			}
 			else
 			{
-				var consentId = (String)FieldFinder.getFieldValue(paper.id(), value.get(), value.get().getClass());
-				return Optional.of(consentId);
+				var Id = (String)FieldFinder.getFieldValue(paper.id(), value.get(), value.get().getClass());
+				return Optional.of(Id);
 			}
 		}
 		catch(Exception e)
@@ -54,7 +56,7 @@ public class ReadTypeByAttribute {
 		return Optional.empty();
 	}
 	
-	public static Optional<String> getPolicyStatementIdFromObject(Class<?> objectClass, Object obj, String propertyame, 
+	public static Optional<String> getPolicyStatementIdFromObject(Class<?> objectClass, Object obj, String propertyName, 
 			ParametersObjectsLocation parametersLocation, JoinPoint jp)
 	{
 		if(obj == null)
@@ -64,7 +66,7 @@ public class ReadTypeByAttribute {
 		}
 		try
 		{
-			var value = FieldFinder.getObjectToReadFrom(objectClass, obj, parametersLocation, propertyame, jp);
+			var value = FieldFinder.getObjectToReadFrom(objectClass, obj, parametersLocation, propertyName, jp);
 			if(!value.isPresent())
 			{
 				return Optional.empty();
@@ -76,8 +78,76 @@ public class ReadTypeByAttribute {
 			}
 			else
 			{
-				var consentId = (String)FieldFinder.getFieldValue(policyStatement.id(), value.get(), value.get().getClass());
-				return Optional.of(consentId);
+				var Id = (String)FieldFinder.getFieldValue(policyStatement.id(), value.get(), value.get().getClass());
+				return Optional.of(Id);
+			}
+		}
+		catch(Exception e)
+		{
+			System.out.println(e);
+		}
+
+		return Optional.empty();
+	}
+	
+	public static Optional<String> getLocationIdFromObject(Class<?> objectClass, Object obj, String propertyName, 
+			ParametersObjectsLocation parametersLocation, JoinPoint jp)
+	{
+		if(obj == null)
+		{
+			System.out.println("Object is not instantiated.");
+			return Optional.empty();
+		}
+		try
+		{
+			var value = FieldFinder.getObjectToReadFrom(objectClass, obj, parametersLocation, propertyName, jp);
+			if(!value.isPresent())
+			{
+				return Optional.empty();
+			}
+			LocationAnnotation location = value.get().getClass().getAnnotation(LocationAnnotation.class);
+			if(location == null)
+			{
+				System.out.println("There is no location annotation");
+			}
+			else
+			{
+				var Id = (String)FieldFinder.getFieldValue(location.id(), value.get(), value.get().getClass());
+				return Optional.of(Id);
+			}
+		}
+		catch(Exception e)
+		{
+			System.out.println(e);
+		}
+
+		return Optional.empty();
+	}
+	
+	public static Optional<String> getPrincipalIdFromObject(Class<?> objectClass, Object obj, String propertyName, 
+			ParametersObjectsLocation parametersLocation, JoinPoint jp)
+	{
+		if(obj == null)
+		{
+			System.out.println("Object is not instantiated.");
+			return Optional.empty();
+		}
+		try
+		{
+			var value = FieldFinder.getObjectToReadFrom(objectClass, obj, parametersLocation, propertyName, jp);
+			if(!value.isPresent())
+			{
+				return Optional.empty();
+			}
+			PrincipalAnnotation principal = value.get().getClass().getAnnotation(PrincipalAnnotation.class);
+			if(principal == null)
+			{
+				System.out.println("There is no principal annotation");
+			}
+			else
+			{
+				var Id = (String)FieldFinder.getFieldValue(principal.id(), value.get(), value.get().getClass());
+				return Optional.of(Id);
 			}
 		}
 		catch(Exception e)

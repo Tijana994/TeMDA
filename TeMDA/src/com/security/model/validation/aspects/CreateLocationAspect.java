@@ -2,6 +2,7 @@ package com.security.model.validation.aspects;
 
 import java.lang.reflect.Method;
 
+import org.aspectj.lang.JoinPoint;
 import org.aspectj.lang.ProceedingJoinPoint;
 import org.aspectj.lang.annotation.Around;
 import org.aspectj.lang.annotation.Aspect;
@@ -11,6 +12,7 @@ import org.aspectj.lang.reflect.MethodSignature;
 import com.security.model.validation.annotations.LocationAnnotation;
 import com.security.model.validation.annotations.creators.CreateLocationAnnotation;
 import com.security.model.validation.annotations.enums.Constants;
+import com.security.model.validation.annotations.enums.ParametersObjectsLocation;
 import com.security.model.validation.helpers.FieldFinder;
 import com.security.model.validation.helpers.ObjectFinder;
 import com.security.model.validation.helpers.ReadTypeByAttribute;
@@ -29,6 +31,7 @@ public class CreateLocationAspect {
 		Object[] args = thisJoinPoint.getArgs();
 		Object returnedObject = thisJoinPoint.proceed(args);
 		Object originalObject = thisJoinPoint.getThis();
+		Class<? extends Object> originalObjectClass = originalObject.getClass();
 	    MethodSignature signature = (MethodSignature) thisJoinPoint.getSignature();
 	    Method method = signature.getMethod();
 		CreateLocationAnnotation createLocation = method.getAnnotation(CreateLocationAnnotation.class);
@@ -63,11 +66,12 @@ public class CreateLocationAspect {
 			locationObject.setLegalAgeLimit(createLocation.legalAgeLimit());
 			if(!location.parent().equals(Constants.Undefined)) 
 			{
-				
+				setPolicyStatementFromObject(originalObject, originalObjectClass, location, model, locationObject, thisJoinPoint);
 			}
 			if(!location.parentId().equals(Constants.Undefined))
 			{
-				setParentById(createdObject, createdObjectClass, location.parentId(), locationObject, model);
+				var parentId = (String)FieldFinder.getFieldValue(location.parentId(), createdObject, createdObjectClass);
+				setParentById(model, locationObject, parentId);
 			}
 			if(!location.subLocations().equals(Constants.Undefined))
 			{
@@ -93,10 +97,18 @@ public class CreateLocationAspect {
 		return returnedObject;
 	}
 	
-	private void setParentById(Object retFromObj, Class<? extends Object> retClass, String propertyName,
-			Location locationObject, PrivacyPolicy model) {
-		var parentId = (String)FieldFinder.getFieldValue(propertyName, retFromObj, retClass);
-		var parent = ObjectFinder.checkIfLocationExists(parentId, model);
+	private void setPolicyStatementFromObject(Object obj, Class<? extends Object> objectClass,
+			LocationAnnotation location, PrivacyPolicy model, Location locationObject, JoinPoint jp) {
+		var locationId = ReadTypeByAttribute.getLocationIdFromObject(objectClass, obj, location.parent(), ParametersObjectsLocation.Property, jp);
+		if(locationId.isPresent())
+		{
+			var locationName = locationId.get();
+			setParentById(model, locationObject, locationName);
+		}
+	}
+	
+	private void setParentById(PrivacyPolicy model, Location locationObject, String id) {
+		var parent = ObjectFinder.checkIfLocationExists(id, model);
 		if(parent.isPresent())
 		{
 			parent.get().getSubLocations().add(locationObject);
