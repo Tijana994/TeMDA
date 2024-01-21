@@ -105,12 +105,18 @@ public class CreatePolicyStatementAspect {
 		return returnedObject;
 	}
 	private How createHow(CreatePolicyStatementAnnotation createPolicyStatement, Object obj,
-			Class<? extends Object> objectClass, PrivacyModelRepository repo, PrivacyPolicy model, JoinPoint jp) {
+			Class<? extends Object> objectClass, PrivacyModelRepository repo, PrivacyPolicy model, 
+			JoinPoint jp) {
 		var how = repo.getFactory().createHow();
 		
 		if(createPolicyStatement.howDocuments() != Constants.Empty)
 		{
-			
+			var documents = ReadTypeByAttribute.getDocumentsFromObject(objectClass, obj, createPolicyStatement.howDocuments(), 
+					createPolicyStatement.parametersLocation(), jp, model);
+			if(!documents.isEmpty())
+			{
+				how.getDocuments().addAll(documents);
+			}
 		}
 		if(createPolicyStatement.howDocumentsIds() != Constants.Empty)
 		{

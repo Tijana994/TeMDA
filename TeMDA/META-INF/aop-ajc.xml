@@ -9,6 +9,7 @@
 	<aspect name="com.security.model.validation.aspects.CreateNotificationAspect"/>
     <aspect name="com.security.model.validation.aspects.CreatePolicyStatementAspect"/>
     <aspect name="com.security.model.validation.aspects.CreatePrincipalAspect"/>
+    <aspect name="com.security.model.validation.aspects.CreatePrivacyDataAspect"/>
     <aspect name="com.security.model.validation.aspects.CreateWithdrawAspect"/>
   </aspects>
   <weaver options="-Xset:weaveJavaxPackages=true"/>

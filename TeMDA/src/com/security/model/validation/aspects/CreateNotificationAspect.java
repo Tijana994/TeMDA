@@ -69,7 +69,12 @@ public class CreateNotificationAspect {
 			}
 			if(createNotification.receivers() != Constants.Empty)
 			{
-				
+				var reveivers = ReadTypeByAttribute.getPrincipalsFromObject(createdObjectClass, createdObject, createNotification.receivers(), 
+						createNotification.parametersLocation(), thisJoinPoint, model);
+				if(!reveivers.isEmpty())
+				{
+					notificationObject.getReceivers().addAll(reveivers);
+				}
 			}
 			if(createNotification.receiversIds() != Constants.Empty)
 			{
@@ -81,7 +86,12 @@ public class CreateNotificationAspect {
 			}
 			if(createNotification.notifiers() != Constants.Empty)
 			{
-				
+				var notifiers = ReadTypeByAttribute.getPrincipalsFromObject(createdObjectClass, createdObject, createNotification.notifiers(), 
+						createNotification.parametersLocation(), thisJoinPoint, model);
+				if(!notifiers.isEmpty())
+				{
+					notificationObject.getNotifiers().addAll(notifiers);
+				}
 			}
 			if(createNotification.notifiersIds() != Constants.Empty)
 			{

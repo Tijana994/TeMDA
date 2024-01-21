@@ -3,6 +3,7 @@ package com.security.model.validation.aspects;
 import java.lang.reflect.Method;
 import java.util.Date;
 
+import org.aspectj.lang.JoinPoint;
 import org.aspectj.lang.ProceedingJoinPoint;
 import org.aspectj.lang.annotation.Around;
 import org.aspectj.lang.annotation.Aspect;
@@ -68,7 +69,12 @@ public class CreateDenialAspect {
 			}
 			if(createDenial.basedOnStatemets() != Constants.Empty)
 			{
-				
+				var policyStatements = ReadTypeByAttribute.getPolicyStatementsFromObject(originalObjectClass, originalObject, createDenial.basedOnStatemets(),
+						createDenial.parametersLocation(), thisJoinPoint , model);
+				if(!policyStatements.isEmpty())
+				{
+					denialObject.getBasedOnStatements().addAll(policyStatements);
+				}
 			}
 			if(createDenial.basedOnStatemetsIds() != Constants.Empty)
 			{
@@ -80,11 +86,12 @@ public class CreateDenialAspect {
 			}
 			if(createDenial.forComplaint() != Constants.Empty)
 			{
-				
+				setComplaintFromObject(originalObject, originalObjectClass, createDenial, model, denialObject, thisJoinPoint);
 			}
 			if(createDenial.forComplaintId() != Constants.Empty)
 			{
-				setComplaintById(originalObject, originalObjectClass, createDenial.forComplaintId(), denialObject, model);
+				var complaintId = (String)FieldFinder.getFieldValue(createDenial.forComplaintId(), originalObject, originalObjectClass);
+				setComplaintById(model, denialObject, complaintId);
 			}
 			model.getAllDenials().add(denialObject);
 			repo.saveModel(model);
@@ -97,10 +104,19 @@ public class CreateDenialAspect {
 		return returnedObject;
 	}
 	
-	private void setComplaintById(Object createdobject, Class<? extends Object> createdobjectClass, String  propertyName,
-			Denial denialObject, PrivacyPolicy model) {
-		var complaintId = (String)FieldFinder.getFieldValue(propertyName, createdobject, createdobjectClass);
-		var complaint = ObjectFinder.checkIfComplaintExists(complaintId, model);
+	private void setComplaintFromObject(Object obj, Class<? extends Object> objectClass,
+			CreateDenialAnnotation createDenial, PrivacyPolicy model, 
+			Denial denialObject, JoinPoint jp) {
+		var complaintId = ReadTypeByAttribute.getComplaintIdFromObject(objectClass, obj, createDenial.forComplaint(), createDenial.parametersLocation(), jp);
+		if(complaintId.isPresent())
+		{
+			var consentName = complaintId.get();
+			setComplaintById(model, denialObject, consentName);
+		}
+	}
+	
+	private void setComplaintById(PrivacyPolicy model, Denial denialObject, String  propertyName) {
+		var complaint = ObjectFinder.checkIfComplaintExists(propertyName, model);
 		if(complaint.isPresent())
 		{
 			if(complaint.get().getAction() instanceof AbstractComplaint)

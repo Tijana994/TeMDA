@@ -66,11 +66,17 @@ public class CreateComplaintBasedOnDataAspect {
 			}
 			if(createComplaintBasedOnData.subjects() != Constants.Empty)
 			{
-				
+				var datas = ReadTypeByAttribute.getPrivacyDatasFromObject(createdObjectClass, createdObject, createComplaintBasedOnData.subjects(), 
+						createComplaintBasedOnData.parametersLocation(), thisJoinPoint, model);
+				if(!datas.isEmpty())
+				{
+					complaintTypeObject.getSubject().addAll(datas);
+				}
 			}
 			if(createComplaintBasedOnData.subjectsIds() != Constants.Empty)
 			{
-				var datas = ReadTypeByAttribute.getPrivacyDatasById(originalObject, originalObjectClass, createComplaintBasedOnData.subjectsIds(), model);
+				var datas = ReadTypeByAttribute.getPrivacyDatasById(originalObject, originalObjectClass, 
+						createComplaintBasedOnData.subjectsIds(), model);
 				if(!datas.isEmpty())
 				{
 					complaintTypeObject.getSubject().addAll(datas);

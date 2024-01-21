@@ -75,7 +75,12 @@ public class CreateLocationAspect {
 			}
 			if(!location.subLocations().equals(Constants.Undefined))
 			{
-				
+				var locations = ReadTypeByAttribute.getLocationsFromObject(createdObjectClass, createdObject, location.subLocations(), 
+						ParametersObjectsLocation.Property, thisJoinPoint, model);
+				if(!locations.isEmpty())
+				{
+					locationObject.getSubLocations().addAll(locations);
+				}
 			}
 			if(!location.subLocationsIds().equals(Constants.Undefined))
 			{

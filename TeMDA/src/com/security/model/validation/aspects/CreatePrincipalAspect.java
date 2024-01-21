@@ -77,7 +77,12 @@ public class CreatePrincipalAspect {
 			}
 			if(!principal.childrens().equals(Constants.Undefined))
 			{
-				
+				var childrens = ReadTypeByAttribute.getPrincipalsFromObject(createdObjectClass, createdObject, principal.childrens(), 
+						ParametersObjectsLocation.Property, thisJoinPoint, model);
+				if(!childrens.isEmpty())
+				{
+					principalObject.getSubPrincipals().addAll(childrens);
+				}
 			}
 			if(!principal.childrensIds().equals(Constants.Undefined))
 			{
