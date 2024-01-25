@@ -83,7 +83,13 @@ public class FieldFinder {
 				System.out.println("Property name is empty");
 				return Optional.empty();
 			}
-			return Optional.of(getFieldValue(name, obj, obj.getClass()));
+			var value = getFieldValue(name, obj, obj.getClass());
+			if(value == null)
+			{
+				System.out.println("Property " + name + " should be instatiate");
+				return Optional.empty();
+			}
+			return Optional.of(value);
 		}
 		else if(location == ParametersObjectsLocation.Parameter)
 		{
