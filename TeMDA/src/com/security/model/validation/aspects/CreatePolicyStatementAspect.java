@@ -64,23 +64,32 @@ public class CreatePolicyStatementAspect {
 			var model = repo.getModel();
 			var policyStatementObject = repo.getFactory().createPolicyStatement();
 			policyStatementObject.setName((String)FieldFinder.getFieldValue(policyStatement.id(), returnedObject, createdObjectClass));
-			var whoId = (String)FieldFinder.getFieldValue(createPolicyStatement.who(), originalObject, originalObjectClass);
-			var whoPrincipal = ObjectFinder.checkIfPrincipalExists(whoId, model);
-			if(whoPrincipal.isPresent())
+			if(!createPolicyStatement.who().equals(Constants.Empty))
 			{
-				policyStatementObject.setWho(whoPrincipal.get());
+				var whoId = (String)FieldFinder.getFieldValue(createPolicyStatement.who(), originalObject, originalObjectClass);
+				var whoPrincipal = ObjectFinder.checkIfPrincipalExists(whoId, model);
+				if(whoPrincipal.isPresent())
+				{
+					policyStatementObject.setWho(whoPrincipal.get());
+				}
 			}
-			var whoseId = (String)FieldFinder.getFieldValue(createPolicyStatement.whose(), originalObject, originalObjectClass);
-			var whosePrincipal = ObjectFinder.checkIfPrincipalExists(whoseId, model);
-			if(whosePrincipal.isPresent())
+			if(!createPolicyStatement.whose().equals(Constants.Empty))
 			{
-				policyStatementObject.setWhose(whosePrincipal.get());
+				var whoseId = (String)FieldFinder.getFieldValue(createPolicyStatement.whose(), originalObject, originalObjectClass);
+				var whosePrincipal = ObjectFinder.checkIfPrincipalExists(whoseId, model);
+				if(whosePrincipal.isPresent())
+				{
+					policyStatementObject.setWhose(whosePrincipal.get());
+				}
 			}
-			var whomId = (String)FieldFinder.getFieldValue(createPolicyStatement.whom(), originalObject, originalObjectClass);
-			var whomPrincipal = ObjectFinder.checkIfPrincipalExists(whomId, model);
-			if(whomPrincipal.isPresent())
+			if(!createPolicyStatement.whom().equals(Constants.Empty))
 			{
-				policyStatementObject.setWhom(whomPrincipal.get());
+				var whomId = (String)FieldFinder.getFieldValue(createPolicyStatement.whom(), originalObject, originalObjectClass);
+				var whomPrincipal = ObjectFinder.checkIfPrincipalExists(whomId, model);
+				if(whomPrincipal.isPresent())
+				{
+					policyStatementObject.setWhom(whomPrincipal.get());
+				}
 			}
 			
 			var purpose = PurposeCreator.createPurpose(originalObjectClass, originalObject, createPolicyStatement.why(),repo.getFactory());
@@ -109,7 +118,7 @@ public class CreatePolicyStatementAspect {
 			JoinPoint jp) {
 		var how = repo.getFactory().createHow();
 		
-		if(createPolicyStatement.howDocuments() != Constants.Empty)
+		if(!createPolicyStatement.howDocuments().equals(Constants.Empty))
 		{
 			var documents = ReadTypeByAttribute.getDocumentsFromObject(objectClass, obj, createPolicyStatement.howDocuments(), 
 					createPolicyStatement.parametersLocation(), jp, model);
@@ -118,7 +127,7 @@ public class CreatePolicyStatementAspect {
 				how.getDocuments().addAll(documents);
 			}
 		}
-		if(createPolicyStatement.howDocumentsIds() != Constants.Empty)
+		if(!createPolicyStatement.howDocumentsIds().equals(Constants.Empty))
 		{
 			var documents = ReadTypeByAttribute.getDocumentsById(obj, objectClass, createPolicyStatement.howDocumentsIds(), model);
 			if(!documents.isEmpty())
@@ -126,11 +135,11 @@ public class CreatePolicyStatementAspect {
 				how.getDocuments().addAll(documents);
 			}
 		}
-		if(createPolicyStatement.howConsent() != Constants.Empty)
+		if(!createPolicyStatement.howConsent().equals(Constants.Empty))
 		{
 			setConsentFromObject(createPolicyStatement, obj, objectClass, model, jp, how);
 		}
-		if(createPolicyStatement.howConsentId() != Constants.Empty)
+		if(!createPolicyStatement.howConsentId().equals(Constants.Empty))
 		{
 			var consentId = (String)FieldFinder.getFieldValue(createPolicyStatement.howConsentId(), obj, objectClass);
 			setConsentById(model, how, consentId);

@@ -60,11 +60,11 @@ public class CreateComplaintBasedOnDataAspect {
 			complaintObject.setName((String)FieldFinder.getFieldValue(complaint.id(), createdObject, createdObjectClass));
 			complaintObject.setWhen((Date)FieldFinder.getFieldValue(complaint.when(), createdObject, createdObjectClass));
 			complaintTypeObject.setType(createComplaintBasedOnData.type());
-			if(complaint.reason() != Constants.Empty)
+			if(!complaint.reason().equals(Constants.Empty))
 			{
 				complaintObject.setReason((String)FieldFinder.getFieldValue(complaint.reason(), createdObject, createdObjectClass));
 			}
-			if(createComplaintBasedOnData.subjects() != Constants.Empty)
+			if(!createComplaintBasedOnData.subjects().equals(Constants.Empty))
 			{
 				var datas = ReadTypeByAttribute.getPrivacyDatasFromObject(createdObjectClass, createdObject, createComplaintBasedOnData.subjects(), 
 						createComplaintBasedOnData.parametersLocation(), thisJoinPoint, model);
@@ -73,7 +73,7 @@ public class CreateComplaintBasedOnDataAspect {
 					complaintTypeObject.getSubject().addAll(datas);
 				}
 			}
-			if(createComplaintBasedOnData.subjectsIds() != Constants.Empty)
+			if(!createComplaintBasedOnData.subjectsIds().equals(Constants.Empty))
 			{
 				var datas = ReadTypeByAttribute.getPrivacyDatasById(originalObject, originalObjectClass, 
 						createComplaintBasedOnData.subjectsIds(), model);

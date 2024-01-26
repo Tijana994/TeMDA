@@ -64,15 +64,15 @@ public class CreateComplaintBasedOnActionAspect {
 			complaintObject.setName((String)FieldFinder.getFieldValue(complaint.id(), createdObject, createdObjectClass));
 			complaintObject.setWhen((Date)FieldFinder.getFieldValue(complaint.when(), createdObject, createdObjectClass));
 			
-			if(complaint.reason() != Constants.Empty)
+			if(!complaint.reason().equals(Constants.Empty))
 			{
 				complaintObject.setReason((String)FieldFinder.getFieldValue(complaint.reason(), createdObject, createdObjectClass));
 			}
-			if(createComplaintBasedOnAction.policyStatement() != Constants.Empty)
+			if(!createComplaintBasedOnAction.policyStatement().equals(Constants.Empty))
 			{
 				setPolicyStatementFromObject(originalObject, originalObjectClass, createComplaintBasedOnAction, model, complaintTypeObject, thisJoinPoint);
 			}
-			if(createComplaintBasedOnAction.policyStatementId() != Constants.Empty)
+			if(!createComplaintBasedOnAction.policyStatementId().equals(Constants.Empty))
 			{
 				var policyStatementId = (String)FieldFinder.getFieldValue(createComplaintBasedOnAction.policyStatementId(), originalObject, originalObjectClass);
 				setPolicyStatementById(model, complaintTypeObject, policyStatementId);

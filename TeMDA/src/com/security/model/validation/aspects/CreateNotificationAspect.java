@@ -59,15 +59,15 @@ public class CreateNotificationAspect {
 			notificationObject.setName((String)FieldFinder.getFieldValue(notification.id(), createdObject, createdObjectClass));
 			notificationObject.setWhen((Date)FieldFinder.getFieldValue(notification.when(), createdObject, createdObjectClass));
 			notificationObject.setType(createNotification.type());
-			if(createNotification.causedBy() != Constants.Empty)
+			if(!createNotification.causedBy().equals(Constants.Empty))
 			{
 				createNotification.causedByType();
 			}
-			if(createNotification.causedById() != Constants.Empty)
+			if(!createNotification.causedById().equals(Constants.Empty))
 			{
 				createNotification.causedByType();
 			}
-			if(createNotification.receivers() != Constants.Empty)
+			if(!createNotification.receivers().equals(Constants.Empty))
 			{
 				var reveivers = ReadTypeByAttribute.getPrincipalsFromObject(createdObjectClass, createdObject, createNotification.receivers(), 
 						createNotification.parametersLocation(), thisJoinPoint, model);
@@ -76,7 +76,7 @@ public class CreateNotificationAspect {
 					notificationObject.getReceivers().addAll(reveivers);
 				}
 			}
-			if(createNotification.receiversIds() != Constants.Empty)
+			if(!createNotification.receiversIds().equals(Constants.Empty))
 			{
 				var reveivers = ReadTypeByAttribute.getPrincipalsById(originalObject, originalObjectClass, createNotification.receiversIds(), model);
 				if(!reveivers.isEmpty())
@@ -84,7 +84,7 @@ public class CreateNotificationAspect {
 					notificationObject.getReceivers().addAll(reveivers);
 				}
 			}
-			if(createNotification.notifiers() != Constants.Empty)
+			if(!createNotification.notifiers().equals(Constants.Empty))
 			{
 				var notifiers = ReadTypeByAttribute.getPrincipalsFromObject(createdObjectClass, createdObject, createNotification.notifiers(), 
 						createNotification.parametersLocation(), thisJoinPoint, model);
@@ -93,7 +93,7 @@ public class CreateNotificationAspect {
 					notificationObject.getNotifiers().addAll(notifiers);
 				}
 			}
-			if(createNotification.notifiersIds() != Constants.Empty)
+			if(!createNotification.notifiersIds().equals(Constants.Empty))
 			{
 				var notifiers = ReadTypeByAttribute.getPrincipalsById(originalObject, originalObjectClass, createNotification.notifiersIds(), model);
 				if(!notifiers.isEmpty())

@@ -63,11 +63,11 @@ public class CreateDenialAspect {
 			var denialObject = repo.getFactory().createDenial();
 			denialObject.setName((String)FieldFinder.getFieldValue(denial.id(), createdObject, createdObjectClass));
 			denialObject.setWhen((Date)FieldFinder.getFieldValue(denial.when(), createdObject, createdObjectClass));
-			if(denial.reason() != Constants.Empty)
+			if(!denial.reason().equals(Constants.Empty))
 			{
 				denialObject.setReason((String)FieldFinder.getFieldValue(denial.reason(), createdObject, createdObjectClass));
 			}
-			if(createDenial.basedOnStatemets() != Constants.Empty)
+			if(!createDenial.basedOnStatemets().equals(Constants.Empty))
 			{
 				var policyStatements = ReadTypeByAttribute.getPolicyStatementsFromObject(originalObjectClass, originalObject, createDenial.basedOnStatemets(),
 						createDenial.parametersLocation(), thisJoinPoint , model);
@@ -76,7 +76,7 @@ public class CreateDenialAspect {
 					denialObject.getBasedOnStatements().addAll(policyStatements);
 				}
 			}
-			if(createDenial.basedOnStatemetsIds() != Constants.Empty)
+			if(!createDenial.basedOnStatemetsIds().equals(Constants.Empty))
 			{
 				var policyStatements = ReadTypeByAttribute.getPolicyStatementsById(originalObject, originalObjectClass, createDenial.basedOnStatemetsIds(), model);
 				if(!policyStatements.isEmpty())
@@ -84,11 +84,11 @@ public class CreateDenialAspect {
 					denialObject.getBasedOnStatements().addAll(policyStatements);
 				}
 			}
-			if(createDenial.forComplaint() != Constants.Empty)
+			if(!createDenial.forComplaint().equals(Constants.Empty))
 			{
 				setComplaintFromObject(originalObject, originalObjectClass, createDenial, model, denialObject, thisJoinPoint);
 			}
-			if(createDenial.forComplaintId() != Constants.Empty)
+			if(!createDenial.forComplaintId().equals(Constants.Empty))
 			{
 				var complaintId = (String)FieldFinder.getFieldValue(createDenial.forComplaintId(), originalObject, originalObjectClass);
 				setComplaintById(model, denialObject, complaintId);
