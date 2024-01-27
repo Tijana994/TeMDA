@@ -1,7 +1,6 @@
 package com.security.model.validation.aspects;
 
 import java.lang.reflect.Method;
-import java.util.Arrays;
 
 import org.aspectj.lang.JoinPoint;
 import org.aspectj.lang.ProceedingJoinPoint;
@@ -13,15 +12,17 @@ import org.aspectj.lang.reflect.MethodSignature;
 import com.security.model.validation.annotations.PolicyStatementAnnotation;
 import com.security.model.validation.annotations.creators.CreatePolicyStatementAnnotation;
 import com.security.model.validation.annotations.enums.Constants;
+import com.security.model.validation.annotations.enums.ParametersObjectsLocation;
+import com.security.model.validation.creators.HowCreator;
 import com.security.model.validation.creators.PurposeCreator;
+import com.security.model.validation.creators.WhatCreator;
 import com.security.model.validation.creators.WhenCreator;
 import com.security.model.validation.helpers.FieldFinder;
 import com.security.model.validation.helpers.ObjectFinder;
 import com.security.model.validation.helpers.ReadTypeByAttribute;
 
-import privacyModel.How;
+import privacyModel.PolicyStatement;
 import privacyModel.PrivacyPolicy;
-import privacyModel.What;
 import utility.PrivacyModelRepository;
 
 @Aspect
@@ -62,45 +63,58 @@ public class CreatePolicyStatementAspect {
 		{
 			PrivacyModelRepository repo = new PrivacyModelRepository();
 			var model = repo.getModel();
+			var parametersLocation = createPolicyStatement.parametersLocation();
 			var policyStatementObject = repo.getFactory().createPolicyStatement();
 			policyStatementObject.setName((String)FieldFinder.getFieldValue(policyStatement.id(), returnedObject, createdObjectClass));
+			if(!createPolicyStatement.whoId().equals(Constants.Empty))
+			{
+				var whoId = FieldFinder.getObjectToReadFrom(originalObjectClass, originalObject, parametersLocation, createPolicyStatement.whoId(), thisJoinPoint);
+				if(whoId.isPresent())
+				{
+					setWhoById(model, policyStatementObject, (String)whoId.get());
+				}
+			}
 			if(!createPolicyStatement.who().equals(Constants.Empty))
 			{
-				var whoId = (String)FieldFinder.getFieldValue(createPolicyStatement.who(), originalObject, originalObjectClass);
-				var whoPrincipal = ObjectFinder.checkIfPrincipalExists(whoId, model);
-				if(whoPrincipal.isPresent())
+				setWhoFromObject(originalObject, originalObjectClass, createPolicyStatement.who(), parametersLocation, policyStatementObject, model, thisJoinPoint);
+			}
+			if(!createPolicyStatement.whoseId().equals(Constants.Empty))
+			{
+				var whoseId = FieldFinder.getObjectToReadFrom(originalObjectClass, originalObject, parametersLocation, createPolicyStatement.whoseId(), thisJoinPoint);
+				if(whoseId.isPresent())
 				{
-					policyStatementObject.setWho(whoPrincipal.get());
+					setWhoseById(model, policyStatementObject, (String)whoseId.get());
 				}
 			}
 			if(!createPolicyStatement.whose().equals(Constants.Empty))
 			{
-				var whoseId = (String)FieldFinder.getFieldValue(createPolicyStatement.whose(), originalObject, originalObjectClass);
-				var whosePrincipal = ObjectFinder.checkIfPrincipalExists(whoseId, model);
-				if(whosePrincipal.isPresent())
+				setWhoseFromObject(originalObject, originalObjectClass, createPolicyStatement.whose(), parametersLocation, policyStatementObject, model, thisJoinPoint);
+			}
+			if(!createPolicyStatement.whomId().equals(Constants.Empty))
+			{
+				var whomId = FieldFinder.getObjectToReadFrom(originalObjectClass, originalObject, parametersLocation, createPolicyStatement.whomId(), thisJoinPoint);
+				if(whomId.isPresent())
 				{
-					policyStatementObject.setWhose(whosePrincipal.get());
+					setWhomById(model, policyStatementObject, (String)whomId.get());
 				}
 			}
 			if(!createPolicyStatement.whom().equals(Constants.Empty))
 			{
-				var whomId = (String)FieldFinder.getFieldValue(createPolicyStatement.whom(), originalObject, originalObjectClass);
-				var whomPrincipal = ObjectFinder.checkIfPrincipalExists(whomId, model);
-				if(whomPrincipal.isPresent())
-				{
-					policyStatementObject.setWhom(whomPrincipal.get());
-				}
+				setWhomFromObject(originalObject, originalObjectClass, createPolicyStatement.whom(), parametersLocation, 
+						policyStatementObject, model, thisJoinPoint);
 			}
 			
-			var purpose = PurposeCreator.createPurpose(originalObjectClass, originalObject, createPolicyStatement.why(),repo.getFactory());
+			var purpose = PurposeCreator.createPurpose(originalObjectClass, originalObject, createPolicyStatement.why(), 
+					parametersLocation, repo.getFactory(), thisJoinPoint);
 			policyStatementObject.setWhy(purpose);
-			var when = WhenCreator.createWhen(originalObjectClass, originalObject, createPolicyStatement.when(), repo.getFactory());
+			var when = WhenCreator.createWhen(originalObjectClass, originalObject, createPolicyStatement.when(), 
+					parametersLocation, repo.getFactory(), thisJoinPoint);
 			policyStatementObject.setWhen(when);
 			
-		    var what = createWhat(createPolicyStatement, repo, model);
+		    var what = WhatCreator.createWhat(createPolicyStatement, repo, model);
 		    policyStatementObject.setWhat(what);
 		    
-		    var how = createHow(createPolicyStatement, originalObject, originalObjectClass, repo, model, thisJoinPoint);
+		    var how = HowCreator.createHow(createPolicyStatement, originalObject, originalObjectClass, repo, model, thisJoinPoint);
 			policyStatementObject.setHow(how);
 			
 			model.getPolicyStatements().add(policyStatementObject);
@@ -113,65 +127,55 @@ public class CreatePolicyStatementAspect {
 		
 		return returnedObject;
 	}
-	private How createHow(CreatePolicyStatementAnnotation createPolicyStatement, Object obj,
-			Class<? extends Object> objectClass, PrivacyModelRepository repo, PrivacyPolicy model, 
-			JoinPoint jp) {
-		var how = repo.getFactory().createHow();
-		
-		if(!createPolicyStatement.howDocuments().equals(Constants.Empty))
+	private void setWhoFromObject(Object originalObject, Class<? extends Object> originalObjectClass,
+			String propertyName, ParametersObjectsLocation parametersLocation,
+			PolicyStatement policyStatementObject, PrivacyPolicy model, JoinPoint jp) {
+		var principalId = ReadTypeByAttribute.getPrincipalIdFromObject(originalObjectClass, originalObject, propertyName, parametersLocation, jp);
+		if(principalId.isPresent())
 		{
-			var documents = ReadTypeByAttribute.getDocumentsFromObject(objectClass, obj, createPolicyStatement.howDocuments(), 
-					createPolicyStatement.parametersLocation(), jp, model);
-			if(!documents.isEmpty())
-			{
-				how.getDocuments().addAll(documents);
-			}
-		}
-		if(!createPolicyStatement.howDocumentsIds().equals(Constants.Empty))
-		{
-			var documents = ReadTypeByAttribute.getDocumentsById(obj, objectClass, createPolicyStatement.howDocumentsIds(), model);
-			if(!documents.isEmpty())
-			{
-				how.getDocuments().addAll(documents);
-			}
-		}
-		if(!createPolicyStatement.howConsent().equals(Constants.Empty))
-		{
-			setConsentFromObject(createPolicyStatement, obj, objectClass, model, jp, how);
-		}
-		if(!createPolicyStatement.howConsentId().equals(Constants.Empty))
-		{
-			var consentId = (String)FieldFinder.getFieldValue(createPolicyStatement.howConsentId(), obj, objectClass);
-			setConsentById(model, how, consentId);
-		}
-		return how;
-	}
-	private void setConsentFromObject(CreatePolicyStatementAnnotation createPolicyStatement, Object obj,
-			Class<? extends Object> objectClass, PrivacyPolicy model, JoinPoint jp, How how) {
-		var consentId = ReadTypeByAttribute.getConsentIdFromObject(objectClass, obj, createPolicyStatement.howConsent(), createPolicyStatement.parametersLocation(), jp);
-		if(consentId.isPresent())
-		{
-			var consentName = consentId.get();
-			setConsentById(model, how, consentName);
+			var principalName = principalId.get();
+			setWhoById(model, policyStatementObject, principalName);
 		}
 	}
-	private void setConsentById(PrivacyPolicy model, How how, String consentId) {
-		var consent = ObjectFinder.checkIfConsentExists(consentId, model);
-		if(consent.isPresent())
+	private void setWhoById(PrivacyPolicy model, PolicyStatement policyStatementObject, String id) {
+		var whoPrincipal = ObjectFinder.checkIfPrincipalExists(id, model);
+		if(whoPrincipal.isPresent())
 		{
-			how.setConsent(consent.get());
+			policyStatementObject.setWho(whoPrincipal.get());
 		}
 	}
-	private What createWhat(CreatePolicyStatementAnnotation createPolicyStatement, PrivacyModelRepository repo,
-			PrivacyPolicy model) {
-		var what = repo.getFactory().createWhat();
-		if(createPolicyStatement.actions().length != 0)
+	private void setWhoseFromObject(Object originalObject, Class<? extends Object> originalObjectClass,
+			String propertyName, ParametersObjectsLocation parametersLocation,
+			PolicyStatement policyStatementObject, PrivacyPolicy model, JoinPoint jp) {
+		var principalId = ReadTypeByAttribute.getPrincipalIdFromObject(originalObjectClass, originalObject, propertyName, parametersLocation, jp);
+		if(principalId.isPresent())
 		{
-		  what.getActions().addAll(Arrays.asList(createPolicyStatement.actions()));
+			var principalName = principalId.get();
+			setWhoseById(model, policyStatementObject, principalName);
 		}
-
-		var datas = ReadTypeByAttribute.getSharedPrivacyDataById(createPolicyStatement.datas(), model);
-		what.getDatas().addAll(datas);
-		return what;
+	}
+	private void setWhoseById(PrivacyPolicy model, PolicyStatement policyStatementObject, String id) {
+		var whosePrincipal = ObjectFinder.checkIfPrincipalExists(id, model);
+		if(whosePrincipal.isPresent())
+		{
+			policyStatementObject.setWhose(whosePrincipal.get());
+		}
+	}
+	private void setWhomFromObject(Object originalObject, Class<? extends Object> originalObjectClass,
+			String propertyName, ParametersObjectsLocation parametersLocation,
+			PolicyStatement policyStatementObject, PrivacyPolicy model, JoinPoint jp) {
+		var principalId = ReadTypeByAttribute.getPrincipalIdFromObject(originalObjectClass, originalObject, propertyName, parametersLocation, jp);
+		if(principalId.isPresent())
+		{
+			var principalName = principalId.get();
+			setWhomById(model, policyStatementObject, principalName);
+		}
+	}
+	private void setWhomById(PrivacyPolicy model, PolicyStatement policyStatementObject, String id) {
+		var whomPrincipal = ObjectFinder.checkIfPrincipalExists(id, model);
+		if(whomPrincipal.isPresent())
+		{
+			policyStatementObject.setWhom(whomPrincipal.get());
+		}
 	}
 }

@@ -68,7 +68,7 @@ public class CreatePrincipalAspect {
 			}
 			if(!principal.parent().equals(Constants.Undefined)) 
 			{
-				setPolicyStatementFromObject(createdObject, createdObjectClass, principal, model, principalObject, thisJoinPoint);
+				setParentFromObject(createdObject, createdObjectClass, principal, model, principalObject, thisJoinPoint);
 			}
 			if(!principal.parentId().equals(Constants.Undefined))
 			{
@@ -103,14 +103,14 @@ public class CreatePrincipalAspect {
 		return returnedObject;
 	}
 	
-	private void setPolicyStatementFromObject(Object obj, Class<? extends Object> objectClass,
+	private void setParentFromObject(Object obj, Class<? extends Object> objectClass,
 			PrincipalAnnotation principal, PrivacyPolicy model, 
 			Principal principalObject, JoinPoint jp) {
 		var principalId = ReadTypeByAttribute.getPrincipalIdFromObject(objectClass, obj, principal.parent(), ParametersObjectsLocation.Property, jp);
 		if(principalId.isPresent())
 		{
-			var policyStatementName = principalId.get();
-			setParentById(model, principalObject, policyStatementName);
+			var principalName = principalId.get();
+			setParentById(model, principalObject, principalName);
 		}
 	}
 	

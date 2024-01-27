@@ -105,9 +105,17 @@ public class FieldFinder {
 			{
 				if(argNames[i].toLowerCase().equals(name.toLowerCase()))
 				{
+					if(values[i] == null)
+					{
+						System.out.println("Parameter " + name + " should be instatiate");
+						return Optional.empty();
+					}
 					return Optional.of(values[i]);
 				}
 			}
+
+			System.out.println("Parameter " + name + " does not exist.");
+			return Optional.empty();
 		}
 		else if (location == ParametersObjectsLocation.PropertyInReturnedObject)
 		{
