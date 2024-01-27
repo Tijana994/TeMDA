@@ -1,6 +1,10 @@
 package com.security.model.validation.aspects;
 
 import java.lang.reflect.Method;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.ZoneId;
+import java.time.ZoneOffset;
 import java.util.Date;
 
 import org.aspectj.lang.JoinPoint;
@@ -64,7 +68,9 @@ public class CreatePrincipalAspect {
 			principalObject.setType(createPrincipal.type());
 			if(!principal.birthday().equals(Constants.Undefined))
 			{
-				principalObject.setBirthdate((Date)FieldFinder.getFieldValue(principal.birthday(), createdObject, createdObjectClass));
+				var birthday = (Date)FieldFinder.getFieldValue(principal.birthday(), createdObject, createdObjectClass);
+				principalObject.setBirthdate(birthday);
+		        calculateAge(principalObject, birthday);
 			}
 			if(!principal.parent().equals(Constants.Undefined)) 
 			{
@@ -101,6 +107,13 @@ public class CreatePrincipalAspect {
 		}
 		
 		return returnedObject;
+	}
+	private void calculateAge(Principal principalObject, Date birthday) {
+		LocalDate date = birthday.toInstant()
+			      .atZone(ZoneId.systemDefault())
+			      .toLocalDate();
+		var age = LocalDate.now().minusYears(date.getYear());
+		principalObject.setAge(age.getYear());
 	}
 	
 	private void setParentFromObject(Object obj, Class<? extends Object> objectClass,
