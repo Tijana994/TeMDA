@@ -16,4 +16,6 @@ public @interface PrincipalAnnotation {
 	String parentId() default Constants.Undefined;
 	String childrens() default Constants.Undefined;
 	String childrensIds() default Constants.Undefined;
+	String inhabits() default Constants.Undefined;
+	String inhabitsId() default Constants.Undefined;
 }

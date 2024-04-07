@@ -2,9 +2,7 @@ package com.security.model.validation.aspects;
 
 import java.lang.reflect.Method;
 import java.time.LocalDate;
-import java.time.LocalDateTime;
 import java.time.ZoneId;
-import java.time.ZoneOffset;
 import java.util.Date;
 
 import org.aspectj.lang.JoinPoint;
@@ -98,6 +96,16 @@ public class CreatePrincipalAspect {
 					principalObject.getSubPrincipals().addAll(childrens);
 				}
 			}
+			if(!principal.inhabits().equals(Constants.Undefined)) 
+			{
+				setLocationFromObject(createdObject, createdObjectClass, principal.inhabits(), model, principalObject, thisJoinPoint);
+			}
+			if(!principal.inhabitsId().equals(Constants.Undefined))
+			{
+				var locationName = (String)FieldFinder.getFieldValue(principal.inhabitsId(), createdObject, createdObjectClass);
+				setParentById(model, principalObject, locationName);
+			}
+			
 			model.getAllPrincipals().add(principalObject);
 			repo.saveModel(model);
 		}
@@ -132,6 +140,24 @@ public class CreatePrincipalAspect {
 		if(parent.isPresent())
 		{
 			parent.get().getSubPrincipals().add(principalObject);
+		}
+	}
+	
+	private void setLocationFromObject(Object obj, Class<? extends Object> objectClass,
+			String propertyName, PrivacyPolicy model, Principal principalObject, JoinPoint jp) {
+		var locationId = ReadTypeByAttribute.getLocationIdFromObject(objectClass, obj, propertyName, ParametersObjectsLocation.Property, jp);
+		if(locationId.isPresent())
+		{
+			var locationName = locationId.get();
+			setLocationById(model, principalObject, locationName);
+		}
+	}
+	
+	private void setLocationById(PrivacyPolicy model, Principal principalObject, String id) {
+		var location = ObjectFinder.checkIfLocationExists(id, model);
+		if(location.isPresent())
+		{
+			principalObject.setInhabits(location.get());
 		}
 	}
 }

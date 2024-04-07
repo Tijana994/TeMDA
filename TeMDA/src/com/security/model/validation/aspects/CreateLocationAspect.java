@@ -66,7 +66,7 @@ public class CreateLocationAspect {
 			locationObject.setLegalAgeLimit(createLocation.legalAgeLimit());
 			if(!location.parent().equals(Constants.Undefined)) 
 			{
-				setPolicyStatementFromObject(originalObject, originalObjectClass, location, model, locationObject, thisJoinPoint);
+				setParentFromObject(originalObject, originalObjectClass, location.parent(), model, locationObject, thisJoinPoint);
 			}
 			if(!location.parentId().equals(Constants.Undefined))
 			{
@@ -102,9 +102,9 @@ public class CreateLocationAspect {
 		return returnedObject;
 	}
 	
-	private void setPolicyStatementFromObject(Object obj, Class<? extends Object> objectClass,
-			LocationAnnotation location, PrivacyPolicy model, Location locationObject, JoinPoint jp) {
-		var locationId = ReadTypeByAttribute.getLocationIdFromObject(objectClass, obj, location.parent(), ParametersObjectsLocation.Property, jp);
+	private void setParentFromObject(Object obj, Class<? extends Object> objectClass,
+			String propertyName, PrivacyPolicy model, Location locationObject, JoinPoint jp) {
+		var locationId = ReadTypeByAttribute.getLocationIdFromObject(objectClass, obj, propertyName, ParametersObjectsLocation.Property, jp);
 		if(locationId.isPresent())
 		{
 			var locationName = locationId.get();
