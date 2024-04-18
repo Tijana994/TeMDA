@@ -64,7 +64,7 @@ public class CreatePrincipalAspect {
 			principalObject.setName((String)FieldFinder.getFieldValue(principal.id(), createdObject, createdObjectClass));
 			principalObject.setScope(createPrincipal.scope());
 			principalObject.setType(createPrincipal.type());
-			if(!principal.birthday().equals(Constants.Undefined))
+			if(!principal.birthday().equals(Constants.Undefined) && createPrincipal.shouldSetBirtday())
 			{
 				var birthday = (Date)FieldFinder.getFieldValue(principal.birthday(), createdObject, createdObjectClass);
 				principalObject.setBirthdate(birthday);
@@ -96,7 +96,7 @@ public class CreatePrincipalAspect {
 					principalObject.getSubPrincipals().addAll(childrens);
 				}
 			}
-			if(!principal.inhabits().equals(Constants.Undefined)) 
+			if(!principal.inhabits().equals(Constants.Undefined) && createPrincipal.shouldSetLocation()) 
 			{
 				setLocationFromObject(createdObject, createdObjectClass, principal.inhabits(), model, principalObject, thisJoinPoint);
 			}

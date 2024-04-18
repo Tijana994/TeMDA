@@ -18,4 +18,6 @@ public @interface CreatePrincipalAnnotation {
 	String name() default Constants.Empty;
 	PrincipalScope scope();
 	PrincipalType type();
+	boolean shouldSetBirtday() default false;
+	boolean shouldSetLocation() default false;
 }
