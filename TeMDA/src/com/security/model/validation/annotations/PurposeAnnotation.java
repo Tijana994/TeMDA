@@ -11,6 +11,8 @@ import com.security.model.validation.annotations.enums.Constants;
 @Target(ElementType.TYPE)
 public @interface PurposeAnnotation {
 	String details();
+	String reason();
+	String reasonSubtype();
 	String subPurposes() default Constants.Empty;
 }
 

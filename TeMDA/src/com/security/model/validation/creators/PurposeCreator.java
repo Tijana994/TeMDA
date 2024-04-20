@@ -1,7 +1,9 @@
 package com.security.model.validation.creators;
 
 import java.lang.reflect.Field;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import org.aspectj.lang.JoinPoint;
 
@@ -11,9 +13,25 @@ import com.security.model.validation.annotations.enums.ParametersObjectsLocation
 import com.security.model.validation.helpers.FieldFinder;
 
 import privacyModel.PrivacyModelFactory;
+import privacyModel.ProcessingReason;
+import privacyModel.ProcessingReasonSubtype;
 import privacyModel.Purpose;
 
 public class PurposeCreator {
+	
+    // Mapping enums to enums id
+    private static final Map<Integer, ProcessingReason> _reasons = new HashMap<Integer, ProcessingReason>();
+    static
+    {
+        for (ProcessingReason reason : ProcessingReason.values())
+        	_reasons.put(reason.getValue(), reason);
+    }
+    private static final Map<Integer, ProcessingReasonSubtype> _subtypes = new HashMap<Integer, ProcessingReasonSubtype>();
+    static
+    {
+        for (ProcessingReasonSubtype reason : ProcessingReasonSubtype.values())
+        	_subtypes.put(reason.getValue(), reason);
+    }
 
 	public static Purpose createPurpose(Class<?> originalObjectClass, Object originalObject,
 			String propertyName, ParametersObjectsLocation parametersLocation, PrivacyModelFactory factory, JoinPoint jp) {
@@ -53,6 +71,10 @@ public class PurposeCreator {
 		String details = (String)FieldFinder.getFieldValue(purposeAnnotation.details(), originalObject, originalObject.getClass());
 		var purposeObject = factory.createPurpose();
 		purposeObject.setDetails(details);
+		int reason = (int)FieldFinder.getFieldValue(purposeAnnotation.reason(), originalObject, originalObject.getClass());
+		purposeObject.setProcessingReason(_reasons.getOrDefault(reason, null));
+		int reasonSubtype = (int)FieldFinder.getFieldValue(purposeAnnotation.reasonSubtype(), originalObject, originalObject.getClass());
+		purposeObject.setProcessingReasonSubtype(_subtypes.getOrDefault(reasonSubtype, null));
 		if(purposeAnnotation.subPurposes().equals(Constants.Empty)) return purposeObject;
 		
 		Field sub = originalObject.getClass().getDeclaredField(purposeAnnotation.subPurposes());
