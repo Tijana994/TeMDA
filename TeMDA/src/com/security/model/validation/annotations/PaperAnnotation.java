@@ -16,4 +16,6 @@ public @interface PaperAnnotation{
 	String terminantionDate() default Constants.Empty;
 	String location();
 	String description() default Constants.Empty;
+	String providedBy() default Constants.Undefined;
+	String providedById() default Constants.Undefined;
 }

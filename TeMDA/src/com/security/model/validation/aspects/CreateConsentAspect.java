@@ -3,6 +3,7 @@ package com.security.model.validation.aspects;
 import java.lang.reflect.Method;
 import java.util.Date;
 
+import org.aspectj.lang.JoinPoint;
 import org.aspectj.lang.ProceedingJoinPoint;
 import org.aspectj.lang.annotation.Around;
 import org.aspectj.lang.annotation.Aspect;
@@ -12,8 +13,13 @@ import org.aspectj.lang.reflect.MethodSignature;
 import com.security.model.validation.annotations.PaperAnnotation;
 import com.security.model.validation.annotations.creators.CreateConsentAnnotation;
 import com.security.model.validation.annotations.enums.Constants;
+import com.security.model.validation.annotations.enums.ParametersObjectsLocation;
 import com.security.model.validation.helpers.FieldFinder;
+import com.security.model.validation.helpers.ObjectFinder;
+import com.security.model.validation.helpers.ReadTypeByAttribute;
 
+import privacyModel.Consent;
+import privacyModel.PrivacyPolicy;
 import utility.PrivacyModelRepository;
 
 @Aspect
@@ -71,6 +77,15 @@ public class CreateConsentAspect {
 			{
 				consentObject.setDescription((String)FieldFinder.getFieldValue(paper.description(), createdObject, createdObjectClass));
 			}
+			if(!paper.providedBy().equals(Constants.Undefined)) 
+			{
+				setProvidedByFromObject(createdObject, createdObjectClass, paper.providedBy(), model, consentObject, thisJoinPoint);
+			}
+			if(!paper.providedById().equals(Constants.Undefined))
+			{
+				var parentId = (String)FieldFinder.getFieldValue(paper.providedById(), createdObject, createdObjectClass);
+				setProvidedByById(model, consentObject, parentId);
+			}
 			model.getAllConsents().add(consentObject);
 			repo.saveModel(model);
 		}
@@ -80,6 +95,25 @@ public class CreateConsentAspect {
 		}
 		
 		return returnedObject;
+	}
+	
+	private void setProvidedByFromObject(Object obj, Class<? extends Object> objectClass,
+			String propertyName, PrivacyPolicy model, 
+			Consent consentObject, JoinPoint jp) {
+		var principalId = ReadTypeByAttribute.getPrincipalIdFromObject(objectClass, obj, propertyName, ParametersObjectsLocation.Property, jp);
+		if(principalId.isPresent())
+		{
+			var principalName = principalId.get();
+			setProvidedByById(model, consentObject, principalName);
+		}
+	}
+	
+	private void setProvidedByById(PrivacyPolicy model, Consent consentObject, String id) {
+		var principal = ObjectFinder.checkIfPrincipalExists(id, model);
+		if(principal.isPresent())
+		{
+			consentObject.setProvidedBy(principal.get());
+		}
 	}
 }
 
