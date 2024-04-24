@@ -70,6 +70,10 @@ public class CreatePrincipalAspect {
 				principalObject.setBirthdate(birthday);
 		        calculateAge(principalObject, birthday);
 			}
+			if(!createPrincipal.shouldSetBirtday() && createPrincipal.isLegalAge())
+			{
+				principalObject.setAge(model.getOwner().getInhabits().getLegalAgeLimit());;
+			}
 			if(!principal.parent().equals(Constants.Undefined)) 
 			{
 				setParentFromObject(createdObject, createdObjectClass, principal, model, principalObject, thisJoinPoint);

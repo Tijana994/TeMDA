@@ -20,4 +20,5 @@ public @interface CreatePrincipalAnnotation {
 	PrincipalType type();
 	boolean shouldSetBirtday() default false;
 	boolean shouldSetLocation() default false;
+	boolean isLegalAge() default false;
 }
