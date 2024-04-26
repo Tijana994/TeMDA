@@ -14,6 +14,7 @@ import com.security.model.validation.annotations.creators.CreatePolicyStatementA
 import com.security.model.validation.annotations.enums.Constants;
 import com.security.model.validation.annotations.enums.ParametersObjectsLocation;
 import com.security.model.validation.creators.HowCreator;
+import com.security.model.validation.creators.ParametersAnnotations;
 import com.security.model.validation.creators.PurposeCreator;
 import com.security.model.validation.creators.WhatCreator;
 import com.security.model.validation.creators.WhenCreator;
@@ -38,6 +39,8 @@ public class CreatePolicyStatementAspect {
 		Class<? extends Object> originalObjectClass = originalObject.getClass();
 	    MethodSignature signature = (MethodSignature) thisJoinPoint.getSignature();
 	    Method method = signature.getMethod();
+	    ParametersAnnotations annotations = new ParametersAnnotations(method.getParameterAnnotations(),
+	    		signature.getParameterNames());
 		CreatePolicyStatementAnnotation createPolicyStatement = method.getAnnotation(CreatePolicyStatementAnnotation.class);
 		if(createPolicyStatement == null)
 		{
@@ -108,7 +111,7 @@ public class CreatePolicyStatementAspect {
 					parametersLocation, repo.getFactory(), thisJoinPoint);
 			policyStatementObject.setWhy(purpose);
 			var when = WhenCreator.createWhen(originalObjectClass, originalObject, createPolicyStatement.when(), 
-					parametersLocation, repo.getFactory(), thisJoinPoint);
+					parametersLocation, repo.getFactory(), thisJoinPoint, annotations);
 			policyStatementObject.setWhen(when);
 			
 		    var what = WhatCreator.createWhat(createPolicyStatement, repo, model);
