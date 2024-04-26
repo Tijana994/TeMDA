@@ -19,7 +19,7 @@ import privacyModel.Purpose;
 
 public class PurposeCreator {
 	
-    // Mapping enums to enums id
+    // Mapping enum to enum id
     private static final Map<Integer, ProcessingReason> _reasons = new HashMap<Integer, ProcessingReason>();
     static
     {

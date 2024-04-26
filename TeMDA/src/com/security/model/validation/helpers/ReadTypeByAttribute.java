@@ -565,7 +565,7 @@ public class ReadTypeByAttribute {
 		var documentIds = FieldFinder.getFieldValue(propertyName, retFromObj, retClass);
 		if(!(documentIds instanceof List))
 		{
-			System.out.println("Property" + propertyName + "should be type of List.");
+			System.out.println("Property " + propertyName + " should be type of List.");
 			return documents;
 		}
 		var list = (List<?>) documentIds;
