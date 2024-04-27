@@ -78,7 +78,8 @@ public class CreateNotificationAspect {
 			}
 			if(!createNotification.receiversIds().equals(Constants.Empty))
 			{
-				var reveivers = ReadTypeByAttribute.getPrincipalsById(originalObject, originalObjectClass, createNotification.receiversIds(), model);
+				var reveivers = ReadTypeByAttribute.getPrincipalsById(createdObjectClass, createdObject, createNotification.receiversIds(), 
+						createNotification.parametersLocation(), thisJoinPoint, model);
 				if(!reveivers.isEmpty())
 				{
 					notificationObject.getReceivers().addAll(reveivers);
@@ -95,7 +96,8 @@ public class CreateNotificationAspect {
 			}
 			if(!createNotification.notifiersIds().equals(Constants.Empty))
 			{
-				var notifiers = ReadTypeByAttribute.getPrincipalsById(originalObject, originalObjectClass, createNotification.notifiersIds(), model);
+				var notifiers = ReadTypeByAttribute.getPrincipalsById(createdObjectClass, createdObject, createNotification.notifiersIds(), 
+						createNotification.parametersLocation(), thisJoinPoint, model);
 				if(!notifiers.isEmpty())
 				{
 					notificationObject.getNotifiers().addAll(notifiers);

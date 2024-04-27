@@ -243,17 +243,21 @@ public class ReadTypeByAttribute {
 		return principals;
 	}
 
-	public static List<Principal> getPrincipalsById(Object retFromObj, Class<? extends Object> retClass, 
-			String propertyName, PrivacyPolicy model)
+	public static List<Principal> getPrincipalsById(Class<?> objectClass, Object obj, String propertyName, 
+			ParametersObjectsLocation parametersLocation, JoinPoint jp, PrivacyPolicy model)
 	{
 		var principals = new ArrayList<Principal>();
-		var principalsIds = FieldFinder.getFieldValue(propertyName, retFromObj, retClass);
-		if(!(principalsIds instanceof List))
+		var principalsIds = FieldFinder.getObjectToReadFrom(objectClass, obj, parametersLocation, propertyName, jp);
+		if(!principalsIds.isPresent())
+		{
+			return principals;
+		}
+		if(!(principalsIds.get() instanceof List))
 		{
 			System.out.println("Property" + propertyName + "should be type of List.");
 			return principals;
 		}
-		var list = (List<?>) principalsIds;
+		var list = (List<?>) principalsIds.get();
 		for(var principalId : list)
 		{
 			addPrincipalIfExists(model, principals, (String)principalId);
@@ -332,17 +336,21 @@ public class ReadTypeByAttribute {
 		return datas;
 	}
 
-	public static List<PrivacyData> getPrivacyDatasById(Object retFromObj, Class<? extends Object> retClass, 
-			String propertyName, PrivacyPolicy model)
+	public static List<PrivacyData> getPrivacyDatasById(Class<?> objectClass, Object obj, String propertyName, 
+			ParametersObjectsLocation parametersLocation, JoinPoint jp, PrivacyPolicy model)
 	{
 		var datas = new ArrayList<PrivacyData>();
-		var dataIds = FieldFinder.getFieldValue(propertyName, retFromObj, retClass);
-		if(!(dataIds instanceof List))
+		var dataIds = FieldFinder.getObjectToReadFrom(objectClass, obj, parametersLocation, propertyName, jp);
+		if(!dataIds.isPresent())
+		{
+			return datas;
+		}
+		if(!(dataIds.get() instanceof List))
 		{
 			System.out.println("Property" + propertyName + "should be type of List.");
 			return datas;
 		}
-		var list = (List<?>) dataIds;
+		var list = (List<?>) dataIds.get();
 		for(var id : list)
 		{
 			addPrivacyDataIfExists(model, datas, (String)id);
@@ -407,17 +415,21 @@ public class ReadTypeByAttribute {
 		return locations;
 	}
 	
-	public static List<Location> getLocationsById(Object retFromObj, Class<? extends Object> retClass, 
-			String propertyName, PrivacyPolicy model)
+	public static List<Location> getLocationsById(Class<?> objectClass, Object obj, String propertyName, 
+			ParametersObjectsLocation parametersLocation, JoinPoint jp, PrivacyPolicy model)
 	{
 		var locations = new ArrayList<Location>();
-		var locationIds = FieldFinder.getFieldValue(propertyName, retFromObj, retClass);
-		if(!(locationIds instanceof List))
+		var locationIds = FieldFinder.getObjectToReadFrom(objectClass, obj, parametersLocation, propertyName, jp);
+		if(!locationIds.isPresent())
+		{
+			return locations;
+		}
+		if(!(locationIds.get() instanceof List))
 		{
 			System.out.println("Property" + propertyName + "should be type of List.");
 			return locations;
 		}
-		var list = (List<?>) locationIds;
+		var list = (List<?>) locationIds.get();
 		for(var locationId : list)
 		{
 			addLocationIfExists(model, locations, (String)locationId);
@@ -482,17 +494,21 @@ public class ReadTypeByAttribute {
 		return policyStatments;
 	}
 
-	public static List<PolicyStatement> getPolicyStatementsById(Object retFromObj, Class<? extends Object> retClass, 
-			String propertyName, PrivacyPolicy model)
+	public static List<PolicyStatement> getPolicyStatementsById(Class<?> objectClass, Object obj, String propertyName, 
+			ParametersObjectsLocation parametersLocation, JoinPoint jp, PrivacyPolicy model)
 	{
 		var policyStatments = new ArrayList<PolicyStatement>();
-		var policyStatmentIds = FieldFinder.getFieldValue(propertyName, retFromObj, retClass);
-		if(!(policyStatmentIds instanceof List))
+		var policyStatmentIds = FieldFinder.getObjectToReadFrom(objectClass, obj, parametersLocation, propertyName, jp);
+		if(!policyStatmentIds.isPresent())
+		{
+			return policyStatments;
+		}
+		if(!(policyStatmentIds.get() instanceof List))
 		{
 			System.out.println("Property" + propertyName + "should be type of List.");
 			return policyStatments;
 		}
-		var list = (List<?>) policyStatmentIds;
+		var list = (List<?>) policyStatmentIds.get();
 		for(var id : list)
 		{
 			addPolicyStatementIfExists(model, policyStatments, (String)id);
@@ -558,17 +574,21 @@ public class ReadTypeByAttribute {
 		return documents;
 	}
 	
-	public static List<Document> getDocumentsById(Object retFromObj, Class<? extends Object> retClass, 
-			String propertyName, PrivacyPolicy model)
+	public static List<Document> getDocumentsById(Class<?> objectClass, Object obj, String propertyName, 
+			ParametersObjectsLocation parametersLocation, JoinPoint jp, PrivacyPolicy model)
 	{
 		var documents = new ArrayList<Document>();
-		var documentIds = FieldFinder.getFieldValue(propertyName, retFromObj, retClass);
-		if(!(documentIds instanceof List))
+		var documentIds = FieldFinder.getObjectToReadFrom(objectClass, obj, parametersLocation, propertyName, jp);
+		if(!documentIds.isPresent())
+		{
+			return documents;
+		}
+		if(!(documentIds.get() instanceof List))
 		{
 			System.out.println("Property " + propertyName + " should be type of List.");
 			return documents;
 		}
-		var list = (List<?>) documentIds;
+		var list = (List<?>) documentIds.get();
 		for(var documentId : list)
 		{
 			addDocumentIfExists(model, documents, (String)documentId);

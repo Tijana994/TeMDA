@@ -84,7 +84,8 @@ public class CreateLocationAspect {
 			}
 			if(!location.subLocationsIds().equals(Constants.Undefined))
 			{
-				var locations = ReadTypeByAttribute.getLocationsById(createdObject, createdObjectClass, location.subLocationsIds(), model);
+				var locations = ReadTypeByAttribute.getLocationsById(createdObjectClass, createdObject, location.subLocationsIds(), 
+						ParametersObjectsLocation.Property, thisJoinPoint, model);
 				if(!locations.isEmpty())
 				{
 					locationObject.getSubLocations().addAll(locations);

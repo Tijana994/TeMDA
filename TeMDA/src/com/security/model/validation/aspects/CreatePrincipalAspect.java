@@ -94,7 +94,8 @@ public class CreatePrincipalAspect {
 			}
 			if(!principal.childrensIds().equals(Constants.Undefined))
 			{
-				var childrens = ReadTypeByAttribute.getPrincipalsById(createdObject, createdObjectClass, principal.childrensIds(), model);
+				var childrens = ReadTypeByAttribute.getPrincipalsById(createdObjectClass, createdObject, principal.childrensIds(), 
+						ParametersObjectsLocation.Property, thisJoinPoint, model);
 				if(!childrens.isEmpty())
 				{
 					principalObject.getSubPrincipals().addAll(childrens);

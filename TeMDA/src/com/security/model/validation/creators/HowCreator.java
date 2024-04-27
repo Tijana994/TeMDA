@@ -30,7 +30,8 @@ public class HowCreator {
 		}
 		if(!createPolicyStatement.howDocumentsIds().equals(Constants.Empty))
 		{
-			var documents = ReadTypeByAttribute.getDocumentsById(originalObject, originalObjectClass, createPolicyStatement.howDocumentsIds(), model);
+			var documents = ReadTypeByAttribute.getDocumentsById(originalObjectClass, originalObject, createPolicyStatement.howDocumentsIds(), 
+					createPolicyStatement.parametersLocation(), jp, model);
 			if(!documents.isEmpty())
 			{
 				how.getDocuments().addAll(documents);

@@ -75,8 +75,8 @@ public class CreateComplaintBasedOnDataAspect {
 			}
 			if(!createComplaintBasedOnData.subjectsIds().equals(Constants.Empty))
 			{
-				var datas = ReadTypeByAttribute.getPrivacyDatasById(originalObject, originalObjectClass, 
-						createComplaintBasedOnData.subjectsIds(), model);
+				var datas = ReadTypeByAttribute.getPrivacyDatasById(createdObjectClass, createdObject, createComplaintBasedOnData.subjectsIds(), 
+						createComplaintBasedOnData.parametersLocation(), thisJoinPoint, model);
 				if(!datas.isEmpty())
 				{
 					complaintTypeObject.getSubject().addAll(datas);

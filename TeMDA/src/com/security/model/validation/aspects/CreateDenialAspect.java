@@ -78,7 +78,8 @@ public class CreateDenialAspect {
 			}
 			if(!createDenial.basedOnStatemetsIds().equals(Constants.Empty))
 			{
-				var policyStatements = ReadTypeByAttribute.getPolicyStatementsById(originalObject, originalObjectClass, createDenial.basedOnStatemetsIds(), model);
+				var policyStatements = ReadTypeByAttribute.getPolicyStatementsById(originalObjectClass, originalObject, createDenial.basedOnStatemetsIds(),
+						createDenial.parametersLocation(), thisJoinPoint , model);
 				if(!policyStatements.isEmpty())
 				{
 					denialObject.getBasedOnStatements().addAll(policyStatements);
