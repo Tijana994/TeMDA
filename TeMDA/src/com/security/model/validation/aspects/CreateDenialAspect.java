@@ -91,8 +91,11 @@ public class CreateDenialAspect {
 			}
 			if(!createDenial.forComplaintId().equals(Constants.Empty))
 			{
-				var complaintId = (String)FieldFinder.getFieldValue(createDenial.forComplaintId(), originalObject, originalObjectClass);
-				setComplaintById(model, denialObject, complaintId);
+				var complaintId = FieldFinder.getObjectToReadFrom(originalObjectClass, originalObject, createDenial.parametersLocation(), createDenial.forComplaintId(), thisJoinPoint);
+				if(complaintId.isPresent())
+				{
+					setComplaintById(model, denialObject, (String)complaintId.get());
+				}
 			}
 			model.getAllDenials().add(denialObject);
 			repo.saveModel(model);

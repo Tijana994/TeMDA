@@ -61,6 +61,7 @@ public class CreateComplaintBasedOnActionAspect {
 			var model = repo.getModel();
 			var complaintTypeObject = repo.getFactory().createComplaintBasedOnAction();
 			var complaintObject = repo.getFactory().createComplaint();
+			var parametersLocation = createComplaintBasedOnAction.parametersLocation();
 			complaintObject.setName((String)FieldFinder.getFieldValue(complaint.id(), createdObject, createdObjectClass));
 			complaintObject.setWhen((Date)FieldFinder.getFieldValue(complaint.when(), createdObject, createdObjectClass));
 			
@@ -74,8 +75,11 @@ public class CreateComplaintBasedOnActionAspect {
 			}
 			if(!createComplaintBasedOnAction.policyStatementId().equals(Constants.Empty))
 			{
-				var policyStatementId = (String)FieldFinder.getFieldValue(createComplaintBasedOnAction.policyStatementId(), originalObject, originalObjectClass);
-				setPolicyStatementById(model, complaintTypeObject, policyStatementId);
+				var policyStatementId = FieldFinder.getObjectToReadFrom(originalObjectClass, originalObject, parametersLocation, createComplaintBasedOnAction.policyStatementId(), thisJoinPoint);
+				if(policyStatementId.isPresent())
+				{
+					setPolicyStatementById(model, complaintTypeObject, (String)policyStatementId.get());
+				}
 			}
 			complaintObject.setAction(complaintTypeObject);
 			model.getAllComplaints().add(complaintObject);

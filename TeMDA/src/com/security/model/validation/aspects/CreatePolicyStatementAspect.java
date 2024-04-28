@@ -18,6 +18,7 @@ import com.security.model.validation.creators.ParametersAnnotations;
 import com.security.model.validation.creators.PurposeCreator;
 import com.security.model.validation.creators.WhatCreator;
 import com.security.model.validation.creators.WhenCreator;
+import com.security.model.validation.creators.WhereCreator;
 import com.security.model.validation.helpers.FieldFinder;
 import com.security.model.validation.helpers.ObjectFinder;
 import com.security.model.validation.helpers.ReadTypeByAttribute;
@@ -119,6 +120,9 @@ public class CreatePolicyStatementAspect {
 		    
 		    var how = HowCreator.createHow(createPolicyStatement, originalObject, originalObjectClass, repo, model, thisJoinPoint);
 			policyStatementObject.setHow(how);
+			
+			var where = WhereCreator.createWhere(createPolicyStatement, originalObject, originalObjectClass, repo, model, thisJoinPoint);
+			policyStatementObject.setWhere(where);
 			
 			model.getPolicyStatements().add(policyStatementObject);
 			repo.saveModel(model);

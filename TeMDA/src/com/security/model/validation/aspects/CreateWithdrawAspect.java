@@ -74,8 +74,11 @@ public class CreateWithdrawAspect {
 			}
 			if(!createWithdraw.consentId().equals(Constants.Undefined))
 			{
-				var consentId = (String)FieldFinder.getFieldValue(createWithdraw.consentId(), originalObject, originalObjectClass);
-				setConsentById(model, withdrawObject, consentId);
+				var consentId = FieldFinder.getObjectToReadFrom(originalObjectClass, originalObject, createWithdraw.parametersLocation(), createWithdraw.consentId(), thisJoinPoint);
+				if(consentId.isPresent())
+				{
+					setConsentById(model, withdrawObject, (String)consentId.get());
+				}
 			}
 			model.getAllComplaints().add(complaintObject);
 			repo.saveModel(model);
