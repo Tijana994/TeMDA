@@ -11,11 +11,11 @@ import com.security.model.validation.annotations.enums.Constants;
 @Target(ElementType.TYPE)
 public @interface PrincipalAnnotation {
 	String id();
-	String birthday() default Constants.Undefined;
-	String parent() default Constants.Undefined;
-	String parentId() default Constants.Undefined;
-	String childrens() default Constants.Undefined;
-	String childrensIds() default Constants.Undefined;
-	String inhabits() default Constants.Undefined;
-	String inhabitsId() default Constants.Undefined;
+	String birthday() default Constants.Empty;
+	String parent() default Constants.Empty;
+	String parentId() default Constants.Empty;
+	String childrens() default Constants.Empty;
+	String childrensIds() default Constants.Empty;
+	String inhabits() default Constants.Empty;
+	String inhabitsId() default Constants.Empty;
 }

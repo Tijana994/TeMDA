@@ -12,9 +12,14 @@ import org.aspectj.lang.reflect.MethodSignature;
 import com.security.model.validation.annotations.NotificationAnnotation;
 import com.security.model.validation.annotations.creators.CreateNotificationAnnotation;
 import com.security.model.validation.annotations.enums.Constants;
+import com.security.model.validation.annotations.enums.ParametersObjectsLocation;
+import com.security.model.validation.annotations.enums.TargetType;
 import com.security.model.validation.helpers.FieldFinder;
+import com.security.model.validation.helpers.ObjectFinder;
 import com.security.model.validation.helpers.ReadTypeByAttribute;
 
+import privacyModel.Notification;
+import privacyModel.PrivacyPolicy;
 import utility.PrivacyModelRepository;
 
 @Aspect
@@ -27,7 +32,6 @@ public class CreateNotificationAspect {
 		Object[] args = thisJoinPoint.getArgs();
 		Object returnedObject = thisJoinPoint.proceed(args);
 		Object originalObject = thisJoinPoint.getThis();
-		Class<? extends Object> originalObjectClass = originalObject.getClass();
 	    MethodSignature signature = (MethodSignature) thisJoinPoint.getSignature();
 	    Method method = signature.getMethod();
 	    CreateNotificationAnnotation createNotification = method.getAnnotation(CreateNotificationAnnotation.class);
@@ -53,51 +57,68 @@ public class CreateNotificationAspect {
 
 		try 
 		{
+			var parametersLocation = ParametersObjectsLocation.Property;
 			PrivacyModelRepository repo = new PrivacyModelRepository();
 			var model = repo.getModel();
 			var notificationObject = repo.getFactory().createNotification();
 			notificationObject.setName((String)FieldFinder.getFieldValue(notification.id(), createdObject, createdObjectClass));
 			notificationObject.setWhen((Date)FieldFinder.getFieldValue(notification.when(), createdObject, createdObjectClass));
 			notificationObject.setType(createNotification.type());
-			if(!createNotification.causedBy().equals(Constants.Empty))
+			if(!notification.causedBy().equals(Constants.Empty))
 			{
-				createNotification.causedByType();
+				if(createNotification.causedByType() == TargetType.PolicyStatement)
+				{
+					setPolicyStatementCausedByFromObject(thisJoinPoint, createdObject, createdObjectClass, notification,
+						parametersLocation, model, notificationObject);
+				}
+				else
+				{
+					System.out.println("TODO");
+				}
 			}
-			if(!createNotification.causedById().equals(Constants.Empty))
+			if(!notification.causedById().equals(Constants.Empty))
 			{
-				createNotification.causedByType();
+				if(createNotification.causedByType() == TargetType.PolicyStatement)
+				{
+					var policyStatmentId = (String)FieldFinder.getFieldValue(notification.causedById(), createdObject, createdObjectClass);
+					setPolicyStatementCausedByById(model, notificationObject, policyStatmentId);
+				}
+				else
+				{
+					System.out.println("TODO");
+				}
 			}
-			if(!createNotification.receivers().equals(Constants.Empty))
+			if(!notification.receivers().equals(Constants.Empty))
 			{
-				var reveivers = ReadTypeByAttribute.getPrincipalsFromObject(createdObjectClass, createdObject, createNotification.receivers(), 
-						createNotification.parametersLocation(), thisJoinPoint, model);
+				var reveivers = ReadTypeByAttribute.getPrincipalsFromObject(createdObjectClass, createdObject, notification.receivers(), 
+						parametersLocation, thisJoinPoint, model);
 				if(!reveivers.isEmpty())
 				{
 					notificationObject.getReceivers().addAll(reveivers);
 				}
 			}
-			if(!createNotification.receiversIds().equals(Constants.Empty))
+			if(!notification.receiversIds().equals(Constants.Empty))
 			{
-				var reveivers = ReadTypeByAttribute.getPrincipalsById(createdObjectClass, createdObject, createNotification.receiversIds(), 
-						createNotification.parametersLocation(), thisJoinPoint, model);
+				var reveivers = ReadTypeByAttribute.getPrincipalsById(createdObjectClass, createdObject, notification.receiversIds(), 
+						parametersLocation, thisJoinPoint, model);
 				if(!reveivers.isEmpty())
 				{
 					notificationObject.getReceivers().addAll(reveivers);
 				}
 			}
-			if(!createNotification.notifiers().equals(Constants.Empty))
+			if(!notification.notifiers().equals(Constants.Empty))
 			{
-				var notifiers = ReadTypeByAttribute.getPrincipalsFromObject(createdObjectClass, createdObject, createNotification.notifiers(), 
-						createNotification.parametersLocation(), thisJoinPoint, model);
+				var notifiers = ReadTypeByAttribute.getPrincipalsFromObject(createdObjectClass, createdObject, notification.notifiers(), 
+						parametersLocation, thisJoinPoint, model);
 				if(!notifiers.isEmpty())
 				{
 					notificationObject.getNotifiers().addAll(notifiers);
 				}
 			}
-			if(!createNotification.notifiersIds().equals(Constants.Empty))
+			if(!notification.notifiersIds().equals(Constants.Empty))
 			{
-				var notifiers = ReadTypeByAttribute.getPrincipalsById(createdObjectClass, createdObject, createNotification.notifiersIds(), 
-						createNotification.parametersLocation(), thisJoinPoint, model);
+				var notifiers = ReadTypeByAttribute.getPrincipalsById(createdObjectClass, createdObject, notification.notifiersIds(), 
+						parametersLocation, thisJoinPoint, model);
 				if(!notifiers.isEmpty())
 				{
 					notificationObject.getNotifiers().addAll(notifiers);
@@ -112,6 +133,27 @@ public class CreateNotificationAspect {
 		}
 		
 		return returnedObject;
+	}
+	private void setPolicyStatementCausedByFromObject(ProceedingJoinPoint thisJoinPoint, Object createdObject,
+			Class<? extends Object> createdObjectClass, NotificationAnnotation notification,
+			ParametersObjectsLocation parametersLocation, PrivacyPolicy model, Notification notificationObject) {
+		var policyStatmentId = ReadTypeByAttribute.getPolicyStatementIdFromObject(createdObjectClass, createdObject, notification.causedBy(), parametersLocation, thisJoinPoint);
+		if(policyStatmentId.isPresent())
+		{
+			var policyStatmentName = policyStatmentId.get();
+			setPolicyStatementCausedByById(model, notificationObject, policyStatmentName);
+		}
+	}
+	private void setPolicyStatementCausedByById(PrivacyPolicy model, Notification notificationObject,
+			String policyStatmentId) {
+		if(policyStatmentId != null)
+		{
+			var policyStatement = ObjectFinder.checkIfPolicyStatementExists(policyStatmentId, model);
+			if(policyStatement.isPresent())
+			{
+				notificationObject.setCausedBy(policyStatement.get());
+			}
+		}
 	}
 }
 

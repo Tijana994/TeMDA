@@ -68,11 +68,11 @@ public class CreateWithdrawAspect {
 			{
 				complaintObject.setReason((String)FieldFinder.getFieldValue(withdraw.reason(), createdObject, createdObjectClass));
 			}
-			if(!createWithdraw.consent().equals(Constants.Undefined))
+			if(!createWithdraw.consent().equals(Constants.Empty))
 			{
 				setConsentFromObject(originalObject, originalObjectClass, createWithdraw, model, withdrawObject, thisJoinPoint);
 			}
-			if(!createWithdraw.consentId().equals(Constants.Undefined))
+			if(!createWithdraw.consentId().equals(Constants.Empty))
 			{
 				var consentId = FieldFinder.getObjectToReadFrom(originalObjectClass, originalObject, createWithdraw.parametersLocation(), createWithdraw.consentId(), thisJoinPoint);
 				if(consentId.isPresent())

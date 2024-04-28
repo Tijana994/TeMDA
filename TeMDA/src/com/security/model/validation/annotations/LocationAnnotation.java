@@ -11,8 +11,8 @@ import com.security.model.validation.annotations.enums.Constants;
 @Target(ElementType.TYPE)
 public @interface LocationAnnotation {
 	String id();
-	String parent() default Constants.Undefined;
-	String parentId() default Constants.Undefined;
-	String subLocations() default Constants.Undefined;
-	String subLocationsIds() default Constants.Undefined;
+	String parent() default Constants.Empty;
+	String parentId() default Constants.Empty;
+	String subLocations() default Constants.Empty;
+	String subLocationsIds() default Constants.Empty;
 }

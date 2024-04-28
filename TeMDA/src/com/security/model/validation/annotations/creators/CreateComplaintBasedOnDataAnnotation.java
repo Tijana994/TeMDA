@@ -18,6 +18,6 @@ public @interface CreateComplaintBasedOnDataAnnotation {
 	String name() default Constants.Empty;
 	ComplaintBasedOnDataType type();
 	ParametersObjectsLocation parametersLocation() default ParametersObjectsLocation.Parameter;
-	String subjects() default Constants.Undefined;
-	String subjectsIds() default Constants.Undefined;
+	String subjects() default Constants.Empty;
+	String subjectsIds() default Constants.Empty;
 }

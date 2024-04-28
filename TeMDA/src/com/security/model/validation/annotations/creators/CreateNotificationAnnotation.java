@@ -20,10 +20,4 @@ public @interface CreateNotificationAnnotation {
 	NotificationType type();
 	TargetType causedByType();
 	ParametersObjectsLocation parametersLocation() default ParametersObjectsLocation.Parameter;
-	String causedBy() default Constants.Undefined;
-	String causedById() default Constants.Undefined;
-	String receivers() default Constants.Undefined;
-	String receiversIds() default Constants.Undefined;
-	String notifiers() default Constants.Undefined;
-	String notifiersIds() default Constants.Undefined;
 }

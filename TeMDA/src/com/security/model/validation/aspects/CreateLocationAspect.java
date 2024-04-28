@@ -64,16 +64,16 @@ public class CreateLocationAspect {
 			locationObject.setType(createLocation.locationType());
 			locationObject.setIsEUMember(createLocation.isEUMember());
 			locationObject.setLegalAgeLimit(createLocation.legalAgeLimit());
-			if(!location.parent().equals(Constants.Undefined)) 
+			if(!location.parent().equals(Constants.Empty)) 
 			{
 				setParentFromObject(originalObject, originalObjectClass, location.parent(), model, locationObject, thisJoinPoint);
 			}
-			if(!location.parentId().equals(Constants.Undefined))
+			if(!location.parentId().equals(Constants.Empty))
 			{
 				var parentId = (String)FieldFinder.getFieldValue(location.parentId(), createdObject, createdObjectClass);
 				setParentById(model, locationObject, parentId);
 			}
-			if(!location.subLocations().equals(Constants.Undefined))
+			if(!location.subLocations().equals(Constants.Empty))
 			{
 				var locations = ReadTypeByAttribute.getLocationsFromObject(createdObjectClass, createdObject, location.subLocations(), 
 						ParametersObjectsLocation.Property, thisJoinPoint, model);
@@ -82,7 +82,7 @@ public class CreateLocationAspect {
 					locationObject.getSubLocations().addAll(locations);
 				}
 			}
-			if(!location.subLocationsIds().equals(Constants.Undefined))
+			if(!location.subLocationsIds().equals(Constants.Empty))
 			{
 				var locations = ReadTypeByAttribute.getLocationsById(createdObjectClass, createdObject, location.subLocationsIds(), 
 						ParametersObjectsLocation.Property, thisJoinPoint, model);

@@ -77,11 +77,11 @@ public class CreateConsentAspect {
 			{
 				consentObject.setDescription((String)FieldFinder.getFieldValue(paper.description(), createdObject, createdObjectClass));
 			}
-			if(!paper.providedBy().equals(Constants.Undefined)) 
+			if(!paper.providedBy().equals(Constants.Empty)) 
 			{
 				setProvidedByFromObject(createdObject, createdObjectClass, paper.providedBy(), model, consentObject, thisJoinPoint);
 			}
-			if(!paper.providedById().equals(Constants.Undefined))
+			if(!paper.providedById().equals(Constants.Empty))
 			{
 				var parentId = (String)FieldFinder.getFieldValue(paper.providedById(), createdObject, createdObjectClass);
 				setProvidedByById(model, consentObject, parentId);

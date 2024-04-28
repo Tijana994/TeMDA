@@ -64,7 +64,7 @@ public class CreatePrincipalAspect {
 			principalObject.setName((String)FieldFinder.getFieldValue(principal.id(), createdObject, createdObjectClass));
 			principalObject.setScope(createPrincipal.scope());
 			principalObject.setType(createPrincipal.type());
-			if(!principal.birthday().equals(Constants.Undefined) && createPrincipal.shouldSetBirtday())
+			if(!principal.birthday().equals(Constants.Empty) && createPrincipal.shouldSetBirtday())
 			{
 				var birthday = (Date)FieldFinder.getFieldValue(principal.birthday(), createdObject, createdObjectClass);
 				principalObject.setBirthdate(birthday);
@@ -74,16 +74,16 @@ public class CreatePrincipalAspect {
 			{
 				principalObject.setAge(model.getOwner().getInhabits().getLegalAgeLimit());;
 			}
-			if(!principal.parent().equals(Constants.Undefined)) 
+			if(!principal.parent().equals(Constants.Empty)) 
 			{
 				setParentFromObject(createdObject, createdObjectClass, principal, model, principalObject, thisJoinPoint);
 			}
-			if(!principal.parentId().equals(Constants.Undefined))
+			if(!principal.parentId().equals(Constants.Empty))
 			{
 				var parentId = (String)FieldFinder.getFieldValue(principal.parentId(), createdObject, createdObjectClass);
 				setParentById(model, principalObject, parentId);
 			}
-			if(!principal.childrens().equals(Constants.Undefined))
+			if(!principal.childrens().equals(Constants.Empty))
 			{
 				var childrens = ReadTypeByAttribute.getPrincipalsFromObject(createdObjectClass, createdObject, principal.childrens(), 
 						ParametersObjectsLocation.Property, thisJoinPoint, model);
@@ -92,7 +92,7 @@ public class CreatePrincipalAspect {
 					principalObject.getSubPrincipals().addAll(childrens);
 				}
 			}
-			if(!principal.childrensIds().equals(Constants.Undefined))
+			if(!principal.childrensIds().equals(Constants.Empty))
 			{
 				var childrens = ReadTypeByAttribute.getPrincipalsById(createdObjectClass, createdObject, principal.childrensIds(), 
 						ParametersObjectsLocation.Property, thisJoinPoint, model);
@@ -101,11 +101,11 @@ public class CreatePrincipalAspect {
 					principalObject.getSubPrincipals().addAll(childrens);
 				}
 			}
-			if(!principal.inhabits().equals(Constants.Undefined) && createPrincipal.shouldSetLocation()) 
+			if(!principal.inhabits().equals(Constants.Empty) && createPrincipal.shouldSetLocation()) 
 			{
 				setLocationFromObject(createdObject, createdObjectClass, principal.inhabits(), model, principalObject, thisJoinPoint);
 			}
-			if(!principal.inhabitsId().equals(Constants.Undefined))
+			if(!principal.inhabitsId().equals(Constants.Empty))
 			{
 				var locationName = (String)FieldFinder.getFieldValue(principal.inhabitsId(), createdObject, createdObjectClass);
 				setParentById(model, principalObject, locationName);
