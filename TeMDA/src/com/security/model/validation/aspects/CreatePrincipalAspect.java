@@ -83,6 +83,24 @@ public class CreatePrincipalAspect {
 				var parentId = (String)FieldFinder.getFieldValue(principal.parentId(), createdObject, createdObjectClass);
 				setParentById(model, principalObject, parentId);
 			}
+			if(!principal.responsiblePersons().equals(Constants.Empty)) 
+			{
+				var parents = ReadTypeByAttribute.getPrincipalsFromObject(createdObjectClass, createdObject, principal.responsiblePersons(), 
+						ParametersObjectsLocation.Property, thisJoinPoint, model);
+				if(!parents.isEmpty())
+				{
+					principalObject.getResponsiblePersons().addAll(parents);
+				}
+			}
+			if(!principal.responsiblePersonIds().equals(Constants.Empty))
+			{
+				var parents = ReadTypeByAttribute.getPrincipalsById(createdObjectClass, createdObject, principal.responsiblePersonIds(), 
+						ParametersObjectsLocation.Property, thisJoinPoint, model);
+				if(!parents.isEmpty())
+				{
+					principalObject.getResponsiblePersons().addAll(parents);
+				}
+			}
 			if(!principal.childrens().equals(Constants.Empty))
 			{
 				var childrens = ReadTypeByAttribute.getPrincipalsFromObject(createdObjectClass, createdObject, principal.childrens(), 
@@ -135,8 +153,7 @@ public class CreatePrincipalAspect {
 		var principalId = ReadTypeByAttribute.getPrincipalIdFromObject(objectClass, obj, principal.parent(), ParametersObjectsLocation.Property, jp);
 		if(principalId.isPresent())
 		{
-			var principalName = principalId.get();
-			setParentById(model, principalObject, principalName);
+			setParentById(model, principalObject, principalId.get());
 		}
 	}
 	
@@ -153,8 +170,7 @@ public class CreatePrincipalAspect {
 		var locationId = ReadTypeByAttribute.getLocationIdFromObject(objectClass, obj, propertyName, ParametersObjectsLocation.Property, jp);
 		if(locationId.isPresent())
 		{
-			var locationName = locationId.get();
-			setLocationById(model, principalObject, locationName);
+			setLocationById(model, principalObject, locationId.get());
 		}
 	}
 	
