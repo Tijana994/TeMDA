@@ -118,11 +118,17 @@ public class CreatePolicyStatementAspect {
 		    var what = WhatCreator.createWhat(createPolicyStatement, repo, model);
 		    policyStatementObject.setWhat(what);
 		    
-		    var how = HowCreator.createHow(createPolicyStatement, originalObject, originalObjectClass, repo, model, thisJoinPoint);
-			policyStatementObject.setHow(how);
-			
-			var where = WhereCreator.createWhere(createPolicyStatement, originalObject, originalObjectClass, repo, model, thisJoinPoint);
-			policyStatementObject.setWhere(where);
+		    if(HowCreator.shouldCreate(createPolicyStatement))
+		    {
+			    var how = HowCreator.createHow(createPolicyStatement, originalObject, originalObjectClass, repo, model, thisJoinPoint);
+				policyStatementObject.setHow(how);
+		    }
+
+		    if(WhereCreator.shouldCreate(createPolicyStatement))
+		    {
+				var where = WhereCreator.createWhere(createPolicyStatement, originalObject, originalObjectClass, repo, model, thisJoinPoint);
+				policyStatementObject.setWhere(where);
+		    }
 			
 			model.getPolicyStatements().add(policyStatementObject);
 			repo.saveModel(model);

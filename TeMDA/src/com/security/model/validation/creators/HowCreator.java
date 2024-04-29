@@ -13,6 +13,14 @@ import privacyModel.PrivacyPolicy;
 import utility.PrivacyModelRepository;
 
 public class HowCreator {
+	
+	public static Boolean shouldCreate(CreatePolicyStatementAnnotation createPolicyStatement)
+	{
+		return !createPolicyStatement.howDocuments().equals(Constants.Empty) ||
+				!createPolicyStatement.howDocumentsIds().equals(Constants.Empty) ||
+				!createPolicyStatement.howConsent().equals(Constants.Empty) ||
+				!createPolicyStatement.howConsentId().equals(Constants.Empty);
+	}
 
 	public static How createHow(CreatePolicyStatementAnnotation createPolicyStatement, Object originalObject,
 			Class<? extends Object> originalObjectClass, PrivacyModelRepository repo, PrivacyPolicy model, 

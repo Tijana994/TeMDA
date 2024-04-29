@@ -15,6 +15,14 @@ import utility.PrivacyModelRepository;
 
 public class WhereCreator {
 
+	public static Boolean shouldCreate(CreatePolicyStatementAnnotation createPolicyStatement)
+	{
+		return !createPolicyStatement.whereDestinationId().equals(Constants.Empty) ||
+				!createPolicyStatement.whereDestination().equals(Constants.Empty) ||
+				!createPolicyStatement.whereSourceId().equals(Constants.Empty) ||
+				!createPolicyStatement.whereSource().equals(Constants.Empty);
+	}
+	
 	public static Where createWhere(CreatePolicyStatementAnnotation createPolicyStatement, Object originalObject,
 			Class<? extends Object> originalObjectClass, PrivacyModelRepository repo, PrivacyPolicy model, 
 			JoinPoint jp) {
