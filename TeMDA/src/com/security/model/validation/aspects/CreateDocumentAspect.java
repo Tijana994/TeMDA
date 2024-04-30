@@ -16,6 +16,7 @@ import com.security.model.validation.annotations.enums.Constants;
 import com.security.model.validation.annotations.enums.ParametersObjectsLocation;
 import com.security.model.validation.helpers.FieldFinder;
 import com.security.model.validation.helpers.ObjectFinder;
+import com.security.model.validation.helpers.ObjectManager;
 import com.security.model.validation.helpers.ReadTypeByAttribute;
 
 import privacyModel.Document;
@@ -78,12 +79,19 @@ public class CreateDocumentAspect {
 			}
 			if(!paper.providedBy().equals(Constants.Empty)) 
 			{
-				setProvidedByFromObject(createdObject, createdObjectClass, paper.providedBy(), model, documentObject, thisJoinPoint);
+				var principal = ObjectManager.tryGetPrincipalByFromObject(createdObject, createdObjectClass, paper.providedBy(), model, ParametersObjectsLocation.Property, thisJoinPoint);
+				if(principal.isPresent())
+				{
+					documentObject.setProvidedBy(principal.get());
+				}
 			}
 			if(!paper.providedById().equals(Constants.Empty))
 			{
-				var parentId = (String)FieldFinder.getFieldValue(paper.providedById(), createdObject, createdObjectClass);
-				setProvidedByById(model, documentObject, parentId);
+				var principal = ObjectManager.tryGetPrincipalByById(createdObject, createdObjectClass, paper.providedById(), model, ParametersObjectsLocation.Property, thisJoinPoint);
+				if(principal.isPresent())
+				{
+					documentObject.setProvidedBy(principal.get());
+				}
 			}
 			model.getAllDocuments().add(documentObject);
 			repo.saveModel(model);
@@ -94,24 +102,5 @@ public class CreateDocumentAspect {
 		}
 		
 		return returnedObject;
-	}
-	
-	private void setProvidedByFromObject(Object obj, Class<? extends Object> objectClass,
-			String propertyName, PrivacyPolicy model, 
-			Document documentObject, JoinPoint jp) {
-		var principalId = ReadTypeByAttribute.getPrincipalIdFromObject(objectClass, obj, propertyName, ParametersObjectsLocation.Property, jp);
-		if(principalId.isPresent())
-		{
-			var principalName = principalId.get();
-			setProvidedByById(model, documentObject, principalName);
-		}
-	}
-	
-	private void setProvidedByById(PrivacyPolicy model, Document documentObject, String id) {
-		var principal = ObjectFinder.checkIfPrincipalExists(id, model);
-		if(principal.isPresent())
-		{
-			documentObject.setProvidedBy(principal.get());
-		}
 	}
 }

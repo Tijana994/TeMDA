@@ -3,7 +3,6 @@ package com.security.model.validation.aspects;
 import java.lang.reflect.Method;
 import java.util.Date;
 
-import org.aspectj.lang.JoinPoint;
 import org.aspectj.lang.ProceedingJoinPoint;
 import org.aspectj.lang.annotation.Around;
 import org.aspectj.lang.annotation.Aspect;
@@ -13,12 +12,10 @@ import org.aspectj.lang.reflect.MethodSignature;
 import com.security.model.validation.annotations.ComplaintAnnotation;
 import com.security.model.validation.annotations.creators.CreateComplaintBasedOnActionAnnotation;
 import com.security.model.validation.annotations.enums.Constants;
+import com.security.model.validation.annotations.enums.ParametersObjectsLocation;
 import com.security.model.validation.helpers.FieldFinder;
-import com.security.model.validation.helpers.ObjectFinder;
-import com.security.model.validation.helpers.ReadTypeByAttribute;
+import com.security.model.validation.helpers.ObjectManager;
 
-import privacyModel.ComplaintBasedOnAction;
-import privacyModel.PrivacyPolicy;
 import utility.PrivacyModelRepository;
 
 @Aspect
@@ -71,14 +68,37 @@ public class CreateComplaintBasedOnActionAspect {
 			}
 			if(!createComplaintBasedOnAction.policyStatement().equals(Constants.Empty))
 			{
-				setPolicyStatementFromObject(originalObject, originalObjectClass, createComplaintBasedOnAction, model, complaintTypeObject, thisJoinPoint);
+				var policyStatement = ObjectManager.tryGetPolicyStatementFromObject(originalObject, originalObjectClass, 
+						createComplaintBasedOnAction.policyStatement(), model, parametersLocation, thisJoinPoint);
+				if(policyStatement.isPresent())
+				{
+					complaintTypeObject.setStatement(policyStatement.get());
+				}
 			}
 			if(!createComplaintBasedOnAction.policyStatementId().equals(Constants.Empty))
 			{
-				var policyStatementId = FieldFinder.getObjectToReadFrom(originalObjectClass, originalObject, parametersLocation, createComplaintBasedOnAction.policyStatementId(), thisJoinPoint);
-				if(policyStatementId.isPresent())
+				var policyStatement = ObjectManager.tryGetPolicyStatementById(originalObject, originalObjectClass, 
+						createComplaintBasedOnAction.policyStatementId(), model, 
+						parametersLocation, thisJoinPoint);
+				if(policyStatement.isPresent())
 				{
-					setPolicyStatementById(model, complaintTypeObject, (String)policyStatementId.get());
+					complaintTypeObject.setStatement(policyStatement.get());
+				}
+			}
+			if(!complaint.who().equals(Constants.Empty)) 
+			{
+				var principal = ObjectManager.tryGetPrincipalByFromObject(createdObject, createdObjectClass, complaint.who(), model, ParametersObjectsLocation.Property, thisJoinPoint);
+				if(principal.isPresent())
+				{
+					complaintObject.setWho(principal.get());
+				}
+			}
+			if(!complaint.whoId().equals(Constants.Empty))
+			{
+				var principal = ObjectManager.tryGetPrincipalByById(createdObject, createdObjectClass, complaint.whoId(), model, ParametersObjectsLocation.Property, thisJoinPoint);
+				if(principal.isPresent())
+				{
+					complaintObject.setWho(principal.get());
 				}
 			}
 			complaintObject.setAction(complaintTypeObject);
@@ -91,25 +111,5 @@ public class CreateComplaintBasedOnActionAspect {
 		}
 		
 		return returnedObject;
-	}
-	
-	private void setPolicyStatementFromObject(Object obj, Class<? extends Object> objectClass,
-			CreateComplaintBasedOnActionAnnotation createComplaintBasedOnAction, PrivacyPolicy model, 
-			ComplaintBasedOnAction complaintTypeObject, JoinPoint jp) {
-		var policyStatementId = ReadTypeByAttribute.getPolicyStatementIdFromObject(objectClass, obj, createComplaintBasedOnAction.policyStatement(), createComplaintBasedOnAction.parametersLocation(), jp);
-		if(policyStatementId.isPresent())
-		{
-			var policyStatementName = policyStatementId.get();
-			setPolicyStatementById(model, complaintTypeObject, policyStatementName);
-		}
-	}
-	
-	private void setPolicyStatementById(PrivacyPolicy model, ComplaintBasedOnAction complaintTypeObject, String id) {
-		
-		var policyStatement = ObjectFinder.checkIfPolicyStatementExists(id, model);
-		if(policyStatement.isPresent())
-		{
-			complaintTypeObject.setStatement(policyStatement.get());
-		}
 	}
 }

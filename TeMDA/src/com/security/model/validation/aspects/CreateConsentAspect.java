@@ -3,7 +3,6 @@ package com.security.model.validation.aspects;
 import java.lang.reflect.Method;
 import java.util.Date;
 
-import org.aspectj.lang.JoinPoint;
 import org.aspectj.lang.ProceedingJoinPoint;
 import org.aspectj.lang.annotation.Around;
 import org.aspectj.lang.annotation.Aspect;
@@ -15,11 +14,8 @@ import com.security.model.validation.annotations.creators.CreateConsentAnnotatio
 import com.security.model.validation.annotations.enums.Constants;
 import com.security.model.validation.annotations.enums.ParametersObjectsLocation;
 import com.security.model.validation.helpers.FieldFinder;
-import com.security.model.validation.helpers.ObjectFinder;
-import com.security.model.validation.helpers.ReadTypeByAttribute;
+import com.security.model.validation.helpers.ObjectManager;
 
-import privacyModel.Consent;
-import privacyModel.PrivacyPolicy;
 import utility.PrivacyModelRepository;
 
 @Aspect
@@ -79,12 +75,19 @@ public class CreateConsentAspect {
 			}
 			if(!paper.providedBy().equals(Constants.Empty)) 
 			{
-				setProvidedByFromObject(createdObject, createdObjectClass, paper.providedBy(), model, consentObject, thisJoinPoint);
+				var principal = ObjectManager.tryGetPrincipalByFromObject(createdObject, createdObjectClass, paper.providedBy(), model, ParametersObjectsLocation.Property, thisJoinPoint);
+				if(principal.isPresent())
+				{
+					consentObject.setProvidedBy(principal.get());
+				}
 			}
 			if(!paper.providedById().equals(Constants.Empty))
 			{
-				var parentId = (String)FieldFinder.getFieldValue(paper.providedById(), createdObject, createdObjectClass);
-				setProvidedByById(model, consentObject, parentId);
+				var principal = ObjectManager.tryGetPrincipalByById(createdObject, createdObjectClass, paper.providedById(), model, ParametersObjectsLocation.Property, thisJoinPoint);
+				if(principal.isPresent())
+				{
+					consentObject.setProvidedBy(principal.get());
+				}
 			}
 			model.getAllConsents().add(consentObject);
 			repo.saveModel(model);
@@ -95,25 +98,6 @@ public class CreateConsentAspect {
 		}
 		
 		return returnedObject;
-	}
-	
-	private void setProvidedByFromObject(Object obj, Class<? extends Object> objectClass,
-			String propertyName, PrivacyPolicy model, 
-			Consent consentObject, JoinPoint jp) {
-		var principalId = ReadTypeByAttribute.getPrincipalIdFromObject(objectClass, obj, propertyName, ParametersObjectsLocation.Property, jp);
-		if(principalId.isPresent())
-		{
-			var principalName = principalId.get();
-			setProvidedByById(model, consentObject, principalName);
-		}
-	}
-	
-	private void setProvidedByById(PrivacyPolicy model, Consent consentObject, String id) {
-		var principal = ObjectFinder.checkIfPrincipalExists(id, model);
-		if(principal.isPresent())
-		{
-			consentObject.setProvidedBy(principal.get());
-		}
 	}
 }
 

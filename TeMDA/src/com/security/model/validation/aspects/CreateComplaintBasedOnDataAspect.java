@@ -12,7 +12,9 @@ import org.aspectj.lang.reflect.MethodSignature;
 import com.security.model.validation.annotations.ComplaintAnnotation;
 import com.security.model.validation.annotations.creators.CreateComplaintBasedOnDataAnnotation;
 import com.security.model.validation.annotations.enums.Constants;
+import com.security.model.validation.annotations.enums.ParametersObjectsLocation;
 import com.security.model.validation.helpers.FieldFinder;
+import com.security.model.validation.helpers.ObjectManager;
 import com.security.model.validation.helpers.ReadTypeByAttribute;
 
 import utility.PrivacyModelRepository;
@@ -79,6 +81,22 @@ public class CreateComplaintBasedOnDataAspect {
 				if(!datas.isEmpty())
 				{
 					complaintTypeObject.getSubject().addAll(datas);
+				}
+			}
+			if(!complaint.who().equals(Constants.Empty)) 
+			{
+				var principal = ObjectManager.tryGetPrincipalByFromObject(createdObject, createdObjectClass, complaint.who(), model, ParametersObjectsLocation.Property, thisJoinPoint);
+				if(principal.isPresent())
+				{
+					complaintObject.setWho(principal.get());
+				}
+			}
+			if(!complaint.whoId().equals(Constants.Empty))
+			{
+				var principal = ObjectManager.tryGetPrincipalByById(createdObject, createdObjectClass, complaint.whoId(), model, ParametersObjectsLocation.Property, thisJoinPoint);
+				if(principal.isPresent())
+				{
+					complaintObject.setWho(principal.get());
 				}
 			}
 			complaintObject.setAction(complaintTypeObject);

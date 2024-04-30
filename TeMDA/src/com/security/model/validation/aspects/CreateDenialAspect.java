@@ -3,7 +3,6 @@ package com.security.model.validation.aspects;
 import java.lang.reflect.Method;
 import java.util.Date;
 
-import org.aspectj.lang.JoinPoint;
 import org.aspectj.lang.ProceedingJoinPoint;
 import org.aspectj.lang.annotation.Around;
 import org.aspectj.lang.annotation.Aspect;
@@ -14,12 +13,10 @@ import com.security.model.validation.annotations.DenialAnnotation;
 import com.security.model.validation.annotations.creators.CreateDenialAnnotation;
 import com.security.model.validation.annotations.enums.Constants;
 import com.security.model.validation.helpers.FieldFinder;
-import com.security.model.validation.helpers.ObjectFinder;
+import com.security.model.validation.helpers.ObjectManager;
 import com.security.model.validation.helpers.ReadTypeByAttribute;
 
 import privacyModel.AbstractComplaint;
-import privacyModel.Denial;
-import privacyModel.PrivacyPolicy;
 import utility.PrivacyModelRepository;
 
 @Aspect
@@ -87,14 +84,20 @@ public class CreateDenialAspect {
 			}
 			if(!createDenial.forComplaint().equals(Constants.Empty))
 			{
-				setComplaintFromObject(originalObject, originalObjectClass, createDenial, model, denialObject, thisJoinPoint);
+				var complaint = ObjectManager.tryGetComplaintFromObject(createdObject, createdObjectClass, createDenial.forComplaint(), model, 
+						createDenial.parametersLocation(), thisJoinPoint);
+				if(complaint.isPresent() && complaint.get().getAction() instanceof AbstractComplaint)
+				{
+					((AbstractComplaint)complaint.get().getAction()).setDenialReason(denialObject);
+				}
 			}
 			if(!createDenial.forComplaintId().equals(Constants.Empty))
 			{
-				var complaintId = FieldFinder.getObjectToReadFrom(originalObjectClass, originalObject, createDenial.parametersLocation(), createDenial.forComplaintId(), thisJoinPoint);
-				if(complaintId.isPresent())
+				var complaint = ObjectManager.tryGetComplaintById(createdObject, createdObjectClass, createDenial.forComplaintId(), model, 
+						createDenial.parametersLocation(), thisJoinPoint);
+				if(complaint.isPresent() && complaint.get().getAction() instanceof AbstractComplaint)
 				{
-					setComplaintById(model, denialObject, (String)complaintId.get());
+					((AbstractComplaint)complaint.get().getAction()).setDenialReason(denialObject);
 				}
 			}
 			model.getAllDenials().add(denialObject);
@@ -106,28 +109,6 @@ public class CreateDenialAspect {
 		}
 		
 		return returnedObject;
-	}
-	
-	private void setComplaintFromObject(Object obj, Class<? extends Object> objectClass,
-			CreateDenialAnnotation createDenial, PrivacyPolicy model, 
-			Denial denialObject, JoinPoint jp) {
-		var complaintId = ReadTypeByAttribute.getComplaintIdFromObject(objectClass, obj, createDenial.forComplaint(), createDenial.parametersLocation(), jp);
-		if(complaintId.isPresent())
-		{
-			var consentName = complaintId.get();
-			setComplaintById(model, denialObject, consentName);
-		}
-	}
-	
-	private void setComplaintById(PrivacyPolicy model, Denial denialObject, String  propertyName) {
-		var complaint = ObjectFinder.checkIfComplaintExists(propertyName, model);
-		if(complaint.isPresent())
-		{
-			if(complaint.get().getAction() instanceof AbstractComplaint)
-			{
-				((AbstractComplaint)complaint.get().getAction()).setDenialReason(denialObject);
-			}
-		}
 	}
 }
 

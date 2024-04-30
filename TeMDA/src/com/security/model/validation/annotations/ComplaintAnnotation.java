@@ -13,4 +13,6 @@ public @interface ComplaintAnnotation {
 	String id();
 	String when();
 	String reason() default Constants.Empty;
+	String who() default Constants.Empty;
+	String whoId() default Constants.Empty;
 }
