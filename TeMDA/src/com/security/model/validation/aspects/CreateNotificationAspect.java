@@ -73,9 +73,14 @@ public class CreateNotificationAspect {
 						notificationObject.setCausedBy(policyStatement.get());
 					}
 				}
-				else
+				else if(createNotification.causedByType() == TargetType.ComplaintBasedOnData || createNotification.causedByType() == TargetType.ComplaintBasedOnAction)
 				{
-					System.out.println("TODO");
+					var complaint = ObjectManager.tryGetComplaintFromObject(createdObject, createdObjectClass, notification.causedBy(), model, 
+							parametersLocation, thisJoinPoint);
+					if(complaint.isPresent())
+					{
+						notificationObject.setCausedBy(complaint.get());
+					}
 				}
 			}
 			if(!notification.causedById().equals(Constants.Empty))
@@ -89,9 +94,14 @@ public class CreateNotificationAspect {
 						notificationObject.setCausedBy(policyStatement.get());
 					}
 				}
-				else
+				else if(createNotification.causedByType() == TargetType.ComplaintBasedOnData || createNotification.causedByType() == TargetType.ComplaintBasedOnAction)
 				{
-					System.out.println("TODO");
+					var complaint = ObjectManager.tryGetComplaintById(createdObject, createdObjectClass, notification.causedById(), model, 
+							parametersLocation, thisJoinPoint);
+					if(complaint.isPresent())
+					{
+						notificationObject.setCausedBy(complaint.get());
+					}
 				}
 			}
 			if(!notification.receivers().equals(Constants.Empty))
