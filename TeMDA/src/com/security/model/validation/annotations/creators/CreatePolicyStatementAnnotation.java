@@ -35,4 +35,6 @@ public @interface CreatePolicyStatementAnnotation {
 	String howDocumentsIds() default Constants.Empty;
 	String howConsent()  default Constants.Empty;
 	String howConsentId()  default Constants.Empty;
+	String causedBy() default Constants.Empty;
+	String causedById() default Constants.Empty;
 }

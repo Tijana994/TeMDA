@@ -113,6 +113,24 @@ public class CreatePolicyStatementAspect {
 					policyStatementObject.setWhom(whom.get());
 				}
 			}
+			if(!createPolicyStatement.causedBy().equals(Constants.Empty))
+			{
+				var complaint = ObjectManager.tryGetComplaintFromObject(originalObject, originalObjectClass, createPolicyStatement.causedBy(), model, 
+						parametersLocation, thisJoinPoint);
+				if(complaint.isPresent())
+				{
+					policyStatementObject.setCausedBy(complaint.get());
+				}
+			}
+			if(!createPolicyStatement.causedById().equals(Constants.Empty))
+			{
+				var complaint = ObjectManager.tryGetComplaintById(originalObject, originalObjectClass, createPolicyStatement.causedById(), model, 
+							parametersLocation, thisJoinPoint);
+				if(complaint.isPresent())
+				{
+					policyStatementObject.setCausedBy(complaint.get());
+				}
+			}
 			
 			var purpose = PurposeCreator.createPurpose(originalObjectClass, originalObject, createPolicyStatement.why(), 
 					parametersLocation, repo.getFactory(), thisJoinPoint);
