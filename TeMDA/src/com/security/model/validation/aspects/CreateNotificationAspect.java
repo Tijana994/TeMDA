@@ -15,11 +15,9 @@ import com.security.model.validation.annotations.enums.Constants;
 import com.security.model.validation.annotations.enums.ParametersObjectsLocation;
 import com.security.model.validation.annotations.enums.TargetType;
 import com.security.model.validation.helpers.FieldFinder;
-import com.security.model.validation.helpers.ObjectFinder;
+import com.security.model.validation.helpers.ObjectManager;
 import com.security.model.validation.helpers.ReadTypeByAttribute;
 
-import privacyModel.Notification;
-import privacyModel.PrivacyPolicy;
 import utility.PrivacyModelRepository;
 
 @Aspect
@@ -68,8 +66,12 @@ public class CreateNotificationAspect {
 			{
 				if(createNotification.causedByType() == TargetType.PolicyStatement)
 				{
-					setPolicyStatementCausedByFromObject(thisJoinPoint, createdObject, createdObjectClass, notification,
-						parametersLocation, model, notificationObject);
+					var policyStatement = ObjectManager.tryGetPolicyStatementFromObject(createdObject, createdObjectClass, 
+							notification.causedBy(), model, parametersLocation, thisJoinPoint);
+					if(policyStatement.isPresent())
+					{
+						notificationObject.setCausedBy(policyStatement.get());
+					}
 				}
 				else
 				{
@@ -80,8 +82,12 @@ public class CreateNotificationAspect {
 			{
 				if(createNotification.causedByType() == TargetType.PolicyStatement)
 				{
-					var policyStatmentId = (String)FieldFinder.getFieldValue(notification.causedById(), createdObject, createdObjectClass);
-					setPolicyStatementCausedByById(model, notificationObject, policyStatmentId);
+					var policyStatement = ObjectManager.tryGetPolicyStatementById(createdObject, createdObjectClass, 
+							notification.causedById(), model, parametersLocation, thisJoinPoint);
+					if(policyStatement.isPresent())
+					{
+						notificationObject.setCausedBy(policyStatement.get());
+					}
 				}
 				else
 				{
@@ -133,27 +139,6 @@ public class CreateNotificationAspect {
 		}
 		
 		return returnedObject;
-	}
-	private void setPolicyStatementCausedByFromObject(ProceedingJoinPoint thisJoinPoint, Object createdObject,
-			Class<? extends Object> createdObjectClass, NotificationAnnotation notification,
-			ParametersObjectsLocation parametersLocation, PrivacyPolicy model, Notification notificationObject) {
-		var policyStatmentId = ReadTypeByAttribute.getPolicyStatementIdFromObject(createdObjectClass, createdObject, notification.causedBy(), parametersLocation, thisJoinPoint);
-		if(policyStatmentId.isPresent())
-		{
-			var policyStatmentName = policyStatmentId.get();
-			setPolicyStatementCausedByById(model, notificationObject, policyStatmentName);
-		}
-	}
-	private void setPolicyStatementCausedByById(PrivacyPolicy model, Notification notificationObject,
-			String policyStatmentId) {
-		if(policyStatmentId != null)
-		{
-			var policyStatement = ObjectFinder.checkIfPolicyStatementExists(policyStatmentId, model);
-			if(policyStatement.isPresent())
-			{
-				notificationObject.setCausedBy(policyStatement.get());
-			}
-		}
 	}
 }
 

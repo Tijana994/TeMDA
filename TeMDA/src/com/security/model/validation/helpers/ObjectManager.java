@@ -4,12 +4,10 @@ import java.util.Optional;
 
 import org.aspectj.lang.JoinPoint;
 
-import com.security.model.validation.annotations.creators.CreateDenialAnnotation;
 import com.security.model.validation.annotations.enums.ParametersObjectsLocation;
 
-import privacyModel.AbstractComplaint;
 import privacyModel.Complaint;
-import privacyModel.Denial;
+import privacyModel.Location;
 import privacyModel.PolicyStatement;
 import privacyModel.Principal;
 import privacyModel.PrivacyPolicy;
@@ -73,6 +71,26 @@ public class ObjectManager {
 		if(complaintId.isPresent())
 		{
 			return ObjectFinder.checkIfComplaintExists((String)complaintId.get(), model);
+		}
+		return Optional.empty();
+	}
+	
+	public static Optional<Location> tryGetLocationFromObject(Object obj, Class<? extends Object> objectClass,
+			String propertyName, PrivacyPolicy model, ParametersObjectsLocation parametersLocation, JoinPoint jp) {
+		var locationId = ReadTypeByAttribute.getLocationIdFromObject(objectClass, obj, propertyName, parametersLocation, jp);
+		if(locationId.isPresent())
+		{
+			return ObjectFinder.checkIfLocationExists(locationId.get(), model);
+		}
+		return Optional.empty();
+	}
+	
+	public static Optional<Location> tryGetLocationById(Object obj, Class<? extends Object> objectClass,
+			String propertyName, PrivacyPolicy model, ParametersObjectsLocation parametersLocation, JoinPoint jp) {
+		var locationId = FieldFinder.getObjectToReadFrom(objectClass, obj,parametersLocation, propertyName, jp);
+		if(locationId.isPresent())
+		{
+			return ObjectFinder.checkIfLocationExists((String)locationId.get(), model);
 		}
 		return Optional.empty();
 	}
