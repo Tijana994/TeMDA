@@ -3,7 +3,6 @@ package com.security.model.validation.aspects;
 import java.lang.reflect.Method;
 import java.util.Date;
 
-import org.aspectj.lang.JoinPoint;
 import org.aspectj.lang.ProceedingJoinPoint;
 import org.aspectj.lang.annotation.Around;
 import org.aspectj.lang.annotation.Aspect;
@@ -14,11 +13,8 @@ import com.security.model.validation.annotations.WithdrawAnnotation;
 import com.security.model.validation.annotations.creators.CreateWithdrawAnnotation;
 import com.security.model.validation.annotations.enums.Constants;
 import com.security.model.validation.helpers.FieldFinder;
-import com.security.model.validation.helpers.ObjectFinder;
-import com.security.model.validation.helpers.ReadTypeByAttribute;
+import com.security.model.validation.helpers.ObjectManager;
 
-import privacyModel.PrivacyPolicy;
-import privacyModel.Withdraw;
 import utility.PrivacyModelRepository;
 
 @Aspect
@@ -70,14 +66,18 @@ public class CreateWithdrawAspect {
 			}
 			if(!createWithdraw.consent().equals(Constants.Empty))
 			{
-				setConsentFromObject(originalObject, originalObjectClass, createWithdraw, model, withdrawObject, thisJoinPoint);
+				var consent = ObjectManager.tryGetConsentFromObject(originalObject, originalObjectClass, createWithdraw.consent(), model, createWithdraw.parametersLocation(), thisJoinPoint);
+				if(consent.isPresent())
+				{
+					withdrawObject.setSubject(consent.get());
+				}
 			}
 			if(!createWithdraw.consentId().equals(Constants.Empty))
 			{
-				var consentId = FieldFinder.getObjectToReadFrom(originalObjectClass, originalObject, createWithdraw.parametersLocation(), createWithdraw.consentId(), thisJoinPoint);
-				if(consentId.isPresent())
+				var consent = ObjectManager.tryGetConsentById(originalObject, originalObjectClass, createWithdraw.consentId(), model, createWithdraw.parametersLocation(), thisJoinPoint);
+				if(consent.isPresent())
 				{
-					setConsentById(model, withdrawObject, (String)consentId.get());
+					withdrawObject.setSubject(consent.get());
 				}
 			}
 			model.getAllComplaints().add(complaintObject);
@@ -90,24 +90,4 @@ public class CreateWithdrawAspect {
 		
 		return returnedObject;
 	}
-	
-	private void setConsentFromObject(Object obj, Class<? extends Object> objectClass,
-			CreateWithdrawAnnotation createWithdraw, PrivacyPolicy model, 
-			Withdraw withdrawObject, JoinPoint jp) {
-		var consentId = ReadTypeByAttribute.getConsentIdFromObject(objectClass, obj, createWithdraw.consent(), createWithdraw.parametersLocation(), jp);
-		if(consentId.isPresent())
-		{
-			var consentName = consentId.get();
-			setConsentById(model, withdrawObject, consentName);
-		}
-	}
-	private void setConsentById(PrivacyPolicy model, Withdraw withdrawObject, String id) {
-		var consent = ObjectFinder.checkIfConsentExists(id, model);
-		if(consent.isPresent())
-		{
-			withdrawObject.setSubject(consent.get());
-		}
-	}
-	
-	
 }

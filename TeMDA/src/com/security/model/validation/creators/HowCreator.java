@@ -4,8 +4,7 @@ import org.aspectj.lang.JoinPoint;
 
 import com.security.model.validation.annotations.creators.CreatePolicyStatementAnnotation;
 import com.security.model.validation.annotations.enums.Constants;
-import com.security.model.validation.helpers.FieldFinder;
-import com.security.model.validation.helpers.ObjectFinder;
+import com.security.model.validation.helpers.ObjectManager;
 import com.security.model.validation.helpers.ReadTypeByAttribute;
 
 import privacyModel.How;
@@ -47,33 +46,20 @@ public class HowCreator {
 		}
 		if(!createPolicyStatement.howConsent().equals(Constants.Empty))
 		{
-			setConsentFromObject(createPolicyStatement, originalObject, originalObjectClass, model, jp, how);
+			var consent = ObjectManager.tryGetConsentFromObject(originalObject, originalObjectClass, createPolicyStatement.howConsent(), model, createPolicyStatement.parametersLocation(), jp);
+			if(consent.isPresent())
+			{
+				how.setConsent(consent.get());
+			}
 		}
 		if(!createPolicyStatement.howConsentId().equals(Constants.Empty))
 		{
-			var consentId = FieldFinder.getObjectToReadFrom(originalObjectClass, originalObject, createPolicyStatement.parametersLocation(), createPolicyStatement.howConsentId(), jp);
-			if(consentId.isPresent())
+			var consent = ObjectManager.tryGetConsentById(originalObject, originalObjectClass, createPolicyStatement.howConsentId(), model, createPolicyStatement.parametersLocation(), jp);
+			if(consent.isPresent())
 			{
-				setConsentById(model, how, (String)consentId.get());
+				how.setConsent(consent.get());
 			}
-			
 		}
 		return how;
-	}
-	private static void setConsentFromObject(CreatePolicyStatementAnnotation createPolicyStatement, Object originalObject,
-			Class<? extends Object> originalObjectClass, PrivacyPolicy model, JoinPoint jp, How how) {
-		var consentId = ReadTypeByAttribute.getConsentIdFromObject(originalObjectClass, originalObject, createPolicyStatement.howConsent(), createPolicyStatement.parametersLocation(), jp);
-		if(consentId.isPresent())
-		{
-			var consentName = consentId.get();
-			setConsentById(model, how, consentName);
-		}
-	}
-	private static void setConsentById(PrivacyPolicy model, How how, String consentId) {
-		var consent = ObjectFinder.checkIfConsentExists(consentId, model);
-		if(consent.isPresent())
-		{
-			how.setConsent(consent.get());
-		}
 	}
 }

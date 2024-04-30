@@ -4,10 +4,7 @@ import org.aspectj.lang.JoinPoint;
 
 import com.security.model.validation.annotations.creators.CreatePolicyStatementAnnotation;
 import com.security.model.validation.annotations.enums.Constants;
-import com.security.model.validation.annotations.enums.ParametersObjectsLocation;
-import com.security.model.validation.helpers.FieldFinder;
-import com.security.model.validation.helpers.ObjectFinder;
-import com.security.model.validation.helpers.ReadTypeByAttribute;
+import com.security.model.validation.helpers.ObjectManager;
 
 import privacyModel.PrivacyPolicy;
 import privacyModel.Where;
@@ -30,52 +27,41 @@ public class WhereCreator {
 		
 		if(!createPolicyStatement.whereDestinationId().equals(Constants.Empty))
 		{
-			var locationId = FieldFinder.getObjectToReadFrom(originalObjectClass, originalObject, createPolicyStatement.parametersLocation(), createPolicyStatement.whereDestinationId(), jp);
-			if(locationId.isPresent())
+			var location = ObjectManager.tryGetLocationById(originalObject, originalObjectClass, createPolicyStatement.whereDestinationId(), model, 
+					createPolicyStatement.parametersLocation(), jp);
+			if(location.isPresent())
 			{
-				setLocationById(model, where, (String)locationId.get(), false);
+				where.setDestination(location.get());
 			}
 		}
 		if(!createPolicyStatement.whereDestination().equals(Constants.Empty))
 		{
-			setLocationFromObject(originalObject, originalObjectClass, createPolicyStatement.whereDestination(), model, where, jp, createPolicyStatement.parametersLocation(), false);
+			var location = ObjectManager.tryGetLocationFromObject(originalObject, originalObjectClass, createPolicyStatement.whereDestination(), model, 
+					createPolicyStatement.parametersLocation(), jp);
+			if(location.isPresent())
+			{
+				where.setDestination(location.get());
+			}
 		}
 		if(!createPolicyStatement.whereSourceId().equals(Constants.Empty))
 		{
-			var locationId = FieldFinder.getObjectToReadFrom(originalObjectClass, originalObject, createPolicyStatement.parametersLocation(), createPolicyStatement.whereSourceId(), jp);
-			if(locationId.isPresent())
+			var location = ObjectManager.tryGetLocationById(originalObject, originalObjectClass, createPolicyStatement.whereSourceId(), model, 
+					createPolicyStatement.parametersLocation(), jp);
+			if(location.isPresent())
 			{
-				setLocationById(model, where, (String)locationId.get(), true);
+				where.setSource(location.get());
 			}
 		}
 		if(!createPolicyStatement.whereSource().equals(Constants.Empty))
 		{
-			setLocationFromObject(originalObject, originalObjectClass, createPolicyStatement.whereSource(), model, where, jp, createPolicyStatement.parametersLocation(), true);
+			var location = ObjectManager.tryGetLocationFromObject(originalObject, originalObjectClass, createPolicyStatement.whereSource(), model, 
+					createPolicyStatement.parametersLocation(), jp);
+			if(location.isPresent())
+			{
+				where.setSource(location.get());
+			}
 		}
 		
 		return where;
-	}
-	
-	private static void setLocationFromObject(Object obj, Class<? extends Object> objectClass,
-			String propertyName, PrivacyPolicy model, Where whereObject, JoinPoint jp, ParametersObjectsLocation parametersLocation,  Boolean source) {
-		var locationId = ReadTypeByAttribute.getLocationIdFromObject(objectClass, obj, propertyName, parametersLocation, jp);
-		if(locationId.isPresent())
-		{
-			var locationName = locationId.get();
-			setLocationById(model, whereObject, locationName, source);
-		}
-	}
-	
-	private static void setLocationById(PrivacyPolicy model, Where whereObject, String id, Boolean source) {
-		var location = ObjectFinder.checkIfLocationExists(id, model);
-		if(location.isPresent())
-		{
-			if(source){
-				whereObject.setSource(location.get());
-			}
-			else {
-				whereObject.setDestination(location.get());
-			}
-		}
 	}
 }

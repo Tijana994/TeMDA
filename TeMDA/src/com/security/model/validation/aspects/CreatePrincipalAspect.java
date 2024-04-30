@@ -5,7 +5,6 @@ import java.time.LocalDate;
 import java.time.ZoneId;
 import java.util.Date;
 
-import org.aspectj.lang.JoinPoint;
 import org.aspectj.lang.ProceedingJoinPoint;
 import org.aspectj.lang.annotation.Around;
 import org.aspectj.lang.annotation.Aspect;
@@ -17,11 +16,10 @@ import com.security.model.validation.annotations.creators.CreatePrincipalAnnotat
 import com.security.model.validation.annotations.enums.Constants;
 import com.security.model.validation.annotations.enums.ParametersObjectsLocation;
 import com.security.model.validation.helpers.FieldFinder;
-import com.security.model.validation.helpers.ObjectFinder;
+import com.security.model.validation.helpers.ObjectManager;
 import com.security.model.validation.helpers.ReadTypeByAttribute;
 
 import privacyModel.Principal;
-import privacyModel.PrivacyPolicy;
 import utility.PrivacyModelRepository;
 
 @Aspect
@@ -76,12 +74,19 @@ public class CreatePrincipalAspect {
 			}
 			if(!principal.parent().equals(Constants.Empty)) 
 			{
-				setParentFromObject(createdObject, createdObjectClass, principal, model, principalObject, thisJoinPoint);
+				var parent = ObjectManager.tryGetPrincipalByFromObject(createdObject, createdObjectClass, principal.parent(), model, ParametersObjectsLocation.Property, thisJoinPoint);
+				if(parent.isPresent())
+				{
+					parent.get().getSubPrincipals().add(principalObject);
+				}
 			}
 			if(!principal.parentId().equals(Constants.Empty))
 			{
-				var parentId = (String)FieldFinder.getFieldValue(principal.parentId(), createdObject, createdObjectClass);
-				setParentById(model, principalObject, parentId);
+				var parent = ObjectManager.tryGetPrincipalByById(createdObject, createdObjectClass, principal.parentId(), model, ParametersObjectsLocation.Property, thisJoinPoint);
+				if(parent.isPresent())
+				{
+					parent.get().getSubPrincipals().add(principalObject);
+				}
 			}
 			if(!principal.responsiblePersons().equals(Constants.Empty)) 
 			{
@@ -121,12 +126,19 @@ public class CreatePrincipalAspect {
 			}
 			if(!principal.inhabits().equals(Constants.Empty) && createPrincipal.shouldSetLocation()) 
 			{
-				setLocationFromObject(createdObject, createdObjectClass, principal.inhabits(), model, principalObject, thisJoinPoint);
+				var location = ObjectManager.tryGetLocationFromObject(createdObject, createdObjectClass, principal.inhabits(), model, ParametersObjectsLocation.Property, thisJoinPoint);
+				if(location.isPresent())
+				{
+					principalObject.setInhabits(location.get());
+				}
 			}
-			if(!principal.inhabitsId().equals(Constants.Empty))
+			if(!principal.inhabitsId().equals(Constants.Empty) && createPrincipal.shouldSetLocation())
 			{
-				var locationName = (String)FieldFinder.getFieldValue(principal.inhabitsId(), createdObject, createdObjectClass);
-				setParentById(model, principalObject, locationName);
+				var location = ObjectManager.tryGetLocationById(createdObject, createdObjectClass, principal.inhabitsId(), model, ParametersObjectsLocation.Property, thisJoinPoint);
+				if(location.isPresent())
+				{
+					principalObject.setInhabits(location.get());
+				}
 			}
 			
 			model.getAllPrincipals().add(principalObject);
@@ -145,40 +157,5 @@ public class CreatePrincipalAspect {
 			      .toLocalDate();
 		var age = LocalDate.now().minusYears(date.getYear());
 		principalObject.setAge(age.getYear());
-	}
-	
-	private void setParentFromObject(Object obj, Class<? extends Object> objectClass,
-			PrincipalAnnotation principal, PrivacyPolicy model, 
-			Principal principalObject, JoinPoint jp) {
-		var principalId = ReadTypeByAttribute.getPrincipalIdFromObject(objectClass, obj, principal.parent(), ParametersObjectsLocation.Property, jp);
-		if(principalId.isPresent())
-		{
-			setParentById(model, principalObject, principalId.get());
-		}
-	}
-	
-	private void setParentById(PrivacyPolicy model, Principal principalObject, String id) {
-		var parent = ObjectFinder.checkIfPrincipalExists(id, model);
-		if(parent.isPresent())
-		{
-			parent.get().getSubPrincipals().add(principalObject);
-		}
-	}
-	
-	private void setLocationFromObject(Object obj, Class<? extends Object> objectClass,
-			String propertyName, PrivacyPolicy model, Principal principalObject, JoinPoint jp) {
-		var locationId = ReadTypeByAttribute.getLocationIdFromObject(objectClass, obj, propertyName, ParametersObjectsLocation.Property, jp);
-		if(locationId.isPresent())
-		{
-			setLocationById(model, principalObject, locationId.get());
-		}
-	}
-	
-	private void setLocationById(PrivacyPolicy model, Principal principalObject, String id) {
-		var location = ObjectFinder.checkIfLocationExists(id, model);
-		if(location.isPresent())
-		{
-			principalObject.setInhabits(location.get());
-		}
 	}
 }
