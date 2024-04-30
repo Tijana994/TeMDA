@@ -19,4 +19,6 @@ public @interface CreateDenialAnnotation {
 	String basedOnStatemetsIds() default Constants.Empty;
 	String forComplaint() default Constants.Empty;
 	String forComplaintId() default Constants.Empty;
+	String approvedBy() default Constants.Empty;
+	String approvedById() default Constants.Empty;
 }

@@ -84,7 +84,7 @@ public class CreateDenialAspect {
 			}
 			if(!createDenial.forComplaint().equals(Constants.Empty))
 			{
-				var complaint = ObjectManager.tryGetComplaintFromObject(createdObject, createdObjectClass, createDenial.forComplaint(), model, 
+				var complaint = ObjectManager.tryGetComplaintFromObject(originalObject, originalObjectClass, createDenial.forComplaint(), model, 
 						createDenial.parametersLocation(), thisJoinPoint);
 				if(complaint.isPresent() && complaint.get().getAction() instanceof AbstractComplaint)
 				{
@@ -93,11 +93,29 @@ public class CreateDenialAspect {
 			}
 			if(!createDenial.forComplaintId().equals(Constants.Empty))
 			{
-				var complaint = ObjectManager.tryGetComplaintById(createdObject, createdObjectClass, createDenial.forComplaintId(), model, 
+				var complaint = ObjectManager.tryGetComplaintById(originalObject, originalObjectClass, createDenial.forComplaintId(), model, 
 						createDenial.parametersLocation(), thisJoinPoint);
 				if(complaint.isPresent() && complaint.get().getAction() instanceof AbstractComplaint)
 				{
 					((AbstractComplaint)complaint.get().getAction()).setDenialReason(denialObject);
+				}
+			}
+			if(!createDenial.approvedBy().equals(Constants.Empty)) 
+			{
+				var principal = ObjectManager.tryGetPrincipalByFromObject(originalObject, originalObjectClass,createDenial.approvedBy(), model, 
+						createDenial.parametersLocation(), thisJoinPoint);
+				if(principal.isPresent())
+				{
+					denialObject.setApprovedBy(principal.get());
+				}
+			}
+			if(!createDenial.approvedById().equals(Constants.Empty))
+			{
+				var principal = ObjectManager.tryGetPrincipalByById(originalObject, originalObjectClass, createDenial.approvedById(), model, 
+						createDenial.parametersLocation(), thisJoinPoint);
+				if(principal.isPresent())
+				{
+					denialObject.setApprovedBy(principal.get());
 				}
 			}
 			model.getAllDenials().add(denialObject);
