@@ -73,7 +73,9 @@ public class CreateNotificationAspect {
 						notificationObject.setCausedBy(policyStatement.get());
 					}
 				}
-				else if(createNotification.causedByType() == TargetType.ComplaintBasedOnData || createNotification.causedByType() == TargetType.ComplaintBasedOnAction)
+				else if(createNotification.causedByType() == TargetType.ComplaintBasedOnData 
+						|| createNotification.causedByType() == TargetType.ComplaintBasedOnAction
+						|| createNotification.causedByType() == TargetType.Withdraw)
 				{
 					var complaint = ObjectManager.tryGetComplaintFromObject(createdObject, createdObjectClass, notification.causedBy(), model, 
 							parametersLocation, thisJoinPoint);
@@ -94,7 +96,9 @@ public class CreateNotificationAspect {
 						notificationObject.setCausedBy(policyStatement.get());
 					}
 				}
-				else if(createNotification.causedByType() == TargetType.ComplaintBasedOnData || createNotification.causedByType() == TargetType.ComplaintBasedOnAction)
+				else if(createNotification.causedByType() == TargetType.ComplaintBasedOnData 
+						|| createNotification.causedByType() == TargetType.ComplaintBasedOnAction
+						|| createNotification.causedByType() == TargetType.Withdraw)
 				{
 					var complaint = ObjectManager.tryGetComplaintById(createdObject, createdObjectClass, notification.causedById(), model, 
 							parametersLocation, thisJoinPoint);

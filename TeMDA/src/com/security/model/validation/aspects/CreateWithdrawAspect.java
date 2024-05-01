@@ -12,6 +12,7 @@ import org.aspectj.lang.reflect.MethodSignature;
 import com.security.model.validation.annotations.WithdrawAnnotation;
 import com.security.model.validation.annotations.creators.CreateWithdrawAnnotation;
 import com.security.model.validation.annotations.enums.Constants;
+import com.security.model.validation.annotations.enums.ParametersObjectsLocation;
 import com.security.model.validation.helpers.FieldFinder;
 import com.security.model.validation.helpers.ObjectManager;
 
@@ -66,7 +67,8 @@ public class CreateWithdrawAspect {
 			}
 			if(!createWithdraw.consent().equals(Constants.Empty))
 			{
-				var consent = ObjectManager.tryGetConsentFromObject(originalObject, originalObjectClass, createWithdraw.consent(), model, createWithdraw.parametersLocation(), thisJoinPoint);
+				var consent = ObjectManager.tryGetConsentFromObject(originalObject, originalObjectClass, createWithdraw.consent(), model, 
+						createWithdraw.parametersLocation(), thisJoinPoint);
 				if(consent.isPresent())
 				{
 					withdrawObject.setSubject(consent.get());
@@ -74,10 +76,29 @@ public class CreateWithdrawAspect {
 			}
 			if(!createWithdraw.consentId().equals(Constants.Empty))
 			{
-				var consent = ObjectManager.tryGetConsentById(originalObject, originalObjectClass, createWithdraw.consentId(), model, createWithdraw.parametersLocation(), thisJoinPoint);
+				var consent = ObjectManager.tryGetConsentById(originalObject, originalObjectClass, createWithdraw.consentId(), model, 
+						createWithdraw.parametersLocation(), thisJoinPoint);
 				if(consent.isPresent())
 				{
 					withdrawObject.setSubject(consent.get());
+				}
+			}
+			if(!withdraw.who().equals(Constants.Empty)) 
+			{
+				var principal = ObjectManager.tryGetPrincipalByFromObject(createdObject, createdObjectClass, withdraw.who(), model, 
+						ParametersObjectsLocation.Property, thisJoinPoint);
+				if(principal.isPresent())
+				{
+					complaintObject.setWho(principal.get());
+				}
+			}
+			if(!withdraw.whoId().equals(Constants.Empty))
+			{
+				var principal = ObjectManager.tryGetPrincipalByById(createdObject, createdObjectClass, withdraw.whoId(), model, 
+						ParametersObjectsLocation.Property, thisJoinPoint);
+				if(principal.isPresent())
+				{
+					complaintObject.setWho(principal.get());
 				}
 			}
 			model.getAllComplaints().add(complaintObject);
