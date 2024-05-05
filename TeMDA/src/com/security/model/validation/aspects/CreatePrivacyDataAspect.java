@@ -10,6 +10,7 @@ import org.aspectj.lang.reflect.MethodSignature;
 
 import com.security.model.validation.annotations.PrivacyDataAnnotation;
 import com.security.model.validation.annotations.creators.CreatePrivacyDataAnnotation;
+import com.security.model.validation.annotations.enums.Constants;
 import com.security.model.validation.helpers.FieldFinder;
 
 import utility.PrivacyModelRepository;
@@ -24,6 +25,7 @@ public class CreatePrivacyDataAspect {
 		Object[] args = thisJoinPoint.getArgs();
 		Object returnedObject = thisJoinPoint.proceed(args);
 		Object originalObject = thisJoinPoint.getThis();
+		Class<? extends Object> originalObjectClass = originalObject.getClass();
 	    MethodSignature signature = (MethodSignature) thisJoinPoint.getSignature();
 	    Method method = signature.getMethod();
 	    CreatePrivacyDataAnnotation createPrivacyData = method.getAnnotation(CreatePrivacyDataAnnotation.class);
@@ -54,6 +56,23 @@ public class CreatePrivacyDataAspect {
 			privacyDataObject.setName((String)FieldFinder.getFieldValue(privacyData.id(), createdObject, createdObjectClass));
 			privacyDataObject.setType(createPrivacyData.type());
 			model.getAllDatas().add(privacyDataObject);
+			if(createPrivacyData.createSharedPrivacyData())
+			{
+				var sharedPrivacyDataObject = repo.getFactory().createSharedPrivacyData();
+				sharedPrivacyDataObject.setName(privacyDataObject.getName());
+				sharedPrivacyDataObject.setCollectedFromSubject(createPrivacyData.collectedFromSubject());
+				if(!createPrivacyData.privacyDataSource().equals(Constants.Empty))
+				{
+					var privacyDataSource = FieldFinder.getObjectToReadFrom(originalObjectClass, originalObject, createPrivacyData.parametersLocation(), createPrivacyData.privacyDataSource(), thisJoinPoint);
+					if(privacyDataSource.isPresent())
+					{
+						sharedPrivacyDataObject.setDataSource((String)privacyDataSource.get());
+					}
+				}
+
+				sharedPrivacyDataObject.setPrivacydata(privacyDataObject);
+				model.getAllSharedPrivacyData().add(sharedPrivacyDataObject);
+			}
 			repo.saveModel(model);
 		}
 		catch(Exception ex)
