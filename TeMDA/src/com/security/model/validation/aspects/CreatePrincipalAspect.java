@@ -74,7 +74,8 @@ public class CreatePrincipalAspect {
 			}
 			if(!principal.parent().equals(Constants.Empty)) 
 			{
-				var parent = ObjectManager.tryGetPrincipalByFromObject(createdObject, createdObjectClass, principal.parent(), model, ParametersObjectsLocation.Property, thisJoinPoint);
+				var parent = ObjectManager.tryGetPrincipalByFromObject(createdObject, createdObjectClass, principal.parent(), model, 
+						ParametersObjectsLocation.Property, thisJoinPoint);
 				if(parent.isPresent())
 				{
 					parent.get().getSubPrincipals().add(principalObject);
@@ -82,7 +83,8 @@ public class CreatePrincipalAspect {
 			}
 			if(!principal.parentId().equals(Constants.Empty))
 			{
-				var parent = ObjectManager.tryGetPrincipalByById(createdObject, createdObjectClass, principal.parentId(), model, ParametersObjectsLocation.Property, thisJoinPoint);
+				var parent = ObjectManager.tryGetPrincipalByById(createdObject, createdObjectClass, principal.parentId(), model, 
+						ParametersObjectsLocation.Property, thisJoinPoint);
 				if(parent.isPresent())
 				{
 					parent.get().getSubPrincipals().add(principalObject);

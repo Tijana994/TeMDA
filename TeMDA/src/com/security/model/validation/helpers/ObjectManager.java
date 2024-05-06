@@ -11,6 +11,7 @@ import privacyModel.Consent;
 import privacyModel.Location;
 import privacyModel.PolicyStatement;
 import privacyModel.Principal;
+import privacyModel.PrivacyData;
 import privacyModel.PrivacyPolicy;
 
 public class ObjectManager {
@@ -52,6 +53,26 @@ public class ObjectManager {
 		if(principalId.isPresent())
 		{
 			return ObjectFinder.checkIfPrincipalExists((String)principalId.get(), model);
+		}
+		return Optional.empty();
+	}
+	
+	public static Optional<PrivacyData> tryGetPrivacyDataByFromObject(Object obj, Class<? extends Object> objectClass,
+			String propertyName, PrivacyPolicy model, ParametersObjectsLocation parametersLocation, JoinPoint jp) {
+		var privacyDataId = ReadTypeByAttribute.getPrivacyDataIdFromObject(objectClass, obj, propertyName, parametersLocation, jp);
+		if(privacyDataId.isPresent())
+		{
+			return ObjectFinder.checkIfPrivacyDataExists(privacyDataId.get(), model);
+		}
+		return Optional.empty();
+	}
+	
+	public static Optional<PrivacyData> tryGetPrivacyDataByById(Object obj, Class<? extends Object> objectClass,
+			String propertyName, PrivacyPolicy model, ParametersObjectsLocation parametersLocation, JoinPoint jp) {
+		var privacyDataId = FieldFinder.getObjectToReadFrom(objectClass, obj, parametersLocation, propertyName, jp);
+		if(privacyDataId.isPresent())
+		{
+			return ObjectFinder.checkIfPrivacyDataExists((String)privacyDataId.get(), model);
 		}
 		return Optional.empty();
 	}

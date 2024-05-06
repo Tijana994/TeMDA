@@ -160,6 +160,40 @@ public class ReadTypeByAttribute {
 		return Optional.empty();
 	}
 	
+	public static Optional<String> getPrivacyDataIdFromObject(Class<?> objectClass, Object obj, String propertyName, 
+			ParametersObjectsLocation parametersLocation, JoinPoint jp)
+	{
+		if(obj == null)
+		{
+			System.out.println("Object is not instantiated.");
+			return Optional.empty();
+		}
+		try
+		{
+			var value = FieldFinder.getObjectToReadFrom(objectClass, obj, parametersLocation, propertyName, jp);
+			if(!value.isPresent())
+			{
+				return Optional.empty();
+			}
+			PrivacyDataAnnotation privacyData = value.getClass().getAnnotation(PrivacyDataAnnotation.class);
+			if(privacyData == null)
+			{
+				System.out.println("There is no privacy data annotation");
+			}
+			else
+			{
+				var Id = (String)FieldFinder.getFieldValue(privacyData.id(), value, value.getClass());
+				return Optional.of(Id);
+			}
+		}
+		catch(Exception e)
+		{
+			System.out.println(e);
+		}
+
+		return Optional.empty();
+	}
+	
 	public static Optional<String> getPrincipalIdFromObject(Class<?> objectClass, Object obj, String propertyName, 
 			ParametersObjectsLocation parametersLocation, JoinPoint jp)
 	{
@@ -324,7 +358,6 @@ public class ReadTypeByAttribute {
 						addPrivacyDataIfExists(model, datas, Id);
 					}
 				}
-
 			}
 			return datas;
 		}

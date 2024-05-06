@@ -62,7 +62,8 @@ public class CreateLocationAspect {
 			locationObject.setLegalAgeLimit(createLocation.legalAgeLimit());
 			if(!location.parent().equals(Constants.Empty)) 
 			{
-				var parent = ObjectManager.tryGetLocationFromObject(createdObject, createdObjectClass, location.parent(), model, ParametersObjectsLocation.Property, thisJoinPoint);
+				var parent = ObjectManager.tryGetLocationFromObject(createdObject, createdObjectClass, location.parent(), model, 
+						ParametersObjectsLocation.Property, thisJoinPoint);
 				if(parent.isPresent())
 				{
 					parent.get().getSubLocations().add(locationObject);
@@ -70,7 +71,8 @@ public class CreateLocationAspect {
 			}
 			if(!location.parentId().equals(Constants.Empty))
 			{
-				var parent = ObjectManager.tryGetLocationById(createdObject, createdObjectClass, location.parentId(), model, ParametersObjectsLocation.Property, thisJoinPoint);
+				var parent = ObjectManager.tryGetLocationById(createdObject, createdObjectClass, location.parentId(), model, 
+						ParametersObjectsLocation.Property, thisJoinPoint);
 				if(parent.isPresent())
 				{
 					parent.get().getSubLocations().add(locationObject);
@@ -92,6 +94,25 @@ public class CreateLocationAspect {
 				if(!locations.isEmpty())
 				{
 					locationObject.getSubLocations().addAll(locations);
+				}
+			}
+			
+			if(!location.subLocation().equals(Constants.Empty)) 
+			{
+				var subLocation = ObjectManager.tryGetLocationFromObject(createdObject, createdObjectClass, location.subLocation(), model, 
+						ParametersObjectsLocation.Property, thisJoinPoint);
+				if(subLocation.isPresent())
+				{
+					locationObject.getSubLocations().add(subLocation.get());
+				}
+			}
+			if(!location.subLocationId().equals(Constants.Empty))
+			{
+				var subLocation = ObjectManager.tryGetLocationById(createdObject, createdObjectClass, location.subLocationId(), model, 
+						ParametersObjectsLocation.Property, thisJoinPoint);
+				if(subLocation.isPresent())
+				{
+					locationObject.getSubLocations().add(subLocation.get());
 				}
 			}
 			

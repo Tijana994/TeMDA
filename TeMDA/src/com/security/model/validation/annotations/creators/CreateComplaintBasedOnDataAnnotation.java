@@ -20,4 +20,6 @@ public @interface CreateComplaintBasedOnDataAnnotation {
 	ParametersObjectsLocation parametersLocation() default ParametersObjectsLocation.Parameter;
 	String subjects() default Constants.Empty;
 	String subjectsIds() default Constants.Empty;
+	String subject() default Constants.Empty;
+	String subjectId() default Constants.Empty;
 }

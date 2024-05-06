@@ -64,22 +64,40 @@ public class CreateDenialAspect {
 			{
 				denialObject.setReason((String)FieldFinder.getFieldValue(denial.reason(), createdObject, createdObjectClass));
 			}
-			if(!createDenial.basedOnStatemets().equals(Constants.Empty))
+			if(!createDenial.basedOnStatements().equals(Constants.Empty))
 			{
-				var policyStatements = ReadTypeByAttribute.getPolicyStatementsFromObject(originalObjectClass, originalObject, createDenial.basedOnStatemets(),
-						createDenial.parametersLocation(), thisJoinPoint , model);
+				var policyStatements = ReadTypeByAttribute.getPolicyStatementsFromObject(originalObjectClass, originalObject, createDenial.basedOnStatements(),
+						createDenial.parametersLocation(), thisJoinPoint, model);
 				if(!policyStatements.isEmpty())
 				{
 					denialObject.getBasedOnStatements().addAll(policyStatements);
 				}
 			}
-			if(!createDenial.basedOnStatemetsIds().equals(Constants.Empty))
+			if(!createDenial.basedOnStatementsIds().equals(Constants.Empty))
 			{
-				var policyStatements = ReadTypeByAttribute.getPolicyStatementsById(originalObjectClass, originalObject, createDenial.basedOnStatemetsIds(),
-						createDenial.parametersLocation(), thisJoinPoint , model);
+				var policyStatements = ReadTypeByAttribute.getPolicyStatementsById(originalObjectClass, originalObject, createDenial.basedOnStatementsIds(),
+						createDenial.parametersLocation(), thisJoinPoint, model);
 				if(!policyStatements.isEmpty())
 				{
 					denialObject.getBasedOnStatements().addAll(policyStatements);
+				}
+			}
+			if(!createDenial.basedOnStatement().equals(Constants.Empty))
+			{
+				var policyStatement = ObjectManager.tryGetPolicyStatementFromObject(originalObject, originalObjectClass, createDenial.basedOnStatement(), 
+						model, createDenial.parametersLocation(), thisJoinPoint);
+				if(!policyStatement.isEmpty())
+				{
+					denialObject.getBasedOnStatements().add(policyStatement.get());
+				}
+			}
+			if(!createDenial.basedOnStatementId().equals(Constants.Empty))
+			{
+				var policyStatement = ObjectManager.tryGetPolicyStatementById(originalObject, originalObjectClass, createDenial.basedOnStatementId(), 
+						model, createDenial.parametersLocation(), thisJoinPoint);
+				if(!policyStatement.isEmpty())
+				{
+					denialObject.getBasedOnStatements().add(policyStatement.get());
 				}
 			}
 			if(!createDenial.forComplaint().equals(Constants.Empty))

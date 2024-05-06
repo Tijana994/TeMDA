@@ -29,6 +29,7 @@ public class CreateComplaintBasedOnDataAspect {
 		Object[] args = thisJoinPoint.getArgs();
 		Object returnedObject = thisJoinPoint.proceed(args);
 		Object originalObject = thisJoinPoint.getThis();
+		Class<? extends Object> originalObjectClass = originalObject.getClass();
 	    MethodSignature signature = (MethodSignature) thisJoinPoint.getSignature();
 	    Method method = signature.getMethod();
 	    CreateComplaintBasedOnDataAnnotation createComplaintBasedOnData = method.getAnnotation(CreateComplaintBasedOnDataAnnotation.class);
@@ -67,7 +68,7 @@ public class CreateComplaintBasedOnDataAspect {
 			}
 			if(!createComplaintBasedOnData.subjects().equals(Constants.Empty))
 			{
-				var datas = ReadTypeByAttribute.getPrivacyDatasFromObject(createdObjectClass, createdObject, createComplaintBasedOnData.subjects(), 
+				var datas = ReadTypeByAttribute.getPrivacyDatasFromObject(originalObjectClass, originalObject, createComplaintBasedOnData.subjects(), 
 						createComplaintBasedOnData.parametersLocation(), thisJoinPoint, model);
 				if(!datas.isEmpty())
 				{
@@ -76,11 +77,29 @@ public class CreateComplaintBasedOnDataAspect {
 			}
 			if(!createComplaintBasedOnData.subjectsIds().equals(Constants.Empty))
 			{
-				var datas = ReadTypeByAttribute.getPrivacyDatasById(createdObjectClass, createdObject, createComplaintBasedOnData.subjectsIds(), 
+				var datas = ReadTypeByAttribute.getPrivacyDatasById(originalObjectClass, originalObject, createComplaintBasedOnData.subjectsIds(), 
 						createComplaintBasedOnData.parametersLocation(), thisJoinPoint, model);
 				if(!datas.isEmpty())
 				{
 					complaintTypeObject.getSubject().addAll(datas);
+				}
+			}
+			if(!createComplaintBasedOnData.subject().equals(Constants.Empty))
+			{
+				var data = ObjectManager.tryGetPrivacyDataByFromObject(originalObject, originalObjectClass, createComplaintBasedOnData.subject(), model, 
+						createComplaintBasedOnData.parametersLocation(), thisJoinPoint);
+				if(!data.isEmpty())
+				{
+					complaintTypeObject.getSubject().add(data.get());
+				}
+			}
+			if(!createComplaintBasedOnData.subjectId().equals(Constants.Empty))
+			{
+				var data = ObjectManager.tryGetPrivacyDataByById(originalObject, originalObjectClass, createComplaintBasedOnData.subjectId(), model, 
+						createComplaintBasedOnData.parametersLocation(), thisJoinPoint);
+				if(!data.isEmpty())
+				{
+					complaintTypeObject.getSubject().add(data.get());
 				}
 			}
 			if(!complaint.who().equals(Constants.Empty)) 

@@ -15,4 +15,6 @@ public @interface LocationAnnotation {
 	String parentId() default Constants.Empty;
 	String subLocations() default Constants.Empty;
 	String subLocationsIds() default Constants.Empty;
+	String subLocation() default Constants.Empty;
+	String subLocationId() default Constants.Empty;
 }
