@@ -18,4 +18,8 @@ public @interface NotificationAnnotation {
 	String receiversIds() default Constants.Empty;
 	String notifiers() default Constants.Empty;
 	String notifiersIds() default Constants.Empty;
+	String receiver() default Constants.Empty;
+	String receiverId() default Constants.Empty;
+	String notifier() default Constants.Empty;
+	String notifierId() default Constants.Empty;
 }

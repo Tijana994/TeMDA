@@ -18,7 +18,9 @@ public class HowCreator {
 		return !createPolicyStatement.howDocuments().equals(Constants.Empty) ||
 				!createPolicyStatement.howDocumentsIds().equals(Constants.Empty) ||
 				!createPolicyStatement.howConsent().equals(Constants.Empty) ||
-				!createPolicyStatement.howConsentId().equals(Constants.Empty);
+				!createPolicyStatement.howConsentId().equals(Constants.Empty) ||
+				!createPolicyStatement.howDocument().equals(Constants.Empty) ||
+				!createPolicyStatement.howDocumentId().equals(Constants.Empty);
 	}
 
 	public static How createHow(CreatePolicyStatementAnnotation createPolicyStatement, Object originalObject,
@@ -44,9 +46,28 @@ public class HowCreator {
 				how.getDocuments().addAll(documents);
 			}
 		}
+		if(!createPolicyStatement.howDocument().equals(Constants.Empty))
+		{
+			var document = ObjectManager.tryGetDocumentFromObject(originalObject, originalObjectClass, createPolicyStatement.howDocument(), 
+					model, createPolicyStatement.parametersLocation(), jp);
+			if(!document.isEmpty())
+			{
+				how.getDocuments().add(document.get());
+			}
+		}
+		if(!createPolicyStatement.howDocumentId().equals(Constants.Empty))
+		{
+			var document = ObjectManager.tryGetDocumentById(originalObject, originalObjectClass, createPolicyStatement.howDocumentId(), 
+					model, createPolicyStatement.parametersLocation(), jp);
+			if(!document.isEmpty())
+			{
+				how.getDocuments().add(document.get());
+			}
+		}
 		if(!createPolicyStatement.howConsent().equals(Constants.Empty))
 		{
-			var consent = ObjectManager.tryGetConsentFromObject(originalObject, originalObjectClass, createPolicyStatement.howConsent(), model, createPolicyStatement.parametersLocation(), jp);
+			var consent = ObjectManager.tryGetConsentFromObject(originalObject, originalObjectClass, createPolicyStatement.howConsent(), 
+					model, createPolicyStatement.parametersLocation(), jp);
 			if(consent.isPresent())
 			{
 				how.setConsent(consent.get());
@@ -54,7 +75,8 @@ public class HowCreator {
 		}
 		if(!createPolicyStatement.howConsentId().equals(Constants.Empty))
 		{
-			var consent = ObjectManager.tryGetConsentById(originalObject, originalObjectClass, createPolicyStatement.howConsentId(), model, createPolicyStatement.parametersLocation(), jp);
+			var consent = ObjectManager.tryGetConsentById(originalObject, originalObjectClass, createPolicyStatement.howConsentId(), 
+					model, createPolicyStatement.parametersLocation(), jp);
 			if(consent.isPresent())
 			{
 				how.setConsent(consent.get());

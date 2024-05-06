@@ -24,7 +24,7 @@ import privacyModel.SharedPrivacyData;
 
 public class ReadTypeByAttribute {
 
-	public static Optional<String> getConsentIdFromObject(Class<?> objectClass, Object obj, String propertyName, 
+	public static Optional<String> getPaperIdFromObject(Class<?> objectClass, Object obj, String propertyName, 
 			ParametersObjectsLocation parametersLocation, JoinPoint jp)
 	{
 		if(obj == null)

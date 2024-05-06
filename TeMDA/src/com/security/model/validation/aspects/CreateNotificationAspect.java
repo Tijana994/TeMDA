@@ -126,6 +126,22 @@ public class CreateNotificationAspect {
 					notificationObject.getReceivers().addAll(reveivers);
 				}
 			}
+			if(!notification.receiver().equals(Constants.Empty))
+			{
+				var reveiver = ObjectManager.tryGetPrincipalByFromObject(createdObject, createdObjectClass, notification.receiver(), model, parametersLocation, thisJoinPoint);
+				if(!reveiver.isEmpty())
+				{
+					notificationObject.getReceivers().add(reveiver.get());
+				}
+			}
+			if(!notification.receiverId().equals(Constants.Empty))
+			{
+				var reveiver = ObjectManager.tryGetPrincipalByById(createdObject, createdObjectClass, notification.receiverId(), model, parametersLocation, thisJoinPoint);
+				if(!reveiver.isEmpty())
+				{
+					notificationObject.getReceivers().add(reveiver.get());
+				}
+			}
 			if(!notification.notifiers().equals(Constants.Empty))
 			{
 				var notifiers = ReadTypeByAttribute.getPrincipalsFromObject(createdObjectClass, createdObject, notification.notifiers(), 
@@ -142,6 +158,22 @@ public class CreateNotificationAspect {
 				if(!notifiers.isEmpty())
 				{
 					notificationObject.getNotifiers().addAll(notifiers);
+				}
+			}
+			if(!notification.notifier().equals(Constants.Empty))
+			{
+				var notifier = ObjectManager.tryGetPrincipalByFromObject(createdObject, createdObjectClass, notification.notifier(), model, parametersLocation, thisJoinPoint);
+				if(!notifier.isEmpty())
+				{
+					notificationObject.getNotifiers().add(notifier.get());
+				}
+			}
+			if(!notification.notifierId().equals(Constants.Empty))
+			{
+				var notifier = ObjectManager.tryGetPrincipalByById(createdObject, createdObjectClass, notification.notifierId(), model, parametersLocation, thisJoinPoint);
+				if(!notifier.isEmpty())
+				{
+					notificationObject.getNotifiers().add(notifier.get());
 				}
 			}
 			model.getNotifications().add(notificationObject);

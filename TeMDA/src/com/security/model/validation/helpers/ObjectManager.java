@@ -8,6 +8,7 @@ import com.security.model.validation.annotations.enums.ParametersObjectsLocation
 
 import privacyModel.Complaint;
 import privacyModel.Consent;
+import privacyModel.Document;
 import privacyModel.Location;
 import privacyModel.PolicyStatement;
 import privacyModel.Principal;
@@ -119,7 +120,7 @@ public class ObjectManager {
 	
 	public static Optional<Consent> tryGetConsentFromObject(Object obj, Class<? extends Object> objectClass,
 			String propertyName, PrivacyPolicy model, ParametersObjectsLocation parametersLocation, JoinPoint jp) {
-		var consentId = ReadTypeByAttribute.getConsentIdFromObject(objectClass, obj, propertyName, parametersLocation, jp);
+		var consentId = ReadTypeByAttribute.getPaperIdFromObject(objectClass, obj, propertyName, parametersLocation, jp);
 		if(consentId.isPresent())
 		{
 			return ObjectFinder.checkIfConsentExists(consentId.get(), model);
@@ -133,6 +134,26 @@ public class ObjectManager {
 		if(consentId.isPresent())
 		{
 			return ObjectFinder.checkIfConsentExists((String)consentId.get(), model);
+		}
+		return Optional.empty();
+	}
+	
+	public static Optional<Document> tryGetDocumentFromObject(Object obj, Class<? extends Object> objectClass,
+			String propertyName, PrivacyPolicy model, ParametersObjectsLocation parametersLocation, JoinPoint jp) {
+		var documentId = ReadTypeByAttribute.getPaperIdFromObject(objectClass, obj, propertyName, parametersLocation, jp);
+		if(documentId.isPresent())
+		{
+			return ObjectFinder.checkIfDocumentExists(documentId.get(), model);
+		}
+		return Optional.empty();
+	}
+	
+	public static Optional<Document> tryGetDocumentById(Object obj, Class<? extends Object> objectClass,
+			String propertyName, PrivacyPolicy model, ParametersObjectsLocation parametersLocation, JoinPoint jp) {
+		var documentId = FieldFinder.getObjectToReadFrom(objectClass, obj,parametersLocation, propertyName, jp);
+		if(documentId.isPresent())
+		{
+			return ObjectFinder.checkIfDocumentExists((String)documentId.get(), model);
 		}
 		return Optional.empty();
 	}
