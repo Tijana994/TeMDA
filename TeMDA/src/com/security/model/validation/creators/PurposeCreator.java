@@ -5,12 +5,10 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.aspectj.lang.JoinPoint;
-
 import com.security.model.validation.annotations.PurposeAnnotation;
 import com.security.model.validation.annotations.enums.Constants;
-import com.security.model.validation.annotations.enums.ParametersObjectsLocation;
 import com.security.model.validation.helpers.FieldFinder;
+import com.security.model.validation.models.CreationModel;
 
 import privacyModel.PrivacyModelFactory;
 import privacyModel.ProcessingReason;
@@ -33,8 +31,8 @@ public class PurposeCreator {
         	_subtypes.put(reason.getValue(), reason);
     }
 
-	public static Purpose createPurpose(Class<?> originalObjectClass, Object originalObject,
-			String propertyName, ParametersObjectsLocation parametersLocation, PrivacyModelFactory factory, JoinPoint jp) {
+	public static Purpose createPurpose(CreationModel creationModel, Class<?> originalObjectClass, Object originalObject,
+			String propertyName, PrivacyModelFactory factory) {
 		if(originalObject == null)
 		{
 			System.out.println("Object is not instantiated.");
@@ -42,7 +40,7 @@ public class PurposeCreator {
 		}
 		try
 		{
-			var purposeObject = FieldFinder.getObjectToReadFrom(originalObjectClass, originalObject, parametersLocation, propertyName, jp);
+			var purposeObject = FieldFinder.getObjectToReadFrom(creationModel, originalObjectClass, originalObject, propertyName);
 			if(purposeObject.isEmpty())
 			{
 				return null;

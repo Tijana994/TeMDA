@@ -3,12 +3,12 @@ package com.security.model.validation.helpers;
 import java.lang.reflect.Field;
 import java.util.Optional;
 
-import org.aspectj.lang.JoinPoint;
 import org.aspectj.lang.reflect.MethodSignature;
 
 import com.security.model.validation.annotations.enums.Constants;
 import com.security.model.validation.annotations.enums.CreatedObjectLocation;
 import com.security.model.validation.annotations.enums.ParametersObjectsLocation;
+import com.security.model.validation.models.CreationModel;
 
 public class FieldFinder {
 
@@ -33,14 +33,14 @@ public class FieldFinder {
 		return null;
 	}
 	
-	public static Object getObjectToReadFrom(Object ret, Object obj, CreatedObjectLocation location, String name, JoinPoint jp)
+	public static Object getObjectToReadFrom(CreationModel creationModel, Object obj, String name)
 	{
 		Object retFromObj = null;
-		if(location == CreatedObjectLocation.Return)
+		if(creationModel.getCreatedLocation() == CreatedObjectLocation.Return)
 		{
-			retFromObj = ret;
+			retFromObj = creationModel.getReturnedObject();
 		}
-		else if(location == CreatedObjectLocation.Property)
+		else if(creationModel.getCreatedLocation() == CreatedObjectLocation.Property)
 		{
 			if(name.equals(Constants.Empty))
 			{
@@ -49,7 +49,7 @@ public class FieldFinder {
 			}
 			retFromObj = getFieldValue(name, obj, obj.getClass());
 		}
-		else if(location == CreatedObjectLocation.Parameter)
+		else if(creationModel.getCreatedLocation() == CreatedObjectLocation.Parameter)
 		{
 			if(name.equals(Constants.Empty))
 			{
@@ -57,9 +57,9 @@ public class FieldFinder {
 				return retFromObj;
 			}
 			
-			MethodSignature signature = (MethodSignature)jp.getSignature();
+			MethodSignature signature = (MethodSignature)creationModel.getJoinPoint().getSignature();
 			String[] argNames = signature.getParameterNames();
-	        Object[] values = jp.getArgs();
+	        Object[] values = creationModel.getJoinPoint().getArgs();
 	        for (int i = 0; i < argNames.length; i++)
 			{
 				if(argNames[i].toLowerCase().equals(name.toLowerCase()))
@@ -73,17 +73,16 @@ public class FieldFinder {
 		return retFromObj;
 	}
 	
-	public static Optional<Object> getObjectToReadFrom(Object ret, Object obj, ParametersObjectsLocation location, 
-			String name, JoinPoint jp)
+	public static Optional<Object> getObjectToReadFrom(CreationModel creationModel, Class<? extends Object> objectClass, Object obj, String name)
 	{
-		if(location == ParametersObjectsLocation.Property)
+		if(creationModel.getParametersLocation() == ParametersObjectsLocation.Property)
 		{
 			if(name.equals(Constants.Empty))
 			{
 				System.out.println("Property name is empty");
 				return Optional.empty();
 			}
-			var value = getFieldValue(name, obj, obj.getClass());
+			var value = getFieldValue(name, obj, objectClass);
 			if(value == null)
 			{
 				System.out.println("Property " + name + " should be instatiate");
@@ -91,16 +90,16 @@ public class FieldFinder {
 			}
 			return Optional.of(value);
 		}
-		else if(location == ParametersObjectsLocation.Parameter)
+		else if(creationModel.getParametersLocation() == ParametersObjectsLocation.Parameter)
 		{
 			if(name.equals(Constants.Empty))
 			{
 				System.out.println("Parameter name is empty");
 				return Optional.empty();
 			}
-			MethodSignature signature = (MethodSignature)jp.getSignature();
+			MethodSignature signature = (MethodSignature)creationModel.getJoinPoint().getSignature();
 			String[] argNames = signature.getParameterNames();
-	        Object[] values = jp.getArgs();
+	        Object[] values = creationModel.getJoinPoint().getArgs();
 	        for (int i = 0; i < argNames.length; i++)
 			{
 				if(argNames[i].toLowerCase().equals(name.toLowerCase()))
@@ -117,10 +116,22 @@ public class FieldFinder {
 			System.out.println("Parameter " + name + " does not exist.");
 			return Optional.empty();
 		}
-		else if (location == ParametersObjectsLocation.PropertyInReturnedObject)
+		else if (creationModel.getParametersLocation() == ParametersObjectsLocation.PropertyInReturnedObject)
 		{
 			//TODO
 			System.out.println("TO DO");
+			if(name.equals(Constants.Empty))
+			{
+				System.out.println("Property name is empty");
+				return Optional.empty();
+			}
+			var value = getFieldValue(name, creationModel.getReturnedObject(), creationModel.getReturnedObject().getClass());
+			if(value == null)
+			{
+				System.out.println("Property " + name + " should be instatiate");
+				return Optional.empty();
+			}
+			return Optional.of(value);
 		}
 		
 		return Optional.empty();

@@ -2,9 +2,7 @@ package com.security.model.validation.helpers;
 
 import java.util.Optional;
 
-import org.aspectj.lang.JoinPoint;
-
-import com.security.model.validation.annotations.enums.ParametersObjectsLocation;
+import com.security.model.validation.models.CreationModel;
 
 import privacyModel.Complaint;
 import privacyModel.Consent;
@@ -17,10 +15,9 @@ import privacyModel.PrivacyPolicy;
 
 public class ObjectManager {
 	
-	public static Optional<PolicyStatement> tryGetPolicyStatementFromObject(Object obj, Class<? extends Object> objectClass,
-			String propertyName, PrivacyPolicy model, ParametersObjectsLocation parametersLocation, JoinPoint jp) {
-		var policyStatementId = ReadTypeByAttribute.getPolicyStatementIdFromObject(objectClass, obj, propertyName, 
-				parametersLocation, jp);
+	public static Optional<PolicyStatement> tryGetPolicyStatementFromObject(CreationModel creationModel, Object obj, 
+			Class<? extends Object> objectClass, String propertyName, PrivacyPolicy model) {
+		var policyStatementId = ReadTypeByAttribute.getPolicyStatementIdFromObject(creationModel, objectClass, obj, propertyName);
 		if(policyStatementId.isPresent())
 		{
 			return ObjectFinder.checkIfPolicyStatementExists(policyStatementId.get(), model);
@@ -28,9 +25,9 @@ public class ObjectManager {
 		return Optional.empty();
 	}
 	
-	public static Optional<PolicyStatement> tryGetPolicyStatementById(Object obj, Class<? extends Object> objectClass, 
-			String propertyName, PrivacyPolicy model, ParametersObjectsLocation parametersLocation, JoinPoint jp) {
-		var policyStatementId = FieldFinder.getObjectToReadFrom(objectClass, obj, parametersLocation, propertyName, jp);
+	public static Optional<PolicyStatement> tryGetPolicyStatementById(CreationModel creationModel, Object obj, 
+			Class<? extends Object> objectClass, String propertyName, PrivacyPolicy model) {
+		var policyStatementId = FieldFinder.getObjectToReadFrom(creationModel, objectClass, obj, propertyName);
 		if(policyStatementId.isPresent())
 		{
 			return ObjectFinder.checkIfPolicyStatementExists((String)policyStatementId.get(), model);
@@ -38,9 +35,9 @@ public class ObjectManager {
 		return Optional.empty();
 	}
 
-	public static Optional<Principal> tryGetPrincipalByFromObject(Object obj, Class<? extends Object> objectClass,
-			String propertyName, PrivacyPolicy model, ParametersObjectsLocation parametersLocation, JoinPoint jp) {
-		var principalId = ReadTypeByAttribute.getPrincipalIdFromObject(objectClass, obj, propertyName, parametersLocation, jp);
+	public static Optional<Principal> tryGetPrincipalByFromObject(CreationModel creationModel, Object obj, 
+			Class<? extends Object> objectClass, String propertyName, PrivacyPolicy model) {
+		var principalId = ReadTypeByAttribute.getPrincipalIdFromObject(creationModel, objectClass, obj, propertyName);
 		if(principalId.isPresent())
 		{
 			return ObjectFinder.checkIfPrincipalExists(principalId.get(), model);
@@ -48,9 +45,9 @@ public class ObjectManager {
 		return Optional.empty();
 	}
 	
-	public static Optional<Principal> tryGetPrincipalByById(Object obj, Class<? extends Object> objectClass,
-			String propertyName, PrivacyPolicy model, ParametersObjectsLocation parametersLocation, JoinPoint jp) {
-		var principalId = FieldFinder.getObjectToReadFrom(objectClass, obj, parametersLocation, propertyName, jp);
+	public static Optional<Principal> tryGetPrincipalByById(CreationModel creationModel, Object obj, 
+			Class<? extends Object> objectClass, String propertyName, PrivacyPolicy model) {
+		var principalId = FieldFinder.getObjectToReadFrom(creationModel, objectClass, obj, propertyName);
 		if(principalId.isPresent())
 		{
 			return ObjectFinder.checkIfPrincipalExists((String)principalId.get(), model);
@@ -58,9 +55,9 @@ public class ObjectManager {
 		return Optional.empty();
 	}
 	
-	public static Optional<PrivacyData> tryGetPrivacyDataByFromObject(Object obj, Class<? extends Object> objectClass,
-			String propertyName, PrivacyPolicy model, ParametersObjectsLocation parametersLocation, JoinPoint jp) {
-		var privacyDataId = ReadTypeByAttribute.getPrivacyDataIdFromObject(objectClass, obj, propertyName, parametersLocation, jp);
+	public static Optional<PrivacyData> tryGetPrivacyDataByFromObject(CreationModel creationModel, Object obj, 
+			Class<? extends Object> objectClass, String propertyName, PrivacyPolicy model) {
+		var privacyDataId = ReadTypeByAttribute.getPrivacyDataIdFromObject(creationModel, objectClass, obj, propertyName);
 		if(privacyDataId.isPresent())
 		{
 			return ObjectFinder.checkIfPrivacyDataExists(privacyDataId.get(), model);
@@ -68,9 +65,9 @@ public class ObjectManager {
 		return Optional.empty();
 	}
 	
-	public static Optional<PrivacyData> tryGetPrivacyDataByById(Object obj, Class<? extends Object> objectClass,
-			String propertyName, PrivacyPolicy model, ParametersObjectsLocation parametersLocation, JoinPoint jp) {
-		var privacyDataId = FieldFinder.getObjectToReadFrom(objectClass, obj, parametersLocation, propertyName, jp);
+	public static Optional<PrivacyData> tryGetPrivacyDataByById(CreationModel creationModel, Object obj, 
+			Class<? extends Object> objectClass, String propertyName, PrivacyPolicy model) {
+		var privacyDataId = FieldFinder.getObjectToReadFrom(creationModel, objectClass, obj, propertyName);
 		if(privacyDataId.isPresent())
 		{
 			return ObjectFinder.checkIfPrivacyDataExists((String)privacyDataId.get(), model);
@@ -78,9 +75,9 @@ public class ObjectManager {
 		return Optional.empty();
 	}
 	
-	public static Optional<Complaint> tryGetComplaintFromObject(Object obj, Class<? extends Object> objectClass,
-			String propertyName, PrivacyPolicy model, ParametersObjectsLocation parametersLocation, JoinPoint jp) {
-		var complaintId = ReadTypeByAttribute.getComplaintIdFromObject(objectClass, obj, propertyName, parametersLocation, jp);
+	public static Optional<Complaint> tryGetComplaintFromObject(CreationModel creationModel, Object obj, 
+			Class<? extends Object> objectClass, String propertyName, PrivacyPolicy model) {
+		var complaintId = ReadTypeByAttribute.getComplaintIdFromObject(creationModel, objectClass, obj, propertyName);
 		if(complaintId.isPresent())
 		{
 			return ObjectFinder.checkIfComplaintExists(complaintId.get(), model);
@@ -88,9 +85,9 @@ public class ObjectManager {
 		return Optional.empty();
 	}
 	
-	public static Optional<Complaint> tryGetComplaintById(Object obj, Class<? extends Object> objectClass,
-			String propertyName, PrivacyPolicy model, ParametersObjectsLocation parametersLocation, JoinPoint jp) {
-		var complaintId = FieldFinder.getObjectToReadFrom(objectClass, obj,parametersLocation, propertyName, jp);
+	public static Optional<Complaint> tryGetComplaintById(CreationModel creationModel, Object obj, 
+			Class<? extends Object> objectClass, String propertyName, PrivacyPolicy model) {
+		var complaintId = FieldFinder.getObjectToReadFrom(creationModel, objectClass, obj, propertyName);
 		if(complaintId.isPresent())
 		{
 			return ObjectFinder.checkIfComplaintExists((String)complaintId.get(), model);
@@ -98,9 +95,9 @@ public class ObjectManager {
 		return Optional.empty();
 	}
 	
-	public static Optional<Location> tryGetLocationFromObject(Object obj, Class<? extends Object> objectClass,
-			String propertyName, PrivacyPolicy model, ParametersObjectsLocation parametersLocation, JoinPoint jp) {
-		var locationId = ReadTypeByAttribute.getLocationIdFromObject(objectClass, obj, propertyName, parametersLocation, jp);
+	public static Optional<Location> tryGetLocationFromObject(CreationModel creationModel, Object obj, 
+			Class<? extends Object> objectClass, String propertyName, PrivacyPolicy model) {
+		var locationId = ReadTypeByAttribute.getLocationIdFromObject(creationModel, objectClass, obj, propertyName);
 		if(locationId.isPresent())
 		{
 			return ObjectFinder.checkIfLocationExists(locationId.get(), model);
@@ -108,9 +105,9 @@ public class ObjectManager {
 		return Optional.empty();
 	}
 	
-	public static Optional<Location> tryGetLocationById(Object obj, Class<? extends Object> objectClass,
-			String propertyName, PrivacyPolicy model, ParametersObjectsLocation parametersLocation, JoinPoint jp) {
-		var locationId = FieldFinder.getObjectToReadFrom(objectClass, obj,parametersLocation, propertyName, jp);
+	public static Optional<Location> tryGetLocationById(CreationModel creationModel, Object obj,
+			Class<? extends Object> objectClass, String propertyName, PrivacyPolicy model) {
+		var locationId = FieldFinder.getObjectToReadFrom(creationModel, objectClass, obj, propertyName);
 		if(locationId.isPresent())
 		{
 			return ObjectFinder.checkIfLocationExists((String)locationId.get(), model);
@@ -118,9 +115,9 @@ public class ObjectManager {
 		return Optional.empty();
 	}
 	
-	public static Optional<Consent> tryGetConsentFromObject(Object obj, Class<? extends Object> objectClass,
-			String propertyName, PrivacyPolicy model, ParametersObjectsLocation parametersLocation, JoinPoint jp) {
-		var consentId = ReadTypeByAttribute.getPaperIdFromObject(objectClass, obj, propertyName, parametersLocation, jp);
+	public static Optional<Consent> tryGetConsentFromObject(CreationModel creationModel, Object obj,
+			Class<? extends Object> objectClass, String propertyName, PrivacyPolicy model) {
+		var consentId = ReadTypeByAttribute.getPaperIdFromObject(creationModel, objectClass, obj, propertyName);
 		if(consentId.isPresent())
 		{
 			return ObjectFinder.checkIfConsentExists(consentId.get(), model);
@@ -128,9 +125,9 @@ public class ObjectManager {
 		return Optional.empty();
 	}
 	
-	public static Optional<Consent> tryGetConsentById(Object obj, Class<? extends Object> objectClass,
-			String propertyName, PrivacyPolicy model, ParametersObjectsLocation parametersLocation, JoinPoint jp) {
-		var consentId = FieldFinder.getObjectToReadFrom(objectClass, obj,parametersLocation, propertyName, jp);
+	public static Optional<Consent> tryGetConsentById(CreationModel creationModel, Object obj,
+			Class<? extends Object> objectClass, String propertyName, PrivacyPolicy model) {
+		var consentId = FieldFinder.getObjectToReadFrom(creationModel, objectClass, obj, propertyName);
 		if(consentId.isPresent())
 		{
 			return ObjectFinder.checkIfConsentExists((String)consentId.get(), model);
@@ -138,19 +135,19 @@ public class ObjectManager {
 		return Optional.empty();
 	}
 	
-	public static Optional<Document> tryGetDocumentFromObject(Object obj, Class<? extends Object> objectClass,
-			String propertyName, PrivacyPolicy model, ParametersObjectsLocation parametersLocation, JoinPoint jp) {
-		var documentId = ReadTypeByAttribute.getPaperIdFromObject(objectClass, obj, propertyName, parametersLocation, jp);
+	public static Optional<Document> tryGetDocumentFromObject(CreationModel creationModel, Object obj,
+			Class<? extends Object> objectClass, String propertyName, PrivacyPolicy model) {
+		var documentId = ReadTypeByAttribute.getPaperIdFromObject(creationModel, objectClass, obj, propertyName);
 		if(documentId.isPresent())
-		{
+		{ 
 			return ObjectFinder.checkIfDocumentExists(documentId.get(), model);
 		}
 		return Optional.empty();
 	}
 	
-	public static Optional<Document> tryGetDocumentById(Object obj, Class<? extends Object> objectClass,
-			String propertyName, PrivacyPolicy model, ParametersObjectsLocation parametersLocation, JoinPoint jp) {
-		var documentId = FieldFinder.getObjectToReadFrom(objectClass, obj,parametersLocation, propertyName, jp);
+	public static Optional<Document> tryGetDocumentById(CreationModel creationModel, Object obj,
+			Class<? extends Object> objectClass, String propertyName, PrivacyPolicy model) {
+		var documentId = FieldFinder.getObjectToReadFrom(creationModel, objectClass, obj, propertyName);
 		if(documentId.isPresent())
 		{
 			return ObjectFinder.checkIfDocumentExists((String)documentId.get(), model);

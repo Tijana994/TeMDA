@@ -4,15 +4,13 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
-import org.aspectj.lang.JoinPoint;
-
 import com.security.model.validation.annotations.ComplaintAnnotation;
 import com.security.model.validation.annotations.LocationAnnotation;
 import com.security.model.validation.annotations.PaperAnnotation;
 import com.security.model.validation.annotations.PolicyStatementAnnotation;
 import com.security.model.validation.annotations.PrincipalAnnotation;
 import com.security.model.validation.annotations.PrivacyDataAnnotation;
-import com.security.model.validation.annotations.enums.ParametersObjectsLocation;
+import com.security.model.validation.models.CreationModel;
 
 import privacyModel.Document;
 import privacyModel.Location;
@@ -24,8 +22,7 @@ import privacyModel.SharedPrivacyData;
 
 public class ReadTypeByAttribute {
 
-	public static Optional<String> getPaperIdFromObject(Class<?> objectClass, Object obj, String propertyName, 
-			ParametersObjectsLocation parametersLocation, JoinPoint jp)
+	public static Optional<String> getPaperIdFromObject(CreationModel creationModel, Class<?> objectClass, Object obj, String propertyName)
 	{
 		if(obj == null)
 		{
@@ -34,7 +31,7 @@ public class ReadTypeByAttribute {
 		}
 		try
 		{
-			var value = FieldFinder.getObjectToReadFrom(objectClass, obj, parametersLocation, propertyName, jp);
+			var value = FieldFinder.getObjectToReadFrom(creationModel, objectClass, obj, propertyName);
 			if(!value.isPresent())
 			{
 				return Optional.empty();
@@ -58,8 +55,7 @@ public class ReadTypeByAttribute {
 		return Optional.empty();
 	}
 	
-	public static Optional<String> getComplaintIdFromObject(Class<?> objectClass, Object obj, String propertyName, 
-			ParametersObjectsLocation parametersLocation, JoinPoint jp)
+	public static Optional<String> getComplaintIdFromObject(CreationModel creationModel, Class<?> objectClass, Object obj, String propertyName)
 	{
 		if(obj == null)
 		{
@@ -68,7 +64,7 @@ public class ReadTypeByAttribute {
 		}
 		try
 		{
-			var value = FieldFinder.getObjectToReadFrom(objectClass, obj, parametersLocation, propertyName, jp);
+			var value = FieldFinder.getObjectToReadFrom(creationModel, objectClass, obj, propertyName);
 			if(!value.isPresent())
 			{
 				return Optional.empty();
@@ -92,8 +88,7 @@ public class ReadTypeByAttribute {
 		return Optional.empty();
 	}
 	
-	public static Optional<String> getPolicyStatementIdFromObject(Class<?> objectClass, Object obj, String propertyName, 
-			ParametersObjectsLocation parametersLocation, JoinPoint jp)
+	public static Optional<String> getPolicyStatementIdFromObject(CreationModel creationModel, Class<?> objectClass, Object obj, String propertyName)
 	{
 		if(obj == null)
 		{
@@ -102,7 +97,7 @@ public class ReadTypeByAttribute {
 		}
 		try
 		{
-			var value = FieldFinder.getObjectToReadFrom(objectClass, obj, parametersLocation, propertyName, jp);
+			var value = FieldFinder.getObjectToReadFrom(creationModel, objectClass, obj, propertyName);
 			if(!value.isPresent())
 			{
 				return Optional.empty();
@@ -126,8 +121,7 @@ public class ReadTypeByAttribute {
 		return Optional.empty();
 	}
 	
-	public static Optional<String> getLocationIdFromObject(Class<?> objectClass, Object obj, String propertyName, 
-			ParametersObjectsLocation parametersLocation, JoinPoint jp)
+	public static Optional<String> getLocationIdFromObject(CreationModel creationModel, Class<?> objectClass, Object obj, String propertyName)
 	{
 		if(obj == null)
 		{
@@ -136,7 +130,7 @@ public class ReadTypeByAttribute {
 		}
 		try
 		{
-			var value = FieldFinder.getObjectToReadFrom(objectClass, obj, parametersLocation, propertyName, jp);
+			var value = FieldFinder.getObjectToReadFrom(creationModel, objectClass, obj, propertyName);
 			if(!value.isPresent())
 			{
 				return Optional.empty();
@@ -160,8 +154,7 @@ public class ReadTypeByAttribute {
 		return Optional.empty();
 	}
 	
-	public static Optional<String> getPrivacyDataIdFromObject(Class<?> objectClass, Object obj, String propertyName, 
-			ParametersObjectsLocation parametersLocation, JoinPoint jp)
+	public static Optional<String> getPrivacyDataIdFromObject(CreationModel creationModel, Class<?> objectClass, Object obj, String propertyName)
 	{
 		if(obj == null)
 		{
@@ -170,7 +163,7 @@ public class ReadTypeByAttribute {
 		}
 		try
 		{
-			var value = FieldFinder.getObjectToReadFrom(objectClass, obj, parametersLocation, propertyName, jp);
+			var value = FieldFinder.getObjectToReadFrom(creationModel, objectClass, obj, propertyName);
 			if(!value.isPresent())
 			{
 				return Optional.empty();
@@ -194,8 +187,7 @@ public class ReadTypeByAttribute {
 		return Optional.empty();
 	}
 	
-	public static Optional<String> getPrincipalIdFromObject(Class<?> objectClass, Object obj, String propertyName, 
-			ParametersObjectsLocation parametersLocation, JoinPoint jp)
+	public static Optional<String> getPrincipalIdFromObject(CreationModel creationModel, Class<?> objectClass, Object obj, String propertyName)
 	{
 		if(obj == null)
 		{
@@ -204,7 +196,7 @@ public class ReadTypeByAttribute {
 		}
 		try
 		{
-			var value = FieldFinder.getObjectToReadFrom(objectClass, obj, parametersLocation, propertyName, jp);
+			var value = FieldFinder.getObjectToReadFrom(creationModel, objectClass, obj, propertyName);
 			if(!value.isPresent())
 			{
 				return Optional.empty();
@@ -228,8 +220,8 @@ public class ReadTypeByAttribute {
 		return Optional.empty();
 	}
 	
-	public static List<Principal> getPrincipalsFromObject(Class<?> objectClass, Object obj, String propertyName, 
-			ParametersObjectsLocation parametersLocation, JoinPoint jp, PrivacyPolicy model)
+	public static List<Principal> getPrincipalsFromObject(CreationModel creationModel, Class<?> objectClass, Object obj, String propertyName, 
+			PrivacyPolicy model)
 	{
 		var principals = new ArrayList<Principal>();
 		if(obj == null)
@@ -239,7 +231,7 @@ public class ReadTypeByAttribute {
 		}
 		try
 		{
-			var value = FieldFinder.getObjectToReadFrom(objectClass, obj, parametersLocation, propertyName, jp);
+			var value = FieldFinder.getObjectToReadFrom(creationModel, objectClass, obj, propertyName);
 			if(!value.isPresent())
 			{
 				return principals;
@@ -277,11 +269,11 @@ public class ReadTypeByAttribute {
 		return principals;
 	}
 
-	public static List<Principal> getPrincipalsById(Class<?> objectClass, Object obj, String propertyName, 
-			ParametersObjectsLocation parametersLocation, JoinPoint jp, PrivacyPolicy model)
+	public static List<Principal> getPrincipalsById(CreationModel creationModel, Class<?> objectClass, Object obj, String propertyName, 
+			PrivacyPolicy model)
 	{
 		var principals = new ArrayList<Principal>();
-		var principalsIds = FieldFinder.getObjectToReadFrom(objectClass, obj, parametersLocation, propertyName, jp);
+		var principalsIds = FieldFinder.getObjectToReadFrom(creationModel, objectClass, obj, propertyName);
 		if(!principalsIds.isPresent())
 		{
 			return principals;
@@ -321,8 +313,8 @@ public class ReadTypeByAttribute {
 		}
 	}
 	
-	public static List<PrivacyData> getPrivacyDatasFromObject(Class<?> objectClass, Object obj, String propertyName,
-			ParametersObjectsLocation parametersLocation, JoinPoint jp, PrivacyPolicy model)
+	public static List<PrivacyData> getPrivacyDatasFromObject(CreationModel creationModel, Class<?> objectClass, Object obj, String propertyName,
+			PrivacyPolicy model)
 	{
 		var datas = new ArrayList<PrivacyData>();
 		if(obj == null)
@@ -332,7 +324,7 @@ public class ReadTypeByAttribute {
 		}
 		try
 		{
-			var value = FieldFinder.getObjectToReadFrom(objectClass, obj, parametersLocation, propertyName, jp);
+			var value = FieldFinder.getObjectToReadFrom(creationModel, objectClass, obj, propertyName);
 			if(!value.isPresent())
 			{
 				return datas;
@@ -369,11 +361,11 @@ public class ReadTypeByAttribute {
 		return datas;
 	}
 
-	public static List<PrivacyData> getPrivacyDatasById(Class<?> objectClass, Object obj, String propertyName, 
-			ParametersObjectsLocation parametersLocation, JoinPoint jp, PrivacyPolicy model)
+	public static List<PrivacyData> getPrivacyDatasById(CreationModel creationModel, Class<?> objectClass, Object obj, String propertyName, 
+			PrivacyPolicy model)
 	{
 		var datas = new ArrayList<PrivacyData>();
-		var dataIds = FieldFinder.getObjectToReadFrom(objectClass, obj, parametersLocation, propertyName, jp);
+		var dataIds = FieldFinder.getObjectToReadFrom(creationModel, objectClass, obj, propertyName);
 		if(!dataIds.isPresent())
 		{
 			return datas;
@@ -399,8 +391,8 @@ public class ReadTypeByAttribute {
 		}
 	}
 	
-	public static List<Location> getLocationsFromObject(Class<?> objectClass, Object obj, String propertyName, 
-			ParametersObjectsLocation parametersLocation, JoinPoint jp, PrivacyPolicy model)
+	public static List<Location> getLocationsFromObject(CreationModel creationModel, Class<?> objectClass, Object obj, String propertyName, 
+			PrivacyPolicy model)
 	{
 		var locations = new ArrayList<Location>();
 		if(obj == null)
@@ -410,7 +402,7 @@ public class ReadTypeByAttribute {
 		}
 		try
 		{
-			var value = FieldFinder.getObjectToReadFrom(objectClass, obj, parametersLocation, propertyName, jp);
+			var value = FieldFinder.getObjectToReadFrom(creationModel, objectClass, obj, propertyName);
 			if(!value.isPresent())
 			{
 				return locations;
@@ -448,11 +440,11 @@ public class ReadTypeByAttribute {
 		return locations;
 	}
 	
-	public static List<Location> getLocationsById(Class<?> objectClass, Object obj, String propertyName, 
-			ParametersObjectsLocation parametersLocation, JoinPoint jp, PrivacyPolicy model)
+	public static List<Location> getLocationsById(CreationModel creationModel, Class<?> objectClass, Object obj, String propertyName, 
+			PrivacyPolicy model)
 	{
 		var locations = new ArrayList<Location>();
-		var locationIds = FieldFinder.getObjectToReadFrom(objectClass, obj, parametersLocation, propertyName, jp);
+		var locationIds = FieldFinder.getObjectToReadFrom(creationModel, objectClass, obj, propertyName);
 		if(!locationIds.isPresent())
 		{
 			return locations;
@@ -478,8 +470,8 @@ public class ReadTypeByAttribute {
 		}
 	}
 	
-	public static List<PolicyStatement> getPolicyStatementsFromObject(Class<?> objectClass, Object obj, String propertyName, 
-			ParametersObjectsLocation parametersLocation, JoinPoint jp, PrivacyPolicy model)
+	public static List<PolicyStatement> getPolicyStatementsFromObject(CreationModel creationModel, Class<?> objectClass, Object obj, String propertyName, 
+			PrivacyPolicy model)
 	{
 		var policyStatments = new ArrayList<PolicyStatement>();
 		if(obj == null)
@@ -489,7 +481,7 @@ public class ReadTypeByAttribute {
 		}
 		try
 		{
-			var value = FieldFinder.getObjectToReadFrom(objectClass, obj, parametersLocation, propertyName, jp);
+			var value = FieldFinder.getObjectToReadFrom(creationModel, objectClass, obj, propertyName);
 			if(!value.isPresent())
 			{
 				return policyStatments;
@@ -527,11 +519,11 @@ public class ReadTypeByAttribute {
 		return policyStatments;
 	}
 
-	public static List<PolicyStatement> getPolicyStatementsById(Class<?> objectClass, Object obj, String propertyName, 
-			ParametersObjectsLocation parametersLocation, JoinPoint jp, PrivacyPolicy model)
+	public static List<PolicyStatement> getPolicyStatementsById(CreationModel creationModel, Class<?> objectClass, Object obj, String propertyName, 
+			PrivacyPolicy model)
 	{
 		var policyStatments = new ArrayList<PolicyStatement>();
-		var policyStatmentIds = FieldFinder.getObjectToReadFrom(objectClass, obj, parametersLocation, propertyName, jp);
+		var policyStatmentIds = FieldFinder.getObjectToReadFrom(creationModel, objectClass, obj, propertyName);
 		if(!policyStatmentIds.isPresent())
 		{
 			return policyStatments;
@@ -558,8 +550,8 @@ public class ReadTypeByAttribute {
 		}
 	}
 	
-	public static List<Document> getDocumentsFromObject(Class<?> objectClass, Object obj, String propertyName, 
-			ParametersObjectsLocation parametersLocation, JoinPoint jp, PrivacyPolicy model)
+	public static List<Document> getDocumentsFromObject(CreationModel creationModel, Class<?> objectClass, Object obj, String propertyName, 
+			PrivacyPolicy model)
 	{
 		var documents = new ArrayList<Document>();
 		if(obj == null)
@@ -569,7 +561,7 @@ public class ReadTypeByAttribute {
 		}
 		try
 		{
-			var value = FieldFinder.getObjectToReadFrom(objectClass, obj, parametersLocation, propertyName, jp);
+			var value = FieldFinder.getObjectToReadFrom(creationModel, objectClass, obj, propertyName);
 			if(!value.isPresent())
 			{
 				return documents;
@@ -607,11 +599,11 @@ public class ReadTypeByAttribute {
 		return documents;
 	}
 	
-	public static List<Document> getDocumentsById(Class<?> objectClass, Object obj, String propertyName, 
-			ParametersObjectsLocation parametersLocation, JoinPoint jp, PrivacyPolicy model)
+	public static List<Document> getDocumentsById(CreationModel creationModel, Class<?> objectClass, Object obj, String propertyName, 
+			PrivacyPolicy model)
 	{
 		var documents = new ArrayList<Document>();
-		var documentIds = FieldFinder.getObjectToReadFrom(objectClass, obj, parametersLocation, propertyName, jp);
+		var documentIds = FieldFinder.getObjectToReadFrom(creationModel, objectClass, obj, propertyName);
 		if(!documentIds.isPresent())
 		{
 			return documents;

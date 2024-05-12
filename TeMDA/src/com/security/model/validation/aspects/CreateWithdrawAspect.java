@@ -15,6 +15,7 @@ import com.security.model.validation.annotations.enums.Constants;
 import com.security.model.validation.annotations.enums.ParametersObjectsLocation;
 import com.security.model.validation.helpers.FieldFinder;
 import com.security.model.validation.helpers.ObjectManager;
+import com.security.model.validation.models.CreationModel;
 
 import utility.PrivacyModelRepository;
 
@@ -37,7 +38,9 @@ public class CreateWithdrawAspect {
 			System.out.println("There is no create withdraw statement annotation");
 			return returnedObject;
 		}
-		Object createdObject = FieldFinder.getObjectToReadFrom(returnedObject, originalObject, createWithdraw.createdObjectLocation(), createWithdraw.name(), thisJoinPoint);
+		CreationModel originalObjectModel = new CreationModel(returnedObject, thisJoinPoint, createWithdraw.createdObjectLocation(), createWithdraw.parametersLocation());
+		CreationModel createdObjectModel = new CreationModel(returnedObject, thisJoinPoint, createWithdraw.createdObjectLocation(), ParametersObjectsLocation.Property);
+		Object createdObject = FieldFinder.getObjectToReadFrom(originalObjectModel, originalObject, createWithdraw.name());
 		if(createdObject == null)
 		{
 			System.out.println("Read from object is null = CreateWithdrawAspect");
@@ -67,8 +70,7 @@ public class CreateWithdrawAspect {
 			}
 			if(!createWithdraw.consent().equals(Constants.Empty))
 			{
-				var consent = ObjectManager.tryGetConsentFromObject(originalObject, originalObjectClass, createWithdraw.consent(), model, 
-						createWithdraw.parametersLocation(), thisJoinPoint);
+				var consent = ObjectManager.tryGetConsentFromObject(originalObjectModel, originalObject, originalObjectClass, createWithdraw.consent(), model);
 				if(consent.isPresent())
 				{
 					withdrawObject.setSubject(consent.get());
@@ -76,8 +78,7 @@ public class CreateWithdrawAspect {
 			}
 			if(!createWithdraw.consentId().equals(Constants.Empty))
 			{
-				var consent = ObjectManager.tryGetConsentById(originalObject, originalObjectClass, createWithdraw.consentId(), model, 
-						createWithdraw.parametersLocation(), thisJoinPoint);
+				var consent = ObjectManager.tryGetConsentById(originalObjectModel, originalObject, originalObjectClass, createWithdraw.consentId(), model);
 				if(consent.isPresent())
 				{
 					withdrawObject.setSubject(consent.get());
@@ -85,8 +86,7 @@ public class CreateWithdrawAspect {
 			}
 			if(!withdraw.who().equals(Constants.Empty)) 
 			{
-				var principal = ObjectManager.tryGetPrincipalByFromObject(createdObject, createdObjectClass, withdraw.who(), model, 
-						ParametersObjectsLocation.Property, thisJoinPoint);
+				var principal = ObjectManager.tryGetPrincipalByFromObject(createdObjectModel, createdObject, createdObjectClass, withdraw.who(), model);
 				if(principal.isPresent())
 				{
 					complaintObject.setWho(principal.get());
@@ -94,8 +94,7 @@ public class CreateWithdrawAspect {
 			}
 			if(!withdraw.whoId().equals(Constants.Empty))
 			{
-				var principal = ObjectManager.tryGetPrincipalByById(createdObject, createdObjectClass, withdraw.whoId(), model, 
-						ParametersObjectsLocation.Property, thisJoinPoint);
+				var principal = ObjectManager.tryGetPrincipalByById(createdObjectModel, createdObject, createdObjectClass, withdraw.whoId(), model);
 				if(principal.isPresent())
 				{
 					complaintObject.setWho(principal.get());

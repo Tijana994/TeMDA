@@ -15,6 +15,7 @@ import com.security.model.validation.annotations.enums.Constants;
 import com.security.model.validation.annotations.enums.ParametersObjectsLocation;
 import com.security.model.validation.helpers.FieldFinder;
 import com.security.model.validation.helpers.ObjectManager;
+import com.security.model.validation.models.CreationModel;
 
 import utility.PrivacyModelRepository;
 
@@ -25,6 +26,7 @@ public class CreateComplaintBasedOnActionAspect {
 	void function() {}
 	@Around("function()")
 	public Object createComplaintBasedOnAction(ProceedingJoinPoint thisJoinPoint) throws Throwable {
+		
 		Object[] args = thisJoinPoint.getArgs();
 		Object returnedObject = thisJoinPoint.proceed(args);
 		Object originalObject = thisJoinPoint.getThis();
@@ -37,7 +39,9 @@ public class CreateComplaintBasedOnActionAspect {
 			System.out.println("There is no create complaint based on action annotation");
 			return returnedObject;
 		}
-		Object createdObject = FieldFinder.getObjectToReadFrom(returnedObject, originalObject, createComplaintBasedOnAction.createdObjectLocation(), createComplaintBasedOnAction.name(), thisJoinPoint);
+		CreationModel originalObjectModel = new CreationModel(returnedObject, thisJoinPoint, createComplaintBasedOnAction.createdObjectLocation(), createComplaintBasedOnAction.parametersLocation());
+		CreationModel createdObjectModel = new CreationModel(returnedObject, thisJoinPoint, createComplaintBasedOnAction.createdObjectLocation(), ParametersObjectsLocation.Property);
+		Object createdObject = FieldFinder.getObjectToReadFrom(originalObjectModel, originalObject, createComplaintBasedOnAction.name());
 		if(createdObject == null)
 		{
 			System.out.println("Read from object is null - CreateComplaintBasedOnActionAspect");
@@ -58,7 +62,6 @@ public class CreateComplaintBasedOnActionAspect {
 			var model = repo.getModel();
 			var complaintTypeObject = repo.getFactory().createComplaintBasedOnAction();
 			var complaintObject = repo.getFactory().createComplaint();
-			var parametersLocation = createComplaintBasedOnAction.parametersLocation();
 			complaintObject.setName((String)FieldFinder.getFieldValue(complaint.id(), createdObject, createdObjectClass));
 			complaintObject.setWhen((Date)FieldFinder.getFieldValue(complaint.when(), createdObject, createdObjectClass));
 			
@@ -68,8 +71,8 @@ public class CreateComplaintBasedOnActionAspect {
 			}
 			if(!createComplaintBasedOnAction.policyStatement().equals(Constants.Empty))
 			{
-				var policyStatement = ObjectManager.tryGetPolicyStatementFromObject(originalObject, originalObjectClass, 
-						createComplaintBasedOnAction.policyStatement(), model, parametersLocation, thisJoinPoint);
+				var policyStatement = ObjectManager.tryGetPolicyStatementFromObject(originalObjectModel, originalObject, originalObjectClass, 
+						createComplaintBasedOnAction.policyStatement(), model);
 				if(policyStatement.isPresent())
 				{
 					complaintTypeObject.setStatement(policyStatement.get());
@@ -77,9 +80,8 @@ public class CreateComplaintBasedOnActionAspect {
 			}
 			if(!createComplaintBasedOnAction.policyStatementId().equals(Constants.Empty))
 			{
-				var policyStatement = ObjectManager.tryGetPolicyStatementById(originalObject, originalObjectClass, 
-						createComplaintBasedOnAction.policyStatementId(), model, 
-						parametersLocation, thisJoinPoint);
+				var policyStatement = ObjectManager.tryGetPolicyStatementById(originalObjectModel, originalObject, originalObjectClass, 
+						createComplaintBasedOnAction.policyStatementId(), model);
 				if(policyStatement.isPresent())
 				{
 					complaintTypeObject.setStatement(policyStatement.get());
@@ -87,7 +89,7 @@ public class CreateComplaintBasedOnActionAspect {
 			}
 			if(!complaint.who().equals(Constants.Empty)) 
 			{
-				var principal = ObjectManager.tryGetPrincipalByFromObject(createdObject, createdObjectClass, complaint.who(), model, ParametersObjectsLocation.Property, thisJoinPoint);
+				var principal = ObjectManager.tryGetPrincipalByFromObject(createdObjectModel, createdObject, createdObjectClass, complaint.who(), model);
 				if(principal.isPresent())
 				{
 					complaintObject.setWho(principal.get());
@@ -95,7 +97,7 @@ public class CreateComplaintBasedOnActionAspect {
 			}
 			if(!complaint.whoId().equals(Constants.Empty))
 			{
-				var principal = ObjectManager.tryGetPrincipalByById(createdObject, createdObjectClass, complaint.whoId(), model, ParametersObjectsLocation.Property, thisJoinPoint);
+				var principal = ObjectManager.tryGetPrincipalByById(createdObjectModel, createdObject, createdObjectClass, complaint.whoId(), model);
 				if(principal.isPresent())
 				{
 					complaintObject.setWho(principal.get());

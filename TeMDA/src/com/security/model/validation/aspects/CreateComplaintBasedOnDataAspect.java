@@ -16,6 +16,7 @@ import com.security.model.validation.annotations.enums.ParametersObjectsLocation
 import com.security.model.validation.helpers.FieldFinder;
 import com.security.model.validation.helpers.ObjectManager;
 import com.security.model.validation.helpers.ReadTypeByAttribute;
+import com.security.model.validation.models.CreationModel;
 
 import utility.PrivacyModelRepository;
 
@@ -38,7 +39,9 @@ public class CreateComplaintBasedOnDataAspect {
 			System.out.println("There is no create complaint based on data annotation");
 			return returnedObject;
 		}
-		Object createdObject = FieldFinder.getObjectToReadFrom(returnedObject, originalObject, createComplaintBasedOnData.createdObjectLocation(), createComplaintBasedOnData.name(), thisJoinPoint);
+		CreationModel originalObjectModel = new CreationModel(returnedObject, thisJoinPoint, createComplaintBasedOnData.createdObjectLocation(), createComplaintBasedOnData.parametersLocation());
+		CreationModel createdObjectModel = new CreationModel(returnedObject, thisJoinPoint, createComplaintBasedOnData.createdObjectLocation(), ParametersObjectsLocation.Property);
+		Object createdObject = FieldFinder.getObjectToReadFrom(originalObjectModel, originalObject, createComplaintBasedOnData.name());
 		if(createdObject == null)
 		{
 			System.out.println("Read from object is null - CreateComplaintBasedOnDataAspect");
@@ -68,8 +71,7 @@ public class CreateComplaintBasedOnDataAspect {
 			}
 			if(!createComplaintBasedOnData.subjects().equals(Constants.Empty))
 			{
-				var datas = ReadTypeByAttribute.getPrivacyDatasFromObject(originalObjectClass, originalObject, createComplaintBasedOnData.subjects(), 
-						createComplaintBasedOnData.parametersLocation(), thisJoinPoint, model);
+				var datas = ReadTypeByAttribute.getPrivacyDatasFromObject(originalObjectModel, originalObjectClass, originalObject, createComplaintBasedOnData.subjects(), model);
 				if(!datas.isEmpty())
 				{
 					complaintTypeObject.getSubject().addAll(datas);
@@ -77,8 +79,7 @@ public class CreateComplaintBasedOnDataAspect {
 			}
 			if(!createComplaintBasedOnData.subjectsIds().equals(Constants.Empty))
 			{
-				var datas = ReadTypeByAttribute.getPrivacyDatasById(originalObjectClass, originalObject, createComplaintBasedOnData.subjectsIds(), 
-						createComplaintBasedOnData.parametersLocation(), thisJoinPoint, model);
+				var datas = ReadTypeByAttribute.getPrivacyDatasById(originalObjectModel, originalObjectClass, originalObject, createComplaintBasedOnData.subjectsIds(), model);
 				if(!datas.isEmpty())
 				{
 					complaintTypeObject.getSubject().addAll(datas);
@@ -86,8 +87,7 @@ public class CreateComplaintBasedOnDataAspect {
 			}
 			if(!createComplaintBasedOnData.subject().equals(Constants.Empty))
 			{
-				var data = ObjectManager.tryGetPrivacyDataByFromObject(originalObject, originalObjectClass, createComplaintBasedOnData.subject(), model, 
-						createComplaintBasedOnData.parametersLocation(), thisJoinPoint);
+				var data = ObjectManager.tryGetPrivacyDataByFromObject(originalObjectModel, originalObject, originalObjectClass, createComplaintBasedOnData.subject(), model);
 				if(!data.isEmpty())
 				{
 					complaintTypeObject.getSubject().add(data.get());
@@ -95,8 +95,7 @@ public class CreateComplaintBasedOnDataAspect {
 			}
 			if(!createComplaintBasedOnData.subjectId().equals(Constants.Empty))
 			{
-				var data = ObjectManager.tryGetPrivacyDataByById(originalObject, originalObjectClass, createComplaintBasedOnData.subjectId(), model, 
-						createComplaintBasedOnData.parametersLocation(), thisJoinPoint);
+				var data = ObjectManager.tryGetPrivacyDataByById(originalObjectModel, originalObject, originalObjectClass, createComplaintBasedOnData.subjectId(), model);
 				if(!data.isEmpty())
 				{
 					complaintTypeObject.getSubject().add(data.get());
@@ -104,7 +103,7 @@ public class CreateComplaintBasedOnDataAspect {
 			}
 			if(!complaint.who().equals(Constants.Empty)) 
 			{
-				var principal = ObjectManager.tryGetPrincipalByFromObject(createdObject, createdObjectClass, complaint.who(), model, ParametersObjectsLocation.Property, thisJoinPoint);
+				var principal = ObjectManager.tryGetPrincipalByFromObject(createdObjectModel, createdObject, createdObjectClass, complaint.who(), model);
 				if(principal.isPresent())
 				{
 					complaintObject.setWho(principal.get());
@@ -112,7 +111,7 @@ public class CreateComplaintBasedOnDataAspect {
 			}
 			if(!complaint.whoId().equals(Constants.Empty))
 			{
-				var principal = ObjectManager.tryGetPrincipalByById(createdObject, createdObjectClass, complaint.whoId(), model, ParametersObjectsLocation.Property, thisJoinPoint);
+				var principal = ObjectManager.tryGetPrincipalByById(createdObjectModel, createdObject, createdObjectClass, complaint.whoId(), model);
 				if(principal.isPresent())
 				{
 					complaintObject.setWho(principal.get());

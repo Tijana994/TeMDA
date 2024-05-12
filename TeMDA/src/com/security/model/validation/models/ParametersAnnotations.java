@@ -1,4 +1,4 @@
-package com.security.model.validation.creators;
+package com.security.model.validation.models;
 
 import java.lang.annotation.Annotation;
 

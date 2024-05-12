@@ -3,37 +3,36 @@ package com.security.model.validation.creators;
 import java.util.Date;
 import java.util.Optional;
 
-import org.aspectj.lang.JoinPoint;
-
 import com.security.model.validation.annotations.TimeStatementAnnotation;
 import com.security.model.validation.annotations.enums.ParametersObjectsLocation;
 import com.security.model.validation.helpers.FieldFinder;
+import com.security.model.validation.models.CreationModel;
+import com.security.model.validation.models.ParametersAnnotations;
 
 import privacyModel.AbstractTime;
 import privacyModel.PrivacyModelFactory;
 import privacyModel.TimeStatement;
 
 public class WhenCreator {
-	public static AbstractTime createWhen(Class<?> originalObjectClass, Object originalObject, 
-			String when, ParametersObjectsLocation parametersLocation, PrivacyModelFactory factory, 
-			JoinPoint jp, ParametersAnnotations parametersAnnotation)
+	public static AbstractTime createWhen(CreationModel creationModel, Class<?> originalObjectClass, Object originalObject, 
+			String when, PrivacyModelFactory factory, ParametersAnnotations parametersAnnotation)
 	{
 		try
 		{
 			var whens = when.split(",", 2);
 			if(whens.length == 1)
 			{
-				var time = FieldFinder.getObjectToReadFrom(originalObjectClass, originalObject, parametersLocation, whens[0], jp);
-				return createTimeStatement(time, factory, parametersAnnotation, parametersLocation, whens[0]);
+				var time = FieldFinder.getObjectToReadFrom(creationModel, originalObjectClass, originalObject, whens[0]);
+				return createTimeStatement(time, factory, parametersAnnotation, creationModel.getParametersLocation(), whens[0]);
 			}
 			else if(whens.length == 2)
 			{
 				var interval = factory.createTimeInterval();
-				var start = FieldFinder.getObjectToReadFrom(originalObjectClass, originalObject, parametersLocation, whens[0], jp);
-				interval.setStart(createTimeStatement(start, factory, parametersAnnotation, parametersLocation, whens[0]));
+				var start = FieldFinder.getObjectToReadFrom(creationModel, originalObjectClass, originalObject, whens[0]);
+				interval.setStart(createTimeStatement(start, factory, parametersAnnotation, creationModel.getParametersLocation(), whens[0]));
 				
-				var end = FieldFinder.getObjectToReadFrom(originalObjectClass, originalObject, parametersLocation, whens[1], jp);
-				interval.setEnd(createTimeStatement(end, factory, parametersAnnotation, parametersLocation, whens[1]));
+				var end = FieldFinder.getObjectToReadFrom(creationModel, originalObjectClass, originalObject, whens[1]);
+				interval.setEnd(createTimeStatement(end, factory, parametersAnnotation, creationModel.getParametersLocation(), whens[1]));
 				
 				return interval;
 			}

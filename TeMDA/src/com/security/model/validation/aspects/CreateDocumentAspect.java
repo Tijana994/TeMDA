@@ -15,6 +15,7 @@ import com.security.model.validation.annotations.enums.Constants;
 import com.security.model.validation.annotations.enums.ParametersObjectsLocation;
 import com.security.model.validation.helpers.FieldFinder;
 import com.security.model.validation.helpers.ObjectManager;
+import com.security.model.validation.models.CreationModel;
 
 import utility.PrivacyModelRepository;
 
@@ -36,7 +37,8 @@ public class CreateDocumentAspect {
 			System.out.println("There is no create document statement annotation");
 			return returnedObject;
 		}
-		Object createdObject = FieldFinder.getObjectToReadFrom(returnedObject, originalObject, createDocument.createdObjectLocation(), createDocument.name(), thisJoinPoint);
+		CreationModel createdObjectModel = new CreationModel(returnedObject, thisJoinPoint, createDocument.createdObjectLocation(), ParametersObjectsLocation.Property);
+		Object createdObject = FieldFinder.getObjectToReadFrom(createdObjectModel, originalObject, createDocument.name());
 		if(createdObject == null)
 		{
 			System.out.println("Read from object is null - CreateDocumentAspect");
@@ -74,7 +76,7 @@ public class CreateDocumentAspect {
 			}
 			if(!paper.providedBy().equals(Constants.Empty)) 
 			{
-				var principal = ObjectManager.tryGetPrincipalByFromObject(createdObject, createdObjectClass, paper.providedBy(), model, ParametersObjectsLocation.Property, thisJoinPoint);
+				var principal = ObjectManager.tryGetPrincipalByFromObject(createdObjectModel, createdObject, createdObjectClass, paper.providedBy(), model);
 				if(principal.isPresent())
 				{
 					documentObject.setProvidedBy(principal.get());
@@ -82,7 +84,7 @@ public class CreateDocumentAspect {
 			}
 			if(!paper.providedById().equals(Constants.Empty))
 			{
-				var principal = ObjectManager.tryGetPrincipalByById(createdObject, createdObjectClass, paper.providedById(), model, ParametersObjectsLocation.Property, thisJoinPoint);
+				var principal = ObjectManager.tryGetPrincipalByById(createdObjectModel, createdObject, createdObjectClass, paper.providedById(), model);
 				if(principal.isPresent())
 				{
 					documentObject.setProvidedBy(principal.get());

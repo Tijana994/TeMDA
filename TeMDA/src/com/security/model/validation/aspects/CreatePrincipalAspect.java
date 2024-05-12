@@ -18,6 +18,7 @@ import com.security.model.validation.annotations.enums.ParametersObjectsLocation
 import com.security.model.validation.helpers.FieldFinder;
 import com.security.model.validation.helpers.ObjectManager;
 import com.security.model.validation.helpers.ReadTypeByAttribute;
+import com.security.model.validation.models.CreationModel;
 
 import privacyModel.Principal;
 import utility.PrivacyModelRepository;
@@ -40,7 +41,8 @@ public class CreatePrincipalAspect {
 			System.out.println("There is no create principal statement annotation");
 			return returnedObject;
 		}
-		Object createdObject = FieldFinder.getObjectToReadFrom(returnedObject, originalObject, createPrincipal.createdObjectLocation(), createPrincipal.name(), thisJoinPoint);
+		CreationModel createdObjectModel = new CreationModel(returnedObject, thisJoinPoint, createPrincipal.createdObjectLocation(), ParametersObjectsLocation.Property);
+		Object createdObject = FieldFinder.getObjectToReadFrom(createdObjectModel, originalObject, createPrincipal.name());
 		if(createdObject == null)
 		{
 			System.out.println("Read from object is null = CreatePrincipalAspect");
@@ -74,8 +76,7 @@ public class CreatePrincipalAspect {
 			}
 			if(!principal.parent().equals(Constants.Empty)) 
 			{
-				var parent = ObjectManager.tryGetPrincipalByFromObject(createdObject, createdObjectClass, principal.parent(), model, 
-						ParametersObjectsLocation.Property, thisJoinPoint);
+				var parent = ObjectManager.tryGetPrincipalByFromObject(createdObjectModel, createdObject, createdObjectClass, principal.parent(), model);
 				if(parent.isPresent())
 				{
 					parent.get().getSubPrincipals().add(principalObject);
@@ -83,8 +84,7 @@ public class CreatePrincipalAspect {
 			}
 			if(!principal.parentId().equals(Constants.Empty))
 			{
-				var parent = ObjectManager.tryGetPrincipalByById(createdObject, createdObjectClass, principal.parentId(), model, 
-						ParametersObjectsLocation.Property, thisJoinPoint);
+				var parent = ObjectManager.tryGetPrincipalByById(createdObjectModel, createdObject, createdObjectClass, principal.parentId(), model);
 				if(parent.isPresent())
 				{
 					parent.get().getSubPrincipals().add(principalObject);
@@ -92,8 +92,7 @@ public class CreatePrincipalAspect {
 			}
 			if(!principal.responsiblePersons().equals(Constants.Empty)) 
 			{
-				var parents = ReadTypeByAttribute.getPrincipalsFromObject(createdObjectClass, createdObject, principal.responsiblePersons(), 
-						ParametersObjectsLocation.Property, thisJoinPoint, model);
+				var parents = ReadTypeByAttribute.getPrincipalsFromObject(createdObjectModel, createdObjectClass, createdObject, principal.responsiblePersons(), model);
 				if(!parents.isEmpty())
 				{
 					principalObject.getResponsiblePersons().addAll(parents);
@@ -101,8 +100,7 @@ public class CreatePrincipalAspect {
 			}
 			if(!principal.responsiblePersonIds().equals(Constants.Empty))
 			{
-				var parents = ReadTypeByAttribute.getPrincipalsById(createdObjectClass, createdObject, principal.responsiblePersonIds(), 
-						ParametersObjectsLocation.Property, thisJoinPoint, model);
+				var parents = ReadTypeByAttribute.getPrincipalsById(createdObjectModel, createdObjectClass, createdObject, principal.responsiblePersonIds(), model);
 				if(!parents.isEmpty())
 				{
 					principalObject.getResponsiblePersons().addAll(parents);
@@ -110,8 +108,7 @@ public class CreatePrincipalAspect {
 			}
 			if(!principal.childrens().equals(Constants.Empty))
 			{
-				var childrens = ReadTypeByAttribute.getPrincipalsFromObject(createdObjectClass, createdObject, principal.childrens(), 
-						ParametersObjectsLocation.Property, thisJoinPoint, model);
+				var childrens = ReadTypeByAttribute.getPrincipalsFromObject(createdObjectModel, createdObjectClass, createdObject, principal.childrens(), model);
 				if(!childrens.isEmpty())
 				{
 					principalObject.getSubPrincipals().addAll(childrens);
@@ -119,8 +116,7 @@ public class CreatePrincipalAspect {
 			}
 			if(!principal.childrensIds().equals(Constants.Empty))
 			{
-				var childrens = ReadTypeByAttribute.getPrincipalsById(createdObjectClass, createdObject, principal.childrensIds(), 
-						ParametersObjectsLocation.Property, thisJoinPoint, model);
+				var childrens = ReadTypeByAttribute.getPrincipalsById(createdObjectModel, createdObjectClass, createdObject, principal.childrensIds(), model);
 				if(!childrens.isEmpty())
 				{
 					principalObject.getSubPrincipals().addAll(childrens);
@@ -128,7 +124,7 @@ public class CreatePrincipalAspect {
 			}
 			if(!principal.inhabits().equals(Constants.Empty) && createPrincipal.shouldSetLocation()) 
 			{
-				var location = ObjectManager.tryGetLocationFromObject(createdObject, createdObjectClass, principal.inhabits(), model, ParametersObjectsLocation.Property, thisJoinPoint);
+				var location = ObjectManager.tryGetLocationFromObject(createdObjectModel, createdObject, createdObjectClass, principal.inhabits(), model);
 				if(location.isPresent())
 				{
 					principalObject.setInhabits(location.get());
@@ -136,7 +132,7 @@ public class CreatePrincipalAspect {
 			}
 			if(!principal.inhabitsId().equals(Constants.Empty) && createPrincipal.shouldSetLocation())
 			{
-				var location = ObjectManager.tryGetLocationById(createdObject, createdObjectClass, principal.inhabitsId(), model, ParametersObjectsLocation.Property, thisJoinPoint);
+				var location = ObjectManager.tryGetLocationById(createdObjectModel, createdObject, createdObjectClass, principal.inhabitsId(), model);
 				if(location.isPresent())
 				{
 					principalObject.setInhabits(location.get());

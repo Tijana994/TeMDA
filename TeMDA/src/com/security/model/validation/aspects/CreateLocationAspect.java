@@ -15,6 +15,7 @@ import com.security.model.validation.annotations.enums.ParametersObjectsLocation
 import com.security.model.validation.helpers.FieldFinder;
 import com.security.model.validation.helpers.ObjectManager;
 import com.security.model.validation.helpers.ReadTypeByAttribute;
+import com.security.model.validation.models.CreationModel;
 
 import utility.PrivacyModelRepository;
 
@@ -36,7 +37,8 @@ public class CreateLocationAspect {
 			System.out.println("There is no create location statement annotation");
 			return returnedObject;
 		}
-		Object createdObject = FieldFinder.getObjectToReadFrom(returnedObject, originalObject, createLocation.createdObjectLocation(), createLocation.name(), thisJoinPoint);
+		CreationModel createdObjectModel = new CreationModel(returnedObject, thisJoinPoint, createLocation.createdObjectLocation(), ParametersObjectsLocation.Property);
+		Object createdObject = FieldFinder.getObjectToReadFrom(createdObjectModel, originalObject, createLocation.name());
 		if(createdObject == null)
 		{
 			System.out.println("Read from object is null - CreateLocationAspect");
@@ -62,8 +64,7 @@ public class CreateLocationAspect {
 			locationObject.setLegalAgeLimit(createLocation.legalAgeLimit());
 			if(!location.parent().equals(Constants.Empty)) 
 			{
-				var parent = ObjectManager.tryGetLocationFromObject(createdObject, createdObjectClass, location.parent(), model, 
-						ParametersObjectsLocation.Property, thisJoinPoint);
+				var parent = ObjectManager.tryGetLocationFromObject(createdObjectModel, createdObject, createdObjectClass, location.parent(), model);
 				if(parent.isPresent())
 				{
 					parent.get().getSubLocations().add(locationObject);
@@ -71,8 +72,7 @@ public class CreateLocationAspect {
 			}
 			if(!location.parentId().equals(Constants.Empty))
 			{
-				var parent = ObjectManager.tryGetLocationById(createdObject, createdObjectClass, location.parentId(), model, 
-						ParametersObjectsLocation.Property, thisJoinPoint);
+				var parent = ObjectManager.tryGetLocationById(createdObjectModel, createdObject, createdObjectClass, location.parentId(), model);
 				if(parent.isPresent())
 				{
 					parent.get().getSubLocations().add(locationObject);
@@ -80,8 +80,7 @@ public class CreateLocationAspect {
 			}
 			if(!location.subLocations().equals(Constants.Empty))
 			{
-				var locations = ReadTypeByAttribute.getLocationsFromObject(createdObjectClass, createdObject, location.subLocations(), 
-						ParametersObjectsLocation.Property, thisJoinPoint, model);
+				var locations = ReadTypeByAttribute.getLocationsFromObject(createdObjectModel, createdObjectClass, createdObject, location.subLocations(), model);
 				if(!locations.isEmpty())
 				{
 					locationObject.getSubLocations().addAll(locations);
@@ -89,8 +88,7 @@ public class CreateLocationAspect {
 			}
 			if(!location.subLocationsIds().equals(Constants.Empty))
 			{
-				var locations = ReadTypeByAttribute.getLocationsById(createdObjectClass, createdObject, location.subLocationsIds(), 
-						ParametersObjectsLocation.Property, thisJoinPoint, model);
+				var locations = ReadTypeByAttribute.getLocationsById(createdObjectModel, createdObjectClass, createdObject, location.subLocationsIds(), model);
 				if(!locations.isEmpty())
 				{
 					locationObject.getSubLocations().addAll(locations);
@@ -99,8 +97,7 @@ public class CreateLocationAspect {
 			
 			if(!location.subLocation().equals(Constants.Empty)) 
 			{
-				var subLocation = ObjectManager.tryGetLocationFromObject(createdObject, createdObjectClass, location.subLocation(), model, 
-						ParametersObjectsLocation.Property, thisJoinPoint);
+				var subLocation = ObjectManager.tryGetLocationFromObject(createdObjectModel, createdObject, createdObjectClass, location.subLocation(), model);
 				if(subLocation.isPresent())
 				{
 					locationObject.getSubLocations().add(subLocation.get());
@@ -108,8 +105,7 @@ public class CreateLocationAspect {
 			}
 			if(!location.subLocationId().equals(Constants.Empty))
 			{
-				var subLocation = ObjectManager.tryGetLocationById(createdObject, createdObjectClass, location.subLocationId(), model, 
-						ParametersObjectsLocation.Property, thisJoinPoint);
+				var subLocation = ObjectManager.tryGetLocationById(createdObjectModel, createdObject, createdObjectClass, location.subLocationId(), model);
 				if(subLocation.isPresent())
 				{
 					locationObject.getSubLocations().add(subLocation.get());

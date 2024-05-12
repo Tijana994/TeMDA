@@ -12,6 +12,7 @@ import com.security.model.validation.annotations.PrivacyDataAnnotation;
 import com.security.model.validation.annotations.creators.CreatePrivacyDataAnnotation;
 import com.security.model.validation.annotations.enums.Constants;
 import com.security.model.validation.helpers.FieldFinder;
+import com.security.model.validation.models.CreationModel;
 
 import utility.PrivacyModelRepository;
 
@@ -34,7 +35,8 @@ public class CreatePrivacyDataAspect {
 			System.out.println("There is no create privacy data annotation");
 			return returnedObject;
 		}
-		Object createdObject = FieldFinder.getObjectToReadFrom(returnedObject, originalObject, createPrivacyData.createdObjectLocation(), createPrivacyData.name(), thisJoinPoint);
+		CreationModel originalObjectModel = new CreationModel(returnedObject, thisJoinPoint, createPrivacyData.createdObjectLocation(), createPrivacyData.parametersLocation());
+		Object createdObject = FieldFinder.getObjectToReadFrom(originalObjectModel, originalObject, createPrivacyData.name());
 		if(createdObject == null)
 		{
 			System.out.println("Read from object is null = CreatePrivacyDataAspect");
@@ -63,7 +65,7 @@ public class CreatePrivacyDataAspect {
 				sharedPrivacyDataObject.setCollectedFromSubject(createPrivacyData.collectedFromSubject());
 				if(!createPrivacyData.privacyDataSource().equals(Constants.Empty))
 				{
-					var privacyDataSource = FieldFinder.getObjectToReadFrom(originalObjectClass, originalObject, createPrivacyData.parametersLocation(), createPrivacyData.privacyDataSource(), thisJoinPoint);
+					var privacyDataSource = FieldFinder.getObjectToReadFrom(originalObjectModel, originalObjectClass, originalObject, createPrivacyData.privacyDataSource());
 					if(privacyDataSource.isPresent())
 					{
 						sharedPrivacyDataObject.setDataSource((String)privacyDataSource.get());

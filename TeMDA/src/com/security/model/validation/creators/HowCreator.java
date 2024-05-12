@@ -1,11 +1,10 @@
 package com.security.model.validation.creators;
 
-import org.aspectj.lang.JoinPoint;
-
 import com.security.model.validation.annotations.creators.CreatePolicyStatementAnnotation;
 import com.security.model.validation.annotations.enums.Constants;
 import com.security.model.validation.helpers.ObjectManager;
 import com.security.model.validation.helpers.ReadTypeByAttribute;
+import com.security.model.validation.models.CreationModel;
 
 import privacyModel.How;
 import privacyModel.PrivacyPolicy;
@@ -23,15 +22,13 @@ public class HowCreator {
 				!createPolicyStatement.howDocumentId().equals(Constants.Empty);
 	}
 
-	public static How createHow(CreatePolicyStatementAnnotation createPolicyStatement, Object originalObject,
-			Class<? extends Object> originalObjectClass, PrivacyModelRepository repo, PrivacyPolicy model, 
-			JoinPoint jp) {
+	public static How createHow(CreationModel creationModel, CreatePolicyStatementAnnotation createPolicyStatement, Object originalObject,
+			Class<? extends Object> originalObjectClass, PrivacyModelRepository repo, PrivacyPolicy model) {
 		var how = repo.getFactory().createHow();
 		
 		if(!createPolicyStatement.howDocuments().equals(Constants.Empty))
 		{
-			var documents = ReadTypeByAttribute.getDocumentsFromObject(originalObjectClass, originalObject, createPolicyStatement.howDocuments(), 
-					createPolicyStatement.parametersLocation(), jp, model);
+			var documents = ReadTypeByAttribute.getDocumentsFromObject(creationModel, originalObjectClass, originalObject, createPolicyStatement.howDocuments(), model);
 			if(!documents.isEmpty())
 			{
 				how.getDocuments().addAll(documents);
@@ -39,8 +36,7 @@ public class HowCreator {
 		}
 		if(!createPolicyStatement.howDocumentsIds().equals(Constants.Empty))
 		{
-			var documents = ReadTypeByAttribute.getDocumentsById(originalObjectClass, originalObject, createPolicyStatement.howDocumentsIds(), 
-					createPolicyStatement.parametersLocation(), jp, model);
+			var documents = ReadTypeByAttribute.getDocumentsById(creationModel, originalObjectClass, originalObject, createPolicyStatement.howDocumentsIds(), model);
 			if(!documents.isEmpty())
 			{
 				how.getDocuments().addAll(documents);
@@ -48,8 +44,7 @@ public class HowCreator {
 		}
 		if(!createPolicyStatement.howDocument().equals(Constants.Empty))
 		{
-			var document = ObjectManager.tryGetDocumentFromObject(originalObject, originalObjectClass, createPolicyStatement.howDocument(), 
-					model, createPolicyStatement.parametersLocation(), jp);
+			var document = ObjectManager.tryGetDocumentFromObject(creationModel, originalObject, originalObjectClass, createPolicyStatement.howDocument(), model);
 			if(!document.isEmpty())
 			{
 				how.getDocuments().add(document.get());
@@ -57,8 +52,7 @@ public class HowCreator {
 		}
 		if(!createPolicyStatement.howDocumentId().equals(Constants.Empty))
 		{
-			var document = ObjectManager.tryGetDocumentById(originalObject, originalObjectClass, createPolicyStatement.howDocumentId(), 
-					model, createPolicyStatement.parametersLocation(), jp);
+			var document = ObjectManager.tryGetDocumentById(creationModel, originalObject, originalObjectClass, createPolicyStatement.howDocumentId(), model);
 			if(!document.isEmpty())
 			{
 				how.getDocuments().add(document.get());
@@ -66,8 +60,7 @@ public class HowCreator {
 		}
 		if(!createPolicyStatement.howConsent().equals(Constants.Empty))
 		{
-			var consent = ObjectManager.tryGetConsentFromObject(originalObject, originalObjectClass, createPolicyStatement.howConsent(), 
-					model, createPolicyStatement.parametersLocation(), jp);
+			var consent = ObjectManager.tryGetConsentFromObject(creationModel, originalObject, originalObjectClass, createPolicyStatement.howConsent(), model);
 			if(consent.isPresent())
 			{
 				how.setConsent(consent.get());
@@ -75,8 +68,7 @@ public class HowCreator {
 		}
 		if(!createPolicyStatement.howConsentId().equals(Constants.Empty))
 		{
-			var consent = ObjectManager.tryGetConsentById(originalObject, originalObjectClass, createPolicyStatement.howConsentId(), 
-					model, createPolicyStatement.parametersLocation(), jp);
+			var consent = ObjectManager.tryGetConsentById(creationModel, originalObject, originalObjectClass, createPolicyStatement.howConsentId(), model);
 			if(consent.isPresent())
 			{
 				how.setConsent(consent.get());
