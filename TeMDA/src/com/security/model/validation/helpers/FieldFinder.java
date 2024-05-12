@@ -118,7 +118,6 @@ public class FieldFinder {
 		}
 		else if (creationModel.getParametersLocation() == ParametersObjectsLocation.PropertyInReturnedObject)
 		{
-			//TODO
 			if(name.equals(Constants.Empty))
 			{
 				System.out.println("Property name is empty");
