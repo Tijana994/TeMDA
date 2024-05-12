@@ -40,15 +40,13 @@ public class CreateNotificationAspect {
 			return returnedObject;
 		}
 		CreationModel createdObjectModel = new CreationModel(returnedObject, thisJoinPoint, createNotification.createdObjectLocation(), ParametersObjectsLocation.Property);
-		Object createdObject = FieldFinder.getObjectToReadFrom(createdObjectModel, originalObject, createNotification.name());
-		if(createdObject == null)
+		createdObjectModel.setObject(FieldFinder.getCreatedObjectToReadFrom(createdObjectModel, originalObject, createNotification.name()));
+		if(createdObjectModel.getObject() == null)
 		{
 			System.out.println("Read from object is null = CreateNotificationAspect");
 			return returnedObject;
 		}
-		Class<? extends Object> createdObjectClass = createdObject.getClass();
-		NotificationAnnotation notification = createdObjectClass.getAnnotation(NotificationAnnotation.class);
-		
+		NotificationAnnotation notification = createdObjectModel.getObjectClass().getAnnotation(NotificationAnnotation.class);
 		if(notification == null)
 		{
 			System.out.println("There is no notification annotation");
@@ -60,15 +58,14 @@ public class CreateNotificationAspect {
 			PrivacyModelRepository repo = new PrivacyModelRepository();
 			var model = repo.getModel();
 			var notificationObject = repo.getFactory().createNotification();
-			notificationObject.setName((String)FieldFinder.getFieldValue(notification.id(), createdObject, createdObjectClass));
-			notificationObject.setWhen((Date)FieldFinder.getFieldValue(notification.when(), createdObject, createdObjectClass));
+			notificationObject.setName((String)FieldFinder.getFieldValue(notification.id(), createdObjectModel.getObject(), createdObjectModel.getObjectClass()));
+			notificationObject.setWhen((Date)FieldFinder.getFieldValue(notification.when(), createdObjectModel.getObject(), createdObjectModel.getObjectClass()));
 			notificationObject.setType(createNotification.type());
 			if(!notification.causedBy().equals(Constants.Empty))
 			{
 				if(createNotification.causedByType() == TargetType.PolicyStatement)
 				{
-					var policyStatement = ObjectManager.tryGetPolicyStatementFromObject(createdObjectModel, createdObject, createdObjectClass, 
-							notification.causedBy(), model);
+					var policyStatement = ObjectManager.tryGetPolicyStatementFromObject(createdObjectModel, notification.causedBy(), model);
 					if(policyStatement.isPresent())
 					{
 						notificationObject.setCausedBy(policyStatement.get());
@@ -78,7 +75,7 @@ public class CreateNotificationAspect {
 						|| createNotification.causedByType() == TargetType.ComplaintBasedOnAction
 						|| createNotification.causedByType() == TargetType.Withdraw)
 				{
-					var complaint = ObjectManager.tryGetComplaintFromObject(createdObjectModel, createdObject, createdObjectClass, notification.causedBy(), model);
+					var complaint = ObjectManager.tryGetComplaintFromObject(createdObjectModel, notification.causedBy(), model);
 					if(complaint.isPresent())
 					{
 						notificationObject.setCausedBy(complaint.get());
@@ -89,8 +86,7 @@ public class CreateNotificationAspect {
 			{
 				if(createNotification.causedByType() == TargetType.PolicyStatement)
 				{
-					var policyStatement = ObjectManager.tryGetPolicyStatementById(createdObjectModel, createdObject, createdObjectClass, 
-							notification.causedById(), model);
+					var policyStatement = ObjectManager.tryGetPolicyStatementById(createdObjectModel, notification.causedById(), model);
 					if(policyStatement.isPresent())
 					{
 						notificationObject.setCausedBy(policyStatement.get());
@@ -100,7 +96,7 @@ public class CreateNotificationAspect {
 						|| createNotification.causedByType() == TargetType.ComplaintBasedOnAction
 						|| createNotification.causedByType() == TargetType.Withdraw)
 				{
-					var complaint = ObjectManager.tryGetComplaintById(createdObjectModel, createdObject, createdObjectClass, notification.causedById(), model);
+					var complaint = ObjectManager.tryGetComplaintById(createdObjectModel, notification.causedById(), model);
 					if(complaint.isPresent())
 					{
 						notificationObject.setCausedBy(complaint.get());
@@ -109,7 +105,7 @@ public class CreateNotificationAspect {
 			}
 			if(!notification.receivers().equals(Constants.Empty))
 			{
-				var reveivers = ReadTypeByAttribute.getPrincipalsFromObject(createdObjectModel, createdObjectClass, createdObject, notification.receivers(), model);
+				var reveivers = ReadTypeByAttribute.getPrincipalsFromObject(createdObjectModel, notification.receivers(), model);
 				if(!reveivers.isEmpty())
 				{
 					notificationObject.getReceivers().addAll(reveivers);
@@ -117,7 +113,7 @@ public class CreateNotificationAspect {
 			}
 			if(!notification.receiversIds().equals(Constants.Empty))
 			{
-				var reveivers = ReadTypeByAttribute.getPrincipalsById(createdObjectModel, createdObjectClass, createdObject, notification.receiversIds(), model);
+				var reveivers = ReadTypeByAttribute.getPrincipalsById(createdObjectModel, notification.receiversIds(), model);
 				if(!reveivers.isEmpty())
 				{
 					notificationObject.getReceivers().addAll(reveivers);
@@ -125,7 +121,7 @@ public class CreateNotificationAspect {
 			}
 			if(!notification.receiver().equals(Constants.Empty))
 			{
-				var reveiver = ObjectManager.tryGetPrincipalByFromObject(createdObjectModel, createdObject, createdObjectClass, notification.receiver(), model);
+				var reveiver = ObjectManager.tryGetPrincipalByFromObject(createdObjectModel, notification.receiver(), model);
 				if(!reveiver.isEmpty())
 				{
 					notificationObject.getReceivers().add(reveiver.get());
@@ -133,7 +129,7 @@ public class CreateNotificationAspect {
 			}
 			if(!notification.receiverId().equals(Constants.Empty))
 			{
-				var reveiver = ObjectManager.tryGetPrincipalByById(createdObjectModel, createdObject, createdObjectClass, notification.receiverId(), model);
+				var reveiver = ObjectManager.tryGetPrincipalByById(createdObjectModel, notification.receiverId(), model);
 				if(!reveiver.isEmpty())
 				{
 					notificationObject.getReceivers().add(reveiver.get());
@@ -141,7 +137,7 @@ public class CreateNotificationAspect {
 			}
 			if(!notification.notifiers().equals(Constants.Empty))
 			{
-				var notifiers = ReadTypeByAttribute.getPrincipalsFromObject(createdObjectModel, createdObjectClass, createdObject, notification.notifiers(), model);
+				var notifiers = ReadTypeByAttribute.getPrincipalsFromObject(createdObjectModel, notification.notifiers(), model);
 				if(!notifiers.isEmpty())
 				{
 					notificationObject.getNotifiers().addAll(notifiers);
@@ -149,7 +145,7 @@ public class CreateNotificationAspect {
 			}
 			if(!notification.notifiersIds().equals(Constants.Empty))
 			{
-				var notifiers = ReadTypeByAttribute.getPrincipalsById(createdObjectModel, createdObjectClass, createdObject, notification.notifiersIds(), model);
+				var notifiers = ReadTypeByAttribute.getPrincipalsById(createdObjectModel, notification.notifiersIds(), model);
 				if(!notifiers.isEmpty())
 				{
 					notificationObject.getNotifiers().addAll(notifiers);
@@ -157,7 +153,7 @@ public class CreateNotificationAspect {
 			}
 			if(!notification.notifier().equals(Constants.Empty))
 			{
-				var notifier = ObjectManager.tryGetPrincipalByFromObject(createdObjectModel, createdObject, createdObjectClass, notification.notifier(), model);
+				var notifier = ObjectManager.tryGetPrincipalByFromObject(createdObjectModel, notification.notifier(), model);
 				if(!notifier.isEmpty())
 				{
 					notificationObject.getNotifiers().add(notifier.get());
@@ -165,7 +161,7 @@ public class CreateNotificationAspect {
 			}
 			if(!notification.notifierId().equals(Constants.Empty))
 			{
-				var notifier = ObjectManager.tryGetPrincipalByById(createdObjectModel, createdObject, createdObjectClass, notification.notifierId(), model);
+				var notifier = ObjectManager.tryGetPrincipalByById(createdObjectModel, notification.notifierId(), model);
 				if(!notifier.isEmpty())
 				{
 					notificationObject.getNotifiers().add(notifier.get());

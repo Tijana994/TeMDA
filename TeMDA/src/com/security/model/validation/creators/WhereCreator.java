@@ -19,13 +19,13 @@ public class WhereCreator {
 				!createPolicyStatement.whereSource().equals(Constants.Empty);
 	}
 	
-	public static Where createWhere(CreationModel creationModel, CreatePolicyStatementAnnotation createPolicyStatement, Object originalObject,
-			Class<? extends Object> originalObjectClass, PrivacyModelRepository repo, PrivacyPolicy model) {
+	public static Where createWhere(CreationModel creationModel, CreatePolicyStatementAnnotation createPolicyStatement, 
+			PrivacyModelRepository repo, PrivacyPolicy model) {
 		var where = repo.getFactory().createWhere();
 		
 		if(!createPolicyStatement.whereDestinationId().equals(Constants.Empty))
 		{
-			var location = ObjectManager.tryGetLocationById(creationModel, originalObject, originalObjectClass, createPolicyStatement.whereDestinationId(), model);
+			var location = ObjectManager.tryGetLocationById(creationModel, createPolicyStatement.whereDestinationId(), model);
 			if(location.isPresent())
 			{
 				where.setDestination(location.get());
@@ -33,7 +33,7 @@ public class WhereCreator {
 		}
 		if(!createPolicyStatement.whereDestination().equals(Constants.Empty))
 		{
-			var location = ObjectManager.tryGetLocationFromObject(creationModel, originalObject, originalObjectClass, createPolicyStatement.whereDestination(), model);
+			var location = ObjectManager.tryGetLocationFromObject(creationModel, createPolicyStatement.whereDestination(), model);
 			if(location.isPresent())
 			{
 				where.setDestination(location.get());
@@ -41,7 +41,7 @@ public class WhereCreator {
 		}
 		if(!createPolicyStatement.whereSourceId().equals(Constants.Empty))
 		{
-			var location = ObjectManager.tryGetLocationById(creationModel, originalObject, originalObjectClass, createPolicyStatement.whereSourceId(), model);
+			var location = ObjectManager.tryGetLocationById(creationModel, createPolicyStatement.whereSourceId(), model);
 			if(location.isPresent())
 			{
 				where.setSource(location.get());
@@ -49,7 +49,7 @@ public class WhereCreator {
 		}
 		if(!createPolicyStatement.whereSource().equals(Constants.Empty))
 		{
-			var location = ObjectManager.tryGetLocationFromObject(creationModel, originalObject, originalObjectClass, createPolicyStatement.whereSource(), model);
+			var location = ObjectManager.tryGetLocationFromObject(creationModel, createPolicyStatement.whereSource(), model);
 			if(location.isPresent())
 			{
 				where.setSource(location.get());

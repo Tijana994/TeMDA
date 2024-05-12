@@ -35,8 +35,8 @@ public class CreatePrivacyDataAspect {
 			System.out.println("There is no create privacy data annotation");
 			return returnedObject;
 		}
-		CreationModel originalObjectModel = new CreationModel(returnedObject, thisJoinPoint, createPrivacyData.createdObjectLocation(), createPrivacyData.parametersLocation());
-		Object createdObject = FieldFinder.getObjectToReadFrom(originalObjectModel, originalObject, createPrivacyData.name());
+		CreationModel originalObjectModel = new CreationModel(returnedObject, originalObject, thisJoinPoint, createPrivacyData.createdObjectLocation(), createPrivacyData.parametersLocation());
+		Object createdObject = FieldFinder.getCreatedObjectToReadFrom(originalObjectModel, originalObject, createPrivacyData.name());
 		if(createdObject == null)
 		{
 			System.out.println("Read from object is null = CreatePrivacyDataAspect");

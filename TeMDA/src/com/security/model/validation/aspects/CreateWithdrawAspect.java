@@ -29,7 +29,6 @@ public class CreateWithdrawAspect {
 		Object[] args = thisJoinPoint.getArgs();
 		Object returnedObject = thisJoinPoint.proceed(args);
 		Object originalObject = thisJoinPoint.getThis();
-		Class<? extends Object> originalObjectClass = originalObject.getClass();
 	    MethodSignature signature = (MethodSignature) thisJoinPoint.getSignature();
 	    Method method = signature.getMethod();
 		CreateWithdrawAnnotation createWithdraw = method.getAnnotation(CreateWithdrawAnnotation.class);
@@ -38,17 +37,15 @@ public class CreateWithdrawAspect {
 			System.out.println("There is no create withdraw statement annotation");
 			return returnedObject;
 		}
-		CreationModel originalObjectModel = new CreationModel(returnedObject, thisJoinPoint, createWithdraw.createdObjectLocation(), createWithdraw.parametersLocation());
+		CreationModel originalObjectModel = new CreationModel(returnedObject, originalObject, thisJoinPoint, createWithdraw.createdObjectLocation(), createWithdraw.parametersLocation());
 		CreationModel createdObjectModel = new CreationModel(returnedObject, thisJoinPoint, createWithdraw.createdObjectLocation(), ParametersObjectsLocation.Property);
-		Object createdObject = FieldFinder.getObjectToReadFrom(originalObjectModel, originalObject, createWithdraw.name());
-		if(createdObject == null)
+		createdObjectModel.setObject(FieldFinder.getCreatedObjectToReadFrom(originalObjectModel, originalObject, createWithdraw.name()));
+		if(createdObjectModel.getObject() == null)
 		{
 			System.out.println("Read from object is null = CreateWithdrawAspect");
 			return returnedObject;
 		}
-		Class<? extends Object> createdObjectClass = createdObject.getClass();
-		WithdrawAnnotation withdraw = createdObjectClass.getAnnotation(WithdrawAnnotation.class);
-		
+		WithdrawAnnotation withdraw = createdObjectModel.getObjectClass().getAnnotation(WithdrawAnnotation.class);
 		if(withdraw == null)
 		{
 			System.out.println("There is no withdraw annotation");
@@ -62,15 +59,15 @@ public class CreateWithdrawAspect {
 			var withdrawObject = repo.getFactory().createWithdraw();
 			var complaintObject = repo.getFactory().createComplaint();
 			complaintObject.setAction(withdrawObject);
-			complaintObject.setName((String)FieldFinder.getFieldValue(withdraw.id(), createdObject, createdObjectClass));
-			complaintObject.setWhen((Date)FieldFinder.getFieldValue(withdraw.when(), createdObject, createdObjectClass));
+			complaintObject.setName((String)FieldFinder.getFieldValue(withdraw.id(), createdObjectModel.getObject(), createdObjectModel.getObjectClass()));
+			complaintObject.setWhen((Date)FieldFinder.getFieldValue(withdraw.when(), createdObjectModel.getObject(), createdObjectModel.getObjectClass()));
 			if(!withdraw.reason().equals(Constants.Empty))
 			{
-				complaintObject.setReason((String)FieldFinder.getFieldValue(withdraw.reason(), createdObject, createdObjectClass));
+				complaintObject.setReason((String)FieldFinder.getFieldValue(withdraw.reason(), createdObjectModel.getObject(), createdObjectModel.getObjectClass()));
 			}
 			if(!createWithdraw.consent().equals(Constants.Empty))
 			{
-				var consent = ObjectManager.tryGetConsentFromObject(originalObjectModel, originalObject, originalObjectClass, createWithdraw.consent(), model);
+				var consent = ObjectManager.tryGetConsentFromObject(originalObjectModel, createWithdraw.consent(), model);
 				if(consent.isPresent())
 				{
 					withdrawObject.setSubject(consent.get());
@@ -78,7 +75,7 @@ public class CreateWithdrawAspect {
 			}
 			if(!createWithdraw.consentId().equals(Constants.Empty))
 			{
-				var consent = ObjectManager.tryGetConsentById(originalObjectModel, originalObject, originalObjectClass, createWithdraw.consentId(), model);
+				var consent = ObjectManager.tryGetConsentById(originalObjectModel, createWithdraw.consentId(), model);
 				if(consent.isPresent())
 				{
 					withdrawObject.setSubject(consent.get());
@@ -86,7 +83,7 @@ public class CreateWithdrawAspect {
 			}
 			if(!withdraw.who().equals(Constants.Empty)) 
 			{
-				var principal = ObjectManager.tryGetPrincipalByFromObject(createdObjectModel, createdObject, createdObjectClass, withdraw.who(), model);
+				var principal = ObjectManager.tryGetPrincipalByFromObject(createdObjectModel, withdraw.who(), model);
 				if(principal.isPresent())
 				{
 					complaintObject.setWho(principal.get());
@@ -94,7 +91,7 @@ public class CreateWithdrawAspect {
 			}
 			if(!withdraw.whoId().equals(Constants.Empty))
 			{
-				var principal = ObjectManager.tryGetPrincipalByById(createdObjectModel, createdObject, createdObjectClass, withdraw.whoId(), model);
+				var principal = ObjectManager.tryGetPrincipalByById(createdObjectModel, withdraw.whoId(), model);
 				if(principal.isPresent())
 				{
 					complaintObject.setWho(principal.get());

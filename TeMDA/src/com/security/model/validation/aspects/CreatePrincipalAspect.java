@@ -42,14 +42,13 @@ public class CreatePrincipalAspect {
 			return returnedObject;
 		}
 		CreationModel createdObjectModel = new CreationModel(returnedObject, thisJoinPoint, createPrincipal.createdObjectLocation(), ParametersObjectsLocation.Property);
-		Object createdObject = FieldFinder.getObjectToReadFrom(createdObjectModel, originalObject, createPrincipal.name());
-		if(createdObject == null)
+		createdObjectModel.setObject(FieldFinder.getCreatedObjectToReadFrom(createdObjectModel, originalObject, createPrincipal.name()));
+		if(createdObjectModel.getObject() == null)
 		{
 			System.out.println("Read from object is null = CreatePrincipalAspect");
 			return returnedObject;
 		}
-		Class<? extends Object> createdObjectClass = createdObject.getClass();
-		PrincipalAnnotation principal = createdObjectClass.getAnnotation(PrincipalAnnotation.class);
+		PrincipalAnnotation principal = createdObjectModel.getObjectClass().getAnnotation(PrincipalAnnotation.class);
 		if(principal == null)
 		{
 			System.out.println("There is no principal annotation");
@@ -61,12 +60,12 @@ public class CreatePrincipalAspect {
 			PrivacyModelRepository repo = new PrivacyModelRepository();
 			var model = repo.getModel();
 			var principalObject = repo.getFactory().createPrincipal();
-			principalObject.setName((String)FieldFinder.getFieldValue(principal.id(), createdObject, createdObjectClass));
+			principalObject.setName((String)FieldFinder.getFieldValue(principal.id(), createdObjectModel.getObject(), createdObjectModel.getObjectClass()));
 			principalObject.setScope(createPrincipal.scope());
 			principalObject.setType(createPrincipal.type());
 			if(!principal.birthday().equals(Constants.Empty) && createPrincipal.shouldSetBirtday())
 			{
-				var birthday = (Date)FieldFinder.getFieldValue(principal.birthday(), createdObject, createdObjectClass);
+				var birthday = (Date)FieldFinder.getFieldValue(principal.birthday(), createdObjectModel.getObject(), createdObjectModel.getObjectClass());
 				principalObject.setBirthdate(birthday);
 		        calculateAge(principalObject, birthday);
 			}
@@ -76,7 +75,7 @@ public class CreatePrincipalAspect {
 			}
 			if(!principal.parent().equals(Constants.Empty)) 
 			{
-				var parent = ObjectManager.tryGetPrincipalByFromObject(createdObjectModel, createdObject, createdObjectClass, principal.parent(), model);
+				var parent = ObjectManager.tryGetPrincipalByFromObject(createdObjectModel, principal.parent(), model);
 				if(parent.isPresent())
 				{
 					parent.get().getSubPrincipals().add(principalObject);
@@ -84,7 +83,7 @@ public class CreatePrincipalAspect {
 			}
 			if(!principal.parentId().equals(Constants.Empty))
 			{
-				var parent = ObjectManager.tryGetPrincipalByById(createdObjectModel, createdObject, createdObjectClass, principal.parentId(), model);
+				var parent = ObjectManager.tryGetPrincipalByById(createdObjectModel, principal.parentId(), model);
 				if(parent.isPresent())
 				{
 					parent.get().getSubPrincipals().add(principalObject);
@@ -92,7 +91,7 @@ public class CreatePrincipalAspect {
 			}
 			if(!principal.responsiblePersons().equals(Constants.Empty)) 
 			{
-				var parents = ReadTypeByAttribute.getPrincipalsFromObject(createdObjectModel, createdObjectClass, createdObject, principal.responsiblePersons(), model);
+				var parents = ReadTypeByAttribute.getPrincipalsFromObject(createdObjectModel, principal.responsiblePersons(), model);
 				if(!parents.isEmpty())
 				{
 					principalObject.getResponsiblePersons().addAll(parents);
@@ -100,7 +99,7 @@ public class CreatePrincipalAspect {
 			}
 			if(!principal.responsiblePersonIds().equals(Constants.Empty))
 			{
-				var parents = ReadTypeByAttribute.getPrincipalsById(createdObjectModel, createdObjectClass, createdObject, principal.responsiblePersonIds(), model);
+				var parents = ReadTypeByAttribute.getPrincipalsById(createdObjectModel, principal.responsiblePersonIds(), model);
 				if(!parents.isEmpty())
 				{
 					principalObject.getResponsiblePersons().addAll(parents);
@@ -108,7 +107,7 @@ public class CreatePrincipalAspect {
 			}
 			if(!principal.childrens().equals(Constants.Empty))
 			{
-				var childrens = ReadTypeByAttribute.getPrincipalsFromObject(createdObjectModel, createdObjectClass, createdObject, principal.childrens(), model);
+				var childrens = ReadTypeByAttribute.getPrincipalsFromObject(createdObjectModel, principal.childrens(), model);
 				if(!childrens.isEmpty())
 				{
 					principalObject.getSubPrincipals().addAll(childrens);
@@ -116,7 +115,7 @@ public class CreatePrincipalAspect {
 			}
 			if(!principal.childrensIds().equals(Constants.Empty))
 			{
-				var childrens = ReadTypeByAttribute.getPrincipalsById(createdObjectModel, createdObjectClass, createdObject, principal.childrensIds(), model);
+				var childrens = ReadTypeByAttribute.getPrincipalsById(createdObjectModel, principal.childrensIds(), model);
 				if(!childrens.isEmpty())
 				{
 					principalObject.getSubPrincipals().addAll(childrens);
@@ -124,7 +123,7 @@ public class CreatePrincipalAspect {
 			}
 			if(!principal.inhabits().equals(Constants.Empty) && createPrincipal.shouldSetLocation()) 
 			{
-				var location = ObjectManager.tryGetLocationFromObject(createdObjectModel, createdObject, createdObjectClass, principal.inhabits(), model);
+				var location = ObjectManager.tryGetLocationFromObject(createdObjectModel, principal.inhabits(), model);
 				if(location.isPresent())
 				{
 					principalObject.setInhabits(location.get());
@@ -132,7 +131,7 @@ public class CreatePrincipalAspect {
 			}
 			if(!principal.inhabitsId().equals(Constants.Empty) && createPrincipal.shouldSetLocation())
 			{
-				var location = ObjectManager.tryGetLocationById(createdObjectModel, createdObject, createdObjectClass, principal.inhabitsId(), model);
+				var location = ObjectManager.tryGetLocationById(createdObjectModel, principal.inhabitsId(), model);
 				if(location.isPresent())
 				{
 					principalObject.setInhabits(location.get());

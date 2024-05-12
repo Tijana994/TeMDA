@@ -38,15 +38,13 @@ public class CreateConsentAspect {
 			return returnedObject;
 		}
 		CreationModel createdObjectModel = new CreationModel(returnedObject, thisJoinPoint, createConsent.createdObjectLocation(), ParametersObjectsLocation.Property);
-		Object createdObject = FieldFinder.getObjectToReadFrom(createdObjectModel, originalObject, createConsent.name());
-		if(createdObject == null)
+		createdObjectModel.setObject(FieldFinder.getCreatedObjectToReadFrom(createdObjectModel, originalObject, createConsent.name()));
+		if(createdObjectModel.getObject() == null)
 		{
 			System.out.println("Read from object is null - CreateConsentAspect");
 			return returnedObject;
 		}
-		Class<? extends Object> createdObjectClass = createdObject.getClass();
-		PaperAnnotation paper = createdObjectClass.getAnnotation(PaperAnnotation.class);
-		
+		PaperAnnotation paper = createdObjectModel.getObjectClass().getAnnotation(PaperAnnotation.class);
 		if(paper == null)
 		{
 			System.out.println("There is no paper annotation");
@@ -58,26 +56,26 @@ public class CreateConsentAspect {
 			PrivacyModelRepository repo = new PrivacyModelRepository();
 			var model = repo.getModel();
 			var consentObject = repo.getFactory().createConsent();
-			consentObject.setName((String)FieldFinder.getFieldValue(paper.id(), createdObject, createdObjectClass));
+			consentObject.setName((String)FieldFinder.getFieldValue(paper.id(), createdObjectModel.getObject(), createdObjectModel.getObjectClass()));
 			consentObject.setType(createConsent.consentType());
 			consentObject.setFormat(createConsent.consentFormat());
-			consentObject.setStartDate((Date)FieldFinder.getFieldValue(paper.startDate(), createdObject, createdObjectClass));
-			consentObject.setLocation((String)FieldFinder.getFieldValue(paper.location(), createdObject, createdObjectClass));
+			consentObject.setStartDate((Date)FieldFinder.getFieldValue(paper.startDate(), createdObjectModel.getObject(), createdObjectModel.getObjectClass()));
+			consentObject.setLocation((String)FieldFinder.getFieldValue(paper.location(), createdObjectModel.getObject(), createdObjectModel.getObjectClass()));
 			if(!paper.terminantionExplanation().equals(Constants.Empty))
 			{
-				consentObject.setTerminationExplanation((String)FieldFinder.getFieldValue(paper.terminantionExplanation(), createdObject, createdObjectClass));
+				consentObject.setTerminationExplanation((String)FieldFinder.getFieldValue(paper.terminantionExplanation(), createdObjectModel.getObject(), createdObjectModel.getObjectClass()));
 			}
 			if(!paper.terminantionDate().equals(Constants.Empty))
 			{
-				consentObject.setTerminationDate((Date)FieldFinder.getFieldValue(paper.terminantionDate(), createdObject, createdObjectClass));
+				consentObject.setTerminationDate((Date)FieldFinder.getFieldValue(paper.terminantionDate(), createdObjectModel.getObject(), createdObjectModel.getObjectClass()));
 			}
 			if(!paper.description().equals(Constants.Empty))
 			{
-				consentObject.setDescription((String)FieldFinder.getFieldValue(paper.description(), createdObject, createdObjectClass));
+				consentObject.setDescription((String)FieldFinder.getFieldValue(paper.description(), createdObjectModel.getObject(), createdObjectModel.getObjectClass()));
 			}
 			if(!paper.providedBy().equals(Constants.Empty)) 
 			{
-				var principal = ObjectManager.tryGetPrincipalByFromObject(createdObjectModel, createdObject, createdObjectClass, paper.providedBy(), model);
+				var principal = ObjectManager.tryGetPrincipalByFromObject(createdObjectModel, paper.providedBy(), model);
 				if(principal.isPresent())
 				{
 					consentObject.setProvidedBy(principal.get());
@@ -85,7 +83,7 @@ public class CreateConsentAspect {
 			}
 			if(!paper.providedById().equals(Constants.Empty))
 			{
-				var principal = ObjectManager.tryGetPrincipalByById(createdObjectModel, createdObject, createdObjectClass, paper.providedById(), model);
+				var principal = ObjectManager.tryGetPrincipalByById(createdObjectModel, paper.providedById(), model);
 				if(principal.isPresent())
 				{
 					consentObject.setProvidedBy(principal.get());

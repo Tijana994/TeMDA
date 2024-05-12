@@ -22,13 +22,12 @@ public class HowCreator {
 				!createPolicyStatement.howDocumentId().equals(Constants.Empty);
 	}
 
-	public static How createHow(CreationModel creationModel, CreatePolicyStatementAnnotation createPolicyStatement, Object originalObject,
-			Class<? extends Object> originalObjectClass, PrivacyModelRepository repo, PrivacyPolicy model) {
+	public static How createHow(CreationModel creationModel, CreatePolicyStatementAnnotation createPolicyStatement, PrivacyModelRepository repo, PrivacyPolicy model) {
 		var how = repo.getFactory().createHow();
 		
 		if(!createPolicyStatement.howDocuments().equals(Constants.Empty))
 		{
-			var documents = ReadTypeByAttribute.getDocumentsFromObject(creationModel, originalObjectClass, originalObject, createPolicyStatement.howDocuments(), model);
+			var documents = ReadTypeByAttribute.getDocumentsFromObject(creationModel, createPolicyStatement.howDocuments(), model);
 			if(!documents.isEmpty())
 			{
 				how.getDocuments().addAll(documents);
@@ -36,7 +35,7 @@ public class HowCreator {
 		}
 		if(!createPolicyStatement.howDocumentsIds().equals(Constants.Empty))
 		{
-			var documents = ReadTypeByAttribute.getDocumentsById(creationModel, originalObjectClass, originalObject, createPolicyStatement.howDocumentsIds(), model);
+			var documents = ReadTypeByAttribute.getDocumentsById(creationModel, createPolicyStatement.howDocumentsIds(), model);
 			if(!documents.isEmpty())
 			{
 				how.getDocuments().addAll(documents);
@@ -44,7 +43,7 @@ public class HowCreator {
 		}
 		if(!createPolicyStatement.howDocument().equals(Constants.Empty))
 		{
-			var document = ObjectManager.tryGetDocumentFromObject(creationModel, originalObject, originalObjectClass, createPolicyStatement.howDocument(), model);
+			var document = ObjectManager.tryGetDocumentFromObject(creationModel, createPolicyStatement.howDocument(), model);
 			if(!document.isEmpty())
 			{
 				how.getDocuments().add(document.get());
@@ -52,7 +51,7 @@ public class HowCreator {
 		}
 		if(!createPolicyStatement.howDocumentId().equals(Constants.Empty))
 		{
-			var document = ObjectManager.tryGetDocumentById(creationModel, originalObject, originalObjectClass, createPolicyStatement.howDocumentId(), model);
+			var document = ObjectManager.tryGetDocumentById(creationModel, createPolicyStatement.howDocumentId(), model);
 			if(!document.isEmpty())
 			{
 				how.getDocuments().add(document.get());
@@ -60,7 +59,7 @@ public class HowCreator {
 		}
 		if(!createPolicyStatement.howConsent().equals(Constants.Empty))
 		{
-			var consent = ObjectManager.tryGetConsentFromObject(creationModel, originalObject, originalObjectClass, createPolicyStatement.howConsent(), model);
+			var consent = ObjectManager.tryGetConsentFromObject(creationModel, createPolicyStatement.howConsent(), model);
 			if(consent.isPresent())
 			{
 				how.setConsent(consent.get());
@@ -68,7 +67,7 @@ public class HowCreator {
 		}
 		if(!createPolicyStatement.howConsentId().equals(Constants.Empty))
 		{
-			var consent = ObjectManager.tryGetConsentById(creationModel, originalObject, originalObjectClass, createPolicyStatement.howConsentId(), model);
+			var consent = ObjectManager.tryGetConsentById(creationModel, createPolicyStatement.howConsentId(), model);
 			if(consent.isPresent())
 			{
 				how.setConsent(consent.get());

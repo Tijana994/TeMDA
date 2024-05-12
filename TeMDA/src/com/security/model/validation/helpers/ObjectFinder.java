@@ -28,30 +28,30 @@ public class ObjectFinder {
 		return principal;
 	}
 	
-	public static Optional<Location> checkIfLocationExists(String locationId, PrivacyPolicy model) 
+	public static Optional<Location> checkIfLocationExists(String fieldId, PrivacyPolicy model) 
 	{
-		if(locationId == null)
+		if(fieldId == null)
 		{
 			return Optional.empty();
 		}
-		var location = findLocation(locationId, model);
+		var location = findLocation(fieldId, model);
 		if(location.isEmpty())
 		{
-			System.out.println("There is no location with id " + locationId);
+			System.out.println("There is no location with id " + fieldId);
 		}
 		return location;
 	}
 	
-	public static Optional<Consent> checkIfConsentExists(String consentId, PrivacyPolicy model) 
+	public static Optional<Consent> checkIfConsentExists(String fieldId, PrivacyPolicy model) 
 	{
-		if(consentId == null)
+		if(fieldId == null)
 		{
 			return Optional.empty();
 		}
-		var consent = findConsent(consentId, model);
+		var consent = findConsent(fieldId, model);
 		if(consent.isEmpty())
 		{
-			System.out.println("There is no consent with id " + consentId);
+			System.out.println("There is no consent with id " + fieldId);
 		}
 		return consent;
 	}

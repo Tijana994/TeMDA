@@ -30,7 +30,6 @@ public class CreateDenialAspect {
 		Object[] args = thisJoinPoint.getArgs();
 		Object returnedObject = thisJoinPoint.proceed(args);
 		Object originalObject = thisJoinPoint.getThis();
-		Class<? extends Object> originalObjectClass = originalObject.getClass();
 	    MethodSignature signature = (MethodSignature) thisJoinPoint.getSignature();
 	    Method method = signature.getMethod();
 	    CreateDenialAnnotation createDenial = method.getAnnotation(CreateDenialAnnotation.class);
@@ -39,8 +38,8 @@ public class CreateDenialAspect {
 			System.out.println("There is no create denial annotation");
 			return returnedObject;
 		}
-		CreationModel originalObjectModel = new CreationModel(returnedObject, thisJoinPoint, createDenial.createdObjectLocation(), createDenial.parametersLocation());
-		Object createdObject = FieldFinder.getObjectToReadFrom(originalObjectModel, originalObject, createDenial.name());
+		CreationModel originalObjectModel = new CreationModel(returnedObject, originalObject, thisJoinPoint, createDenial.createdObjectLocation(), createDenial.parametersLocation());
+		Object createdObject = FieldFinder.getCreatedObjectToReadFrom(originalObjectModel, originalObject, createDenial.name());
 		if(createdObject == null)
 		{
 			System.out.println("Read from object is null - CreateDenialAspect");
@@ -68,8 +67,7 @@ public class CreateDenialAspect {
 			}
 			if(!createDenial.basedOnStatements().equals(Constants.Empty))
 			{
-				var policyStatements = ReadTypeByAttribute.getPolicyStatementsFromObject(originalObjectModel, originalObjectClass, originalObject, 
-						createDenial.basedOnStatements(), model);
+				var policyStatements = ReadTypeByAttribute.getPolicyStatementsFromObject(originalObjectModel, createDenial.basedOnStatements(), model);
 				if(!policyStatements.isEmpty())
 				{
 					denialObject.getBasedOnStatements().addAll(policyStatements);
@@ -77,8 +75,7 @@ public class CreateDenialAspect {
 			}
 			if(!createDenial.basedOnStatementsIds().equals(Constants.Empty))
 			{
-				var policyStatements = ReadTypeByAttribute.getPolicyStatementsById(originalObjectModel, originalObjectClass, originalObject, 
-						createDenial.basedOnStatementsIds(), model);
+				var policyStatements = ReadTypeByAttribute.getPolicyStatementsById(originalObjectModel, createDenial.basedOnStatementsIds(), model);
 				if(!policyStatements.isEmpty())
 				{
 					denialObject.getBasedOnStatements().addAll(policyStatements);
@@ -86,8 +83,7 @@ public class CreateDenialAspect {
 			}
 			if(!createDenial.basedOnStatement().equals(Constants.Empty))
 			{
-				var policyStatement = ObjectManager.tryGetPolicyStatementFromObject(originalObjectModel, originalObject, originalObjectClass, 
-						createDenial.basedOnStatement(), model);
+				var policyStatement = ObjectManager.tryGetPolicyStatementFromObject(originalObjectModel, createDenial.basedOnStatement(), model);
 				if(!policyStatement.isEmpty())
 				{
 					denialObject.getBasedOnStatements().add(policyStatement.get());
@@ -95,8 +91,7 @@ public class CreateDenialAspect {
 			}
 			if(!createDenial.basedOnStatementId().equals(Constants.Empty))
 			{
-				var policyStatement = ObjectManager.tryGetPolicyStatementById(originalObjectModel, originalObject, originalObjectClass, 
-						createDenial.basedOnStatementId(), model);
+				var policyStatement = ObjectManager.tryGetPolicyStatementById(originalObjectModel, createDenial.basedOnStatementId(), model);
 				if(!policyStatement.isEmpty())
 				{
 					denialObject.getBasedOnStatements().add(policyStatement.get());
@@ -104,8 +99,7 @@ public class CreateDenialAspect {
 			}
 			if(!createDenial.forComplaint().equals(Constants.Empty))
 			{
-				var complaint = ObjectManager.tryGetComplaintFromObject(originalObjectModel, originalObject, originalObjectClass, 
-						createDenial.forComplaint(), model);
+				var complaint = ObjectManager.tryGetComplaintFromObject(originalObjectModel, createDenial.forComplaint(), model);
 				if(complaint.isPresent() && complaint.get().getAction() instanceof AbstractComplaint)
 				{
 					((AbstractComplaint)complaint.get().getAction()).setDenialReason(denialObject);
@@ -113,8 +107,7 @@ public class CreateDenialAspect {
 			}
 			if(!createDenial.forComplaintId().equals(Constants.Empty))
 			{
-				var complaint = ObjectManager.tryGetComplaintById(originalObjectModel, originalObject, originalObjectClass, 
-						createDenial.forComplaintId(), model);
+				var complaint = ObjectManager.tryGetComplaintById(originalObjectModel, createDenial.forComplaintId(), model);
 				if(complaint.isPresent() && complaint.get().getAction() instanceof AbstractComplaint)
 				{
 					((AbstractComplaint)complaint.get().getAction()).setDenialReason(denialObject);
@@ -122,7 +115,7 @@ public class CreateDenialAspect {
 			}
 			if(!createDenial.approvedBy().equals(Constants.Empty)) 
 			{
-				var principal = ObjectManager.tryGetPrincipalByFromObject(originalObjectModel, originalObject, originalObjectClass,createDenial.approvedBy(), model);
+				var principal = ObjectManager.tryGetPrincipalByFromObject(originalObjectModel, createDenial.approvedBy(), model);
 				if(principal.isPresent())
 				{
 					denialObject.setApprovedBy(principal.get());
@@ -130,7 +123,7 @@ public class CreateDenialAspect {
 			}
 			if(!createDenial.approvedById().equals(Constants.Empty))
 			{
-				var principal = ObjectManager.tryGetPrincipalByById(originalObjectModel, originalObject, originalObjectClass, createDenial.approvedById(), model);
+				var principal = ObjectManager.tryGetPrincipalByById(originalObjectModel, createDenial.approvedById(), model);
 				if(principal.isPresent())
 				{
 					denialObject.setApprovedBy(principal.get());

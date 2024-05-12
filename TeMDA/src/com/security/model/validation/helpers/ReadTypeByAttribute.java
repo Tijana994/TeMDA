@@ -22,16 +22,16 @@ import privacyModel.SharedPrivacyData;
 
 public class ReadTypeByAttribute {
 
-	public static Optional<String> getPaperIdFromObject(CreationModel creationModel, Class<?> objectClass, Object obj, String propertyName)
+	public static Optional<String> getPaperIdFromObject(CreationModel creationModel, String propertyName)
 	{
-		if(obj == null)
+		if(creationModel.getObject() == null)
 		{
 			System.out.println("Object is not instantiated.");
 			return Optional.empty();
 		}
 		try
 		{
-			var value = FieldFinder.getObjectToReadFrom(creationModel, objectClass, obj, propertyName);
+			var value = FieldFinder.getObjectToReadFrom(creationModel, creationModel.getObjectClass(), creationModel.getObject(), propertyName);
 			if(!value.isPresent())
 			{
 				return Optional.empty();
@@ -55,16 +55,16 @@ public class ReadTypeByAttribute {
 		return Optional.empty();
 	}
 	
-	public static Optional<String> getComplaintIdFromObject(CreationModel creationModel, Class<?> objectClass, Object obj, String propertyName)
+	public static Optional<String> getComplaintIdFromObject(CreationModel creationModel, String propertyName)
 	{
-		if(obj == null)
+		if(creationModel.getObject() == null)
 		{
 			System.out.println("Object is not instantiated.");
 			return Optional.empty();
 		}
 		try
 		{
-			var value = FieldFinder.getObjectToReadFrom(creationModel, objectClass, obj, propertyName);
+			var value = FieldFinder.getObjectToReadFrom(creationModel, creationModel.getObjectClass(), creationModel.getObject(), propertyName);
 			if(!value.isPresent())
 			{
 				return Optional.empty();
@@ -88,16 +88,16 @@ public class ReadTypeByAttribute {
 		return Optional.empty();
 	}
 	
-	public static Optional<String> getPolicyStatementIdFromObject(CreationModel creationModel, Class<?> objectClass, Object obj, String propertyName)
+	public static Optional<String> getPolicyStatementIdFromObject(CreationModel creationModel, String propertyName)
 	{
-		if(obj == null)
+		if(creationModel.getObject() == null)
 		{
 			System.out.println("Object is not instantiated.");
 			return Optional.empty();
 		}
 		try
 		{
-			var value = FieldFinder.getObjectToReadFrom(creationModel, objectClass, obj, propertyName);
+			var value = FieldFinder.getObjectToReadFrom(creationModel, creationModel.getObjectClass(), creationModel.getObject(), propertyName);
 			if(!value.isPresent())
 			{
 				return Optional.empty();
@@ -121,16 +121,16 @@ public class ReadTypeByAttribute {
 		return Optional.empty();
 	}
 	
-	public static Optional<String> getLocationIdFromObject(CreationModel creationModel, Class<?> objectClass, Object obj, String propertyName)
+	public static Optional<String> getLocationIdFromObject(CreationModel creationModel, String propertyName)
 	{
-		if(obj == null)
+		if(creationModel.getObject() == null)
 		{
 			System.out.println("Object is not instantiated.");
 			return Optional.empty();
 		}
 		try
 		{
-			var value = FieldFinder.getObjectToReadFrom(creationModel, objectClass, obj, propertyName);
+			var value = FieldFinder.getObjectToReadFrom(creationModel, creationModel.getObjectClass(), creationModel.getObject(), propertyName);
 			if(!value.isPresent())
 			{
 				return Optional.empty();
@@ -154,16 +154,16 @@ public class ReadTypeByAttribute {
 		return Optional.empty();
 	}
 	
-	public static Optional<String> getPrivacyDataIdFromObject(CreationModel creationModel, Class<?> objectClass, Object obj, String propertyName)
+	public static Optional<String> getPrivacyDataIdFromObject(CreationModel creationModel, String propertyName)
 	{
-		if(obj == null)
+		if(creationModel.getObject() == null)
 		{
 			System.out.println("Object is not instantiated.");
 			return Optional.empty();
 		}
 		try
 		{
-			var value = FieldFinder.getObjectToReadFrom(creationModel, objectClass, obj, propertyName);
+			var value = FieldFinder.getObjectToReadFrom(creationModel, creationModel.getObjectClass(), creationModel.getObject(), propertyName);
 			if(!value.isPresent())
 			{
 				return Optional.empty();
@@ -187,16 +187,16 @@ public class ReadTypeByAttribute {
 		return Optional.empty();
 	}
 	
-	public static Optional<String> getPrincipalIdFromObject(CreationModel creationModel, Class<?> objectClass, Object obj, String propertyName)
+	public static Optional<String> getPrincipalIdFromObject(CreationModel creationModel, String propertyName)
 	{
-		if(obj == null)
+		if(creationModel.getObject() == null)
 		{
 			System.out.println("Object is not instantiated.");
 			return Optional.empty();
 		}
 		try
 		{
-			var value = FieldFinder.getObjectToReadFrom(creationModel, objectClass, obj, propertyName);
+			var value = FieldFinder.getObjectToReadFrom(creationModel, creationModel.getObjectClass(), creationModel.getObject(), propertyName);
 			if(!value.isPresent())
 			{
 				return Optional.empty();
@@ -220,18 +220,17 @@ public class ReadTypeByAttribute {
 		return Optional.empty();
 	}
 	
-	public static List<Principal> getPrincipalsFromObject(CreationModel creationModel, Class<?> objectClass, Object obj, String propertyName, 
-			PrivacyPolicy model)
+	public static List<Principal> getPrincipalsFromObject(CreationModel creationModel, String propertyName, PrivacyPolicy model)
 	{
 		var principals = new ArrayList<Principal>();
-		if(obj == null)
+		if(creationModel.getObject() == null)
 		{
 			System.out.println("Object is not instantiated.");
 			return principals;
 		}
 		try
 		{
-			var value = FieldFinder.getObjectToReadFrom(creationModel, objectClass, obj, propertyName);
+			var value = FieldFinder.getObjectToReadFrom(creationModel, creationModel.getObjectClass(), creationModel.getObject(), propertyName);
 			if(!value.isPresent())
 			{
 				return principals;
@@ -269,11 +268,10 @@ public class ReadTypeByAttribute {
 		return principals;
 	}
 
-	public static List<Principal> getPrincipalsById(CreationModel creationModel, Class<?> objectClass, Object obj, String propertyName, 
-			PrivacyPolicy model)
+	public static List<Principal> getPrincipalsById(CreationModel creationModel, String propertyName, PrivacyPolicy model)
 	{
 		var principals = new ArrayList<Principal>();
-		var principalsIds = FieldFinder.getObjectToReadFrom(creationModel, objectClass, obj, propertyName);
+		var principalsIds = FieldFinder.getObjectToReadFrom(creationModel, creationModel.getObjectClass(), creationModel.getObject(), propertyName);
 		if(!principalsIds.isPresent())
 		{
 			return principals;
@@ -313,18 +311,17 @@ public class ReadTypeByAttribute {
 		}
 	}
 	
-	public static List<PrivacyData> getPrivacyDatasFromObject(CreationModel creationModel, Class<?> objectClass, Object obj, String propertyName,
-			PrivacyPolicy model)
+	public static List<PrivacyData> getPrivacyDatasFromObject(CreationModel creationModel, String propertyName, PrivacyPolicy model)
 	{
 		var datas = new ArrayList<PrivacyData>();
-		if(obj == null)
+		if(creationModel.getObject() == null)
 		{
 			System.out.println("Object is not instantiated.");
 			return datas;
 		}
 		try
 		{
-			var value = FieldFinder.getObjectToReadFrom(creationModel, objectClass, obj, propertyName);
+			var value = FieldFinder.getObjectToReadFrom(creationModel, creationModel.getObjectClass(), creationModel.getObject(), propertyName);
 			if(!value.isPresent())
 			{
 				return datas;
@@ -361,11 +358,10 @@ public class ReadTypeByAttribute {
 		return datas;
 	}
 
-	public static List<PrivacyData> getPrivacyDatasById(CreationModel creationModel, Class<?> objectClass, Object obj, String propertyName, 
-			PrivacyPolicy model)
+	public static List<PrivacyData> getPrivacyDatasById(CreationModel creationModel, String propertyName, PrivacyPolicy model)
 	{
 		var datas = new ArrayList<PrivacyData>();
-		var dataIds = FieldFinder.getObjectToReadFrom(creationModel, objectClass, obj, propertyName);
+		var dataIds = FieldFinder.getObjectToReadFrom(creationModel, creationModel.getObjectClass(), creationModel.getObject(), propertyName);
 		if(!dataIds.isPresent())
 		{
 			return datas;
@@ -391,18 +387,17 @@ public class ReadTypeByAttribute {
 		}
 	}
 	
-	public static List<Location> getLocationsFromObject(CreationModel creationModel, Class<?> objectClass, Object obj, String propertyName, 
-			PrivacyPolicy model)
+	public static List<Location> getLocationsFromObject(CreationModel creationModel, String propertyName, PrivacyPolicy model)
 	{
 		var locations = new ArrayList<Location>();
-		if(obj == null)
+		if(creationModel.getObject() == null)
 		{
 			System.out.println("Object is not instantiated.");
 			return locations;
 		}
 		try
 		{
-			var value = FieldFinder.getObjectToReadFrom(creationModel, objectClass, obj, propertyName);
+			var value = FieldFinder.getObjectToReadFrom(creationModel, creationModel.getObjectClass(), creationModel.getObject(), propertyName);
 			if(!value.isPresent())
 			{
 				return locations;
@@ -440,11 +435,10 @@ public class ReadTypeByAttribute {
 		return locations;
 	}
 	
-	public static List<Location> getLocationsById(CreationModel creationModel, Class<?> objectClass, Object obj, String propertyName, 
-			PrivacyPolicy model)
+	public static List<Location> getLocationsById(CreationModel creationModel, String propertyName, PrivacyPolicy model)
 	{
 		var locations = new ArrayList<Location>();
-		var locationIds = FieldFinder.getObjectToReadFrom(creationModel, objectClass, obj, propertyName);
+		var locationIds = FieldFinder.getObjectToReadFrom(creationModel, creationModel.getObjectClass(), creationModel.getObject(), propertyName);
 		if(!locationIds.isPresent())
 		{
 			return locations;
@@ -470,18 +464,18 @@ public class ReadTypeByAttribute {
 		}
 	}
 	
-	public static List<PolicyStatement> getPolicyStatementsFromObject(CreationModel creationModel, Class<?> objectClass, Object obj, String propertyName, 
+	public static List<PolicyStatement> getPolicyStatementsFromObject(CreationModel creationModel, String propertyName, 
 			PrivacyPolicy model)
 	{
 		var policyStatments = new ArrayList<PolicyStatement>();
-		if(obj == null)
+		if(creationModel.getObject() == null)
 		{
 			System.out.println("Object is not instantiated.");
 			return policyStatments;
 		}
 		try
 		{
-			var value = FieldFinder.getObjectToReadFrom(creationModel, objectClass, obj, propertyName);
+			var value = FieldFinder.getObjectToReadFrom(creationModel, creationModel.getObjectClass(), creationModel.getObject(), propertyName);
 			if(!value.isPresent())
 			{
 				return policyStatments;
@@ -519,11 +513,10 @@ public class ReadTypeByAttribute {
 		return policyStatments;
 	}
 
-	public static List<PolicyStatement> getPolicyStatementsById(CreationModel creationModel, Class<?> objectClass, Object obj, String propertyName, 
-			PrivacyPolicy model)
+	public static List<PolicyStatement> getPolicyStatementsById(CreationModel creationModel, String propertyName, PrivacyPolicy model)
 	{
 		var policyStatments = new ArrayList<PolicyStatement>();
-		var policyStatmentIds = FieldFinder.getObjectToReadFrom(creationModel, objectClass, obj, propertyName);
+		var policyStatmentIds = FieldFinder.getObjectToReadFrom(creationModel, creationModel.getObjectClass(), creationModel.getObject(), propertyName);
 		if(!policyStatmentIds.isPresent())
 		{
 			return policyStatments;
@@ -550,18 +543,17 @@ public class ReadTypeByAttribute {
 		}
 	}
 	
-	public static List<Document> getDocumentsFromObject(CreationModel creationModel, Class<?> objectClass, Object obj, String propertyName, 
-			PrivacyPolicy model)
+	public static List<Document> getDocumentsFromObject(CreationModel creationModel, String propertyName, PrivacyPolicy model)
 	{
 		var documents = new ArrayList<Document>();
-		if(obj == null)
+		if(creationModel.getObject() == null)
 		{
 			System.out.println("Object is not instantiated.");
 			return documents;
 		}
 		try
 		{
-			var value = FieldFinder.getObjectToReadFrom(creationModel, objectClass, obj, propertyName);
+			var value = FieldFinder.getObjectToReadFrom(creationModel, creationModel.getObjectClass(), creationModel.getObject(), propertyName);
 			if(!value.isPresent())
 			{
 				return documents;
@@ -599,11 +591,10 @@ public class ReadTypeByAttribute {
 		return documents;
 	}
 	
-	public static List<Document> getDocumentsById(CreationModel creationModel, Class<?> objectClass, Object obj, String propertyName, 
-			PrivacyPolicy model)
+	public static List<Document> getDocumentsById(CreationModel creationModel, String propertyName, PrivacyPolicy model)
 	{
 		var documents = new ArrayList<Document>();
-		var documentIds = FieldFinder.getObjectToReadFrom(creationModel, objectClass, obj, propertyName);
+		var documentIds = FieldFinder.getObjectToReadFrom(creationModel, creationModel.getObjectClass(), creationModel.getObject(), propertyName);
 		if(!documentIds.isPresent())
 		{
 			return documents;

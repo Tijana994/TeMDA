@@ -30,7 +30,6 @@ public class CreateComplaintBasedOnActionAspect {
 		Object[] args = thisJoinPoint.getArgs();
 		Object returnedObject = thisJoinPoint.proceed(args);
 		Object originalObject = thisJoinPoint.getThis();
-		Class<? extends Object> originalObjectClass = originalObject.getClass();
 	    MethodSignature signature = (MethodSignature) thisJoinPoint.getSignature();
 	    Method method = signature.getMethod();
 	    CreateComplaintBasedOnActionAnnotation createComplaintBasedOnAction = method.getAnnotation(CreateComplaintBasedOnActionAnnotation.class);
@@ -39,17 +38,15 @@ public class CreateComplaintBasedOnActionAspect {
 			System.out.println("There is no create complaint based on action annotation");
 			return returnedObject;
 		}
-		CreationModel originalObjectModel = new CreationModel(returnedObject, thisJoinPoint, createComplaintBasedOnAction.createdObjectLocation(), createComplaintBasedOnAction.parametersLocation());
+		CreationModel originalObjectModel = new CreationModel(returnedObject, originalObject, thisJoinPoint, createComplaintBasedOnAction.createdObjectLocation(), createComplaintBasedOnAction.parametersLocation());
 		CreationModel createdObjectModel = new CreationModel(returnedObject, thisJoinPoint, createComplaintBasedOnAction.createdObjectLocation(), ParametersObjectsLocation.Property);
-		Object createdObject = FieldFinder.getObjectToReadFrom(originalObjectModel, originalObject, createComplaintBasedOnAction.name());
-		if(createdObject == null)
+		createdObjectModel.setObject(FieldFinder.getCreatedObjectToReadFrom(originalObjectModel, originalObject, createComplaintBasedOnAction.name()));
+		if(createdObjectModel.getObject() == null)
 		{
 			System.out.println("Read from object is null - CreateComplaintBasedOnActionAspect");
 			return returnedObject;
 		}
-		Class<? extends Object> createdObjectClass = createdObject.getClass();
-		ComplaintAnnotation complaint = createdObjectClass.getAnnotation(ComplaintAnnotation.class);
-		
+		ComplaintAnnotation complaint = createdObjectModel.getObjectClass().getAnnotation(ComplaintAnnotation.class);
 		if(complaint == null)
 		{
 			System.out.println("There is no complaint annotation");
@@ -62,16 +59,16 @@ public class CreateComplaintBasedOnActionAspect {
 			var model = repo.getModel();
 			var complaintTypeObject = repo.getFactory().createComplaintBasedOnAction();
 			var complaintObject = repo.getFactory().createComplaint();
-			complaintObject.setName((String)FieldFinder.getFieldValue(complaint.id(), createdObject, createdObjectClass));
-			complaintObject.setWhen((Date)FieldFinder.getFieldValue(complaint.when(), createdObject, createdObjectClass));
+			complaintObject.setName((String)FieldFinder.getFieldValue(complaint.id(), createdObjectModel.getObject(), createdObjectModel.getObjectClass()));
+			complaintObject.setWhen((Date)FieldFinder.getFieldValue(complaint.when(), createdObjectModel.getObject(), createdObjectModel.getObjectClass()));
 			
 			if(!complaint.reason().equals(Constants.Empty))
 			{
-				complaintObject.setReason((String)FieldFinder.getFieldValue(complaint.reason(), createdObject, createdObjectClass));
+				complaintObject.setReason((String)FieldFinder.getFieldValue(complaint.reason(), createdObjectModel.getObject(), createdObjectModel.getObjectClass()));
 			}
 			if(!createComplaintBasedOnAction.policyStatement().equals(Constants.Empty))
 			{
-				var policyStatement = ObjectManager.tryGetPolicyStatementFromObject(originalObjectModel, originalObject, originalObjectClass, 
+				var policyStatement = ObjectManager.tryGetPolicyStatementFromObject(originalObjectModel,  
 						createComplaintBasedOnAction.policyStatement(), model);
 				if(policyStatement.isPresent())
 				{
@@ -80,8 +77,7 @@ public class CreateComplaintBasedOnActionAspect {
 			}
 			if(!createComplaintBasedOnAction.policyStatementId().equals(Constants.Empty))
 			{
-				var policyStatement = ObjectManager.tryGetPolicyStatementById(originalObjectModel, originalObject, originalObjectClass, 
-						createComplaintBasedOnAction.policyStatementId(), model);
+				var policyStatement = ObjectManager.tryGetPolicyStatementById(originalObjectModel, createComplaintBasedOnAction.policyStatementId(), model);
 				if(policyStatement.isPresent())
 				{
 					complaintTypeObject.setStatement(policyStatement.get());
@@ -89,7 +85,7 @@ public class CreateComplaintBasedOnActionAspect {
 			}
 			if(!complaint.who().equals(Constants.Empty)) 
 			{
-				var principal = ObjectManager.tryGetPrincipalByFromObject(createdObjectModel, createdObject, createdObjectClass, complaint.who(), model);
+				var principal = ObjectManager.tryGetPrincipalByFromObject(createdObjectModel, complaint.who(), model);
 				if(principal.isPresent())
 				{
 					complaintObject.setWho(principal.get());
@@ -97,7 +93,7 @@ public class CreateComplaintBasedOnActionAspect {
 			}
 			if(!complaint.whoId().equals(Constants.Empty))
 			{
-				var principal = ObjectManager.tryGetPrincipalByById(createdObjectModel, createdObject, createdObjectClass, complaint.whoId(), model);
+				var principal = ObjectManager.tryGetPrincipalByById(createdObjectModel, complaint.whoId(), model);
 				if(principal.isPresent())
 				{
 					complaintObject.setWho(principal.get());

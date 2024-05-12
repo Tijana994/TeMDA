@@ -12,7 +12,7 @@ import com.security.model.validation.models.CreationModel;
 
 public class FieldFinder {
 
-	public static Object getFieldValue(String fieldName, Object annotationObject, Class<? extends Object> c)
+	public static Object getFieldValue(String fieldName, Object object, Class<? extends Object> objectClass)
 	{
 		try 
 		{
@@ -21,9 +21,9 @@ public class FieldFinder {
 				System.out.println("Parameter name is empty");
 				return null;
 			}
-			Field field = c.getDeclaredField(fieldName);
+			Field field = objectClass.getDeclaredField(fieldName);
 			field.setAccessible(true);
-			return field.get(annotationObject);
+			return field.get(object);
 		}
 		catch(Exception ex)
 		{
@@ -33,7 +33,7 @@ public class FieldFinder {
 		return null;
 	}
 	
-	public static Object getObjectToReadFrom(CreationModel creationModel, Object obj, String name)
+	public static Object getCreatedObjectToReadFrom(CreationModel creationModel, Object object, String name)
 	{
 		Object retFromObj = null;
 		if(creationModel.getCreatedLocation() == CreatedObjectLocation.Return)
@@ -47,7 +47,7 @@ public class FieldFinder {
 				System.out.println("Property name is empty");
 				return retFromObj;
 			}
-			retFromObj = getFieldValue(name, obj, obj.getClass());
+			retFromObj = getFieldValue(name, object, object.getClass());
 		}
 		else if(creationModel.getCreatedLocation() == CreatedObjectLocation.Parameter)
 		{
@@ -119,13 +119,12 @@ public class FieldFinder {
 		else if (creationModel.getParametersLocation() == ParametersObjectsLocation.PropertyInReturnedObject)
 		{
 			//TODO
-			System.out.println("TO DO");
 			if(name.equals(Constants.Empty))
 			{
 				System.out.println("Property name is empty");
 				return Optional.empty();
 			}
-			var value = getFieldValue(name, creationModel.getReturnedObject(), creationModel.getReturnedObject().getClass());
+			var value = getFieldValue(name, creationModel.getReturnedObject(), creationModel.getReturnedObjectClass());
 			if(value == null)
 			{
 				System.out.println("Property " + name + " should be instatiate");

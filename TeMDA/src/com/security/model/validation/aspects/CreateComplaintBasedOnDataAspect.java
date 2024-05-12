@@ -30,7 +30,6 @@ public class CreateComplaintBasedOnDataAspect {
 		Object[] args = thisJoinPoint.getArgs();
 		Object returnedObject = thisJoinPoint.proceed(args);
 		Object originalObject = thisJoinPoint.getThis();
-		Class<? extends Object> originalObjectClass = originalObject.getClass();
 	    MethodSignature signature = (MethodSignature) thisJoinPoint.getSignature();
 	    Method method = signature.getMethod();
 	    CreateComplaintBasedOnDataAnnotation createComplaintBasedOnData = method.getAnnotation(CreateComplaintBasedOnDataAnnotation.class);
@@ -39,17 +38,15 @@ public class CreateComplaintBasedOnDataAspect {
 			System.out.println("There is no create complaint based on data annotation");
 			return returnedObject;
 		}
-		CreationModel originalObjectModel = new CreationModel(returnedObject, thisJoinPoint, createComplaintBasedOnData.createdObjectLocation(), createComplaintBasedOnData.parametersLocation());
+		CreationModel originalObjectModel = new CreationModel(returnedObject, originalObject, thisJoinPoint, createComplaintBasedOnData.createdObjectLocation(), createComplaintBasedOnData.parametersLocation());
 		CreationModel createdObjectModel = new CreationModel(returnedObject, thisJoinPoint, createComplaintBasedOnData.createdObjectLocation(), ParametersObjectsLocation.Property);
-		Object createdObject = FieldFinder.getObjectToReadFrom(originalObjectModel, originalObject, createComplaintBasedOnData.name());
-		if(createdObject == null)
+		createdObjectModel.setObject(FieldFinder.getCreatedObjectToReadFrom(originalObjectModel, originalObject, createComplaintBasedOnData.name()));
+		if(createdObjectModel.getObject() == null)
 		{
 			System.out.println("Read from object is null - CreateComplaintBasedOnDataAspect");
 			return returnedObject;
 		}
-		Class<? extends Object> createdObjectClass = createdObject.getClass();
-		ComplaintAnnotation complaint = createdObjectClass.getAnnotation(ComplaintAnnotation.class);
-		
+		ComplaintAnnotation complaint = createdObjectModel.getObjectClass().getAnnotation(ComplaintAnnotation.class);
 		if(complaint == null)
 		{
 			System.out.println("There is no complaint annotation");
@@ -62,16 +59,16 @@ public class CreateComplaintBasedOnDataAspect {
 			var model = repo.getModel();
 			var complaintTypeObject = repo.getFactory().createComplaintBasedOnData();
 			var complaintObject = repo.getFactory().createComplaint();
-			complaintObject.setName((String)FieldFinder.getFieldValue(complaint.id(), createdObject, createdObjectClass));
-			complaintObject.setWhen((Date)FieldFinder.getFieldValue(complaint.when(), createdObject, createdObjectClass));
+			complaintObject.setName((String)FieldFinder.getFieldValue(complaint.id(), createdObjectModel.getObject(), createdObjectModel.getObjectClass()));
+			complaintObject.setWhen((Date)FieldFinder.getFieldValue(complaint.when(), createdObjectModel.getObject(), createdObjectModel.getObjectClass()));
 			complaintTypeObject.setType(createComplaintBasedOnData.type());
 			if(!complaint.reason().equals(Constants.Empty))
 			{
-				complaintObject.setReason((String)FieldFinder.getFieldValue(complaint.reason(), createdObject, createdObjectClass));
+				complaintObject.setReason((String)FieldFinder.getFieldValue(complaint.reason(), createdObjectModel.getObject(), createdObjectModel.getObjectClass()));
 			}
 			if(!createComplaintBasedOnData.subjects().equals(Constants.Empty))
 			{
-				var datas = ReadTypeByAttribute.getPrivacyDatasFromObject(originalObjectModel, originalObjectClass, originalObject, createComplaintBasedOnData.subjects(), model);
+				var datas = ReadTypeByAttribute.getPrivacyDatasFromObject(originalObjectModel, createComplaintBasedOnData.subjects(), model);
 				if(!datas.isEmpty())
 				{
 					complaintTypeObject.getSubject().addAll(datas);
@@ -79,7 +76,7 @@ public class CreateComplaintBasedOnDataAspect {
 			}
 			if(!createComplaintBasedOnData.subjectsIds().equals(Constants.Empty))
 			{
-				var datas = ReadTypeByAttribute.getPrivacyDatasById(originalObjectModel, originalObjectClass, originalObject, createComplaintBasedOnData.subjectsIds(), model);
+				var datas = ReadTypeByAttribute.getPrivacyDatasById(originalObjectModel, createComplaintBasedOnData.subjectsIds(), model);
 				if(!datas.isEmpty())
 				{
 					complaintTypeObject.getSubject().addAll(datas);
@@ -87,7 +84,7 @@ public class CreateComplaintBasedOnDataAspect {
 			}
 			if(!createComplaintBasedOnData.subject().equals(Constants.Empty))
 			{
-				var data = ObjectManager.tryGetPrivacyDataByFromObject(originalObjectModel, originalObject, originalObjectClass, createComplaintBasedOnData.subject(), model);
+				var data = ObjectManager.tryGetPrivacyDataByFromObject(originalObjectModel, createComplaintBasedOnData.subject(), model);
 				if(!data.isEmpty())
 				{
 					complaintTypeObject.getSubject().add(data.get());
@@ -95,7 +92,7 @@ public class CreateComplaintBasedOnDataAspect {
 			}
 			if(!createComplaintBasedOnData.subjectId().equals(Constants.Empty))
 			{
-				var data = ObjectManager.tryGetPrivacyDataByById(originalObjectModel, originalObject, originalObjectClass, createComplaintBasedOnData.subjectId(), model);
+				var data = ObjectManager.tryGetPrivacyDataByById(originalObjectModel, createComplaintBasedOnData.subjectId(), model);
 				if(!data.isEmpty())
 				{
 					complaintTypeObject.getSubject().add(data.get());
@@ -103,7 +100,7 @@ public class CreateComplaintBasedOnDataAspect {
 			}
 			if(!complaint.who().equals(Constants.Empty)) 
 			{
-				var principal = ObjectManager.tryGetPrincipalByFromObject(createdObjectModel, createdObject, createdObjectClass, complaint.who(), model);
+				var principal = ObjectManager.tryGetPrincipalByFromObject(createdObjectModel, complaint.who(), model);
 				if(principal.isPresent())
 				{
 					complaintObject.setWho(principal.get());
@@ -111,7 +108,7 @@ public class CreateComplaintBasedOnDataAspect {
 			}
 			if(!complaint.whoId().equals(Constants.Empty))
 			{
-				var principal = ObjectManager.tryGetPrincipalByById(createdObjectModel, createdObject, createdObjectClass, complaint.whoId(), model);
+				var principal = ObjectManager.tryGetPrincipalByById(createdObjectModel, complaint.whoId(), model);
 				if(principal.isPresent())
 				{
 					complaintObject.setWho(principal.get());

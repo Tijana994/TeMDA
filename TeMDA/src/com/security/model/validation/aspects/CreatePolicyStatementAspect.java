@@ -42,8 +42,8 @@ public class CreatePolicyStatementAspect {
 			System.out.println("There is no create policy statement annotation");
 			return returnedObject;
 		}
-		CreationModel originalObjectModel = new CreationModel(returnedObject, thisJoinPoint, createPolicyStatement.createdObjectLocation(), createPolicyStatement.parametersLocation());
-		Object createdObject = FieldFinder.getObjectToReadFrom(originalObjectModel, originalObject, createPolicyStatement.name());
+		CreationModel originalObjectModel = new CreationModel(returnedObject, originalObject, thisJoinPoint, createPolicyStatement.createdObjectLocation(), createPolicyStatement.parametersLocation());
+		Object createdObject = FieldFinder.getCreatedObjectToReadFrom(originalObjectModel, originalObject, createPolicyStatement.name());
 		if(createdObject == null)
 		{
 			System.out.println("Read from object is null = CreatePolicyStatementAspect");
@@ -66,7 +66,7 @@ public class CreatePolicyStatementAspect {
 			policyStatementObject.setName((String)FieldFinder.getFieldValue(policyStatement.id(), returnedObject, createdObjectClass));
 			if(!createPolicyStatement.whoId().equals(Constants.Empty))
 			{
-				var who = ObjectManager.tryGetPrincipalByById(originalObjectModel, originalObject, originalObjectClass, createPolicyStatement.whoId(), model);
+				var who = ObjectManager.tryGetPrincipalByById(originalObjectModel, createPolicyStatement.whoId(), model);
 				if(who.isPresent())
 				{
 					policyStatementObject.setWho(who.get());
@@ -74,7 +74,7 @@ public class CreatePolicyStatementAspect {
 			}
 			if(!createPolicyStatement.who().equals(Constants.Empty))
 			{
-				var who = ObjectManager.tryGetPrincipalByFromObject(originalObjectModel, originalObject, originalObjectClass, createPolicyStatement.who(), model);
+				var who = ObjectManager.tryGetPrincipalByFromObject(originalObjectModel, createPolicyStatement.who(), model);
 				if(who.isPresent())
 				{
 					policyStatementObject.setWho(who.get());
@@ -82,7 +82,7 @@ public class CreatePolicyStatementAspect {
 			}
 			if(!createPolicyStatement.whoseId().equals(Constants.Empty))
 			{
-				var whose = ObjectManager.tryGetPrincipalByById(originalObjectModel, originalObject, originalObjectClass, createPolicyStatement.whoseId(), model);
+				var whose = ObjectManager.tryGetPrincipalByById(originalObjectModel, createPolicyStatement.whoseId(), model);
 				if(whose.isPresent())
 				{
 					policyStatementObject.setWhose(whose.get());
@@ -90,7 +90,7 @@ public class CreatePolicyStatementAspect {
 			}
 			if(!createPolicyStatement.whose().equals(Constants.Empty))
 			{
-				var whose = ObjectManager.tryGetPrincipalByFromObject(originalObjectModel, originalObject, originalObjectClass, createPolicyStatement.whose(), model);
+				var whose = ObjectManager.tryGetPrincipalByFromObject(originalObjectModel, createPolicyStatement.whose(), model);
 				if(whose.isPresent())
 				{
 					policyStatementObject.setWhose(whose.get());
@@ -98,7 +98,7 @@ public class CreatePolicyStatementAspect {
 			}
 			if(!createPolicyStatement.whomId().equals(Constants.Empty))
 			{
-				var whom = ObjectManager.tryGetPrincipalByById(originalObjectModel, originalObject, originalObjectClass, createPolicyStatement.whomId(), model);
+				var whom = ObjectManager.tryGetPrincipalByById(originalObjectModel, createPolicyStatement.whomId(), model);
 				if(whom.isPresent())
 				{
 					policyStatementObject.setWhom(whom.get());
@@ -106,7 +106,7 @@ public class CreatePolicyStatementAspect {
 			}
 			if(!createPolicyStatement.whom().equals(Constants.Empty))
 			{
-				var whom = ObjectManager.tryGetPrincipalByFromObject(originalObjectModel, originalObject, originalObjectClass, createPolicyStatement.whom(), model);
+				var whom = ObjectManager.tryGetPrincipalByFromObject(originalObjectModel, createPolicyStatement.whom(), model);
 				if(whom.isPresent())
 				{
 					policyStatementObject.setWhom(whom.get());
@@ -114,7 +114,7 @@ public class CreatePolicyStatementAspect {
 			}
 			if(!createPolicyStatement.causedBy().equals(Constants.Empty))
 			{
-				var complaint = ObjectManager.tryGetComplaintFromObject(originalObjectModel, originalObject, originalObjectClass, createPolicyStatement.causedBy(), model);
+				var complaint = ObjectManager.tryGetComplaintFromObject(originalObjectModel, createPolicyStatement.causedBy(), model);
 				if(complaint.isPresent())
 				{
 					policyStatementObject.setCausedBy(complaint.get());
@@ -122,7 +122,7 @@ public class CreatePolicyStatementAspect {
 			}
 			if(!createPolicyStatement.causedById().equals(Constants.Empty))
 			{
-				var complaint = ObjectManager.tryGetComplaintById(originalObjectModel, originalObject, originalObjectClass, createPolicyStatement.causedById(), model);
+				var complaint = ObjectManager.tryGetComplaintById(originalObjectModel, createPolicyStatement.causedById(), model);
 				if(complaint.isPresent())
 				{
 					policyStatementObject.setCausedBy(complaint.get());
@@ -140,13 +140,13 @@ public class CreatePolicyStatementAspect {
 		    
 		    if(HowCreator.shouldCreate(createPolicyStatement))
 		    {
-			    var how = HowCreator.createHow(originalObjectModel, createPolicyStatement, originalObject, originalObjectClass, repo, model);
+			    var how = HowCreator.createHow(originalObjectModel, createPolicyStatement, repo, model);
 				policyStatementObject.setHow(how);
 		    }
 
 		    if(WhereCreator.shouldCreate(createPolicyStatement))
 		    {
-				var where = WhereCreator.createWhere(originalObjectModel, createPolicyStatement, originalObject, originalObjectClass, repo, model);
+				var where = WhereCreator.createWhere(originalObjectModel, createPolicyStatement, repo, model);
 				policyStatementObject.setWhere(where);
 		    }
 			
