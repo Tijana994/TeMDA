@@ -132,7 +132,7 @@ public class CreatePolicyStatementAspect {
 			var purpose = PurposeCreator.createPurpose(originalObjectModel, originalObjectClass, originalObject, createPolicyStatement.why(), repo.getFactory());
 			policyStatementObject.setWhy(purpose);
 			ParametersAnnotations annotations = new ParametersAnnotations(method.getParameterAnnotations(), signature.getParameterNames());
-			var when = WhenCreator.createWhen(originalObjectModel, originalObjectClass, originalObject, createPolicyStatement.when(), repo.getFactory(), annotations);
+			var when = WhenCreator.createWhen(originalObjectModel, createPolicyStatement.when(), repo.getFactory(), annotations);
 			policyStatementObject.setWhen(when);
 			
 		    var what = WhatCreator.createWhat(createPolicyStatement, repo, model);

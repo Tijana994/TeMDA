@@ -14,24 +14,23 @@ import privacyModel.PrivacyModelFactory;
 import privacyModel.TimeStatement;
 
 public class WhenCreator {
-	public static AbstractTime createWhen(CreationModel creationModel, Class<?> originalObjectClass, Object originalObject, 
-			String when, PrivacyModelFactory factory, ParametersAnnotations parametersAnnotation)
+	public static AbstractTime createWhen(CreationModel creationModel, String when, PrivacyModelFactory factory, ParametersAnnotations parametersAnnotation)
 	{
 		try
 		{
 			var whens = when.split(",", 2);
 			if(whens.length == 1)
 			{
-				var time = FieldFinder.getObjectToReadFrom(creationModel, originalObjectClass, originalObject, whens[0]);
+				var time = FieldFinder.getObjectToReadFrom(creationModel, creationModel.getObjectClass(), creationModel.getObject(), whens[0]);
 				return createTimeStatement(time, factory, parametersAnnotation, creationModel.getParametersLocation(), whens[0]);
 			}
 			else if(whens.length == 2)
 			{
 				var interval = factory.createTimeInterval();
-				var start = FieldFinder.getObjectToReadFrom(creationModel, originalObjectClass, originalObject, whens[0]);
+				var start = FieldFinder.getObjectToReadFrom(creationModel, creationModel.getObjectClass(), creationModel.getObject(), whens[0]);
 				interval.setStart(createTimeStatement(start, factory, parametersAnnotation, creationModel.getParametersLocation(), whens[0]));
 				
-				var end = FieldFinder.getObjectToReadFrom(creationModel, originalObjectClass, originalObject, whens[1]);
+				var end = FieldFinder.getObjectToReadFrom(creationModel, creationModel.getObjectClass(), creationModel.getObject(), whens[1]);
 				interval.setEnd(createTimeStatement(end, factory, parametersAnnotation, creationModel.getParametersLocation(), whens[1]));
 				
 				return interval;
