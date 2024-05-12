@@ -1,12 +1,9 @@
 package com.security.model.validation.aspects;
 
-import java.lang.reflect.Method;
-
 import org.aspectj.lang.ProceedingJoinPoint;
 import org.aspectj.lang.annotation.Around;
 import org.aspectj.lang.annotation.Aspect;
 import org.aspectj.lang.annotation.Pointcut;
-import org.aspectj.lang.reflect.MethodSignature;
 
 import com.security.model.validation.annotations.LocationAnnotation;
 import com.security.model.validation.annotations.creators.CreateLocationAnnotation;
@@ -20,17 +17,13 @@ import com.security.model.validation.models.CreationModel;
 import utility.PrivacyModelRepository;
 
 @Aspect
-public class CreateLocationAspect {
+public class CreateLocationAspect extends BaseAspect {
 
 	@Pointcut("execution(* *..*(..)) && @annotation(com.security.model.validation.annotations.creators.CreateLocationAnnotation)")
 	void function() {}
 	@Around("function()")
 	public Object createLocation(ProceedingJoinPoint thisJoinPoint) throws Throwable {
-		Object[] args = thisJoinPoint.getArgs();
-		Object returnedObject = thisJoinPoint.proceed(args);
-		Object originalObject = thisJoinPoint.getThis();
-	    MethodSignature signature = (MethodSignature) thisJoinPoint.getSignature();
-	    Method method = signature.getMethod();
+		SetUp(thisJoinPoint);
 		CreateLocationAnnotation createLocation = method.getAnnotation(CreateLocationAnnotation.class);
 		if(createLocation == null)
 		{

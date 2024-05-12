@@ -1,13 +1,11 @@
 package com.security.model.validation.aspects;
 
-import java.lang.reflect.Method;
 import java.util.Date;
 
 import org.aspectj.lang.ProceedingJoinPoint;
 import org.aspectj.lang.annotation.Around;
 import org.aspectj.lang.annotation.Aspect;
 import org.aspectj.lang.annotation.Pointcut;
-import org.aspectj.lang.reflect.MethodSignature;
 
 import com.security.model.validation.annotations.PaperAnnotation;
 import com.security.model.validation.annotations.creators.CreateDocumentAnnotation;
@@ -20,17 +18,13 @@ import com.security.model.validation.models.CreationModel;
 import utility.PrivacyModelRepository;
 
 @Aspect
-public class CreateDocumentAspect {
+public class CreateDocumentAspect extends BaseAspect {
 
 	@Pointcut("execution(* *..*(..)) && @annotation(com.security.model.validation.annotations.creators.CreateDocumentAnnotation)")
 	void function() {}
 	@Around("function()")
 	public Object createDocument(ProceedingJoinPoint thisJoinPoint) throws Throwable {
-		Object[] args = thisJoinPoint.getArgs();
-		Object returnedObject = thisJoinPoint.proceed(args);
-		Object originalObject = thisJoinPoint.getThis();
-	    MethodSignature signature = (MethodSignature) thisJoinPoint.getSignature();
-	    Method method = signature.getMethod();
+		SetUp(thisJoinPoint);
 	    CreateDocumentAnnotation createDocument = method.getAnnotation(CreateDocumentAnnotation.class);
 		if(createDocument == null)
 		{

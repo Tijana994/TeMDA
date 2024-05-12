@@ -1,13 +1,11 @@
 package com.security.model.validation.aspects;
 
-import java.lang.reflect.Method;
 import java.util.Date;
 
 import org.aspectj.lang.ProceedingJoinPoint;
 import org.aspectj.lang.annotation.Around;
 import org.aspectj.lang.annotation.Aspect;
 import org.aspectj.lang.annotation.Pointcut;
-import org.aspectj.lang.reflect.MethodSignature;
 
 import com.security.model.validation.annotations.ComplaintAnnotation;
 import com.security.model.validation.annotations.creators.CreateComplaintBasedOnActionAnnotation;
@@ -20,18 +18,13 @@ import com.security.model.validation.models.CreationModel;
 import utility.PrivacyModelRepository;
 
 @Aspect
-public class CreateComplaintBasedOnActionAspect {
+public class CreateComplaintBasedOnActionAspect extends BaseAspect {
 
 	@Pointcut("execution(* *..*(..)) && @annotation(com.security.model.validation.annotations.creators.CreateComplaintBasedOnActionAnnotation)")
 	void function() {}
 	@Around("function()")
 	public Object createComplaintBasedOnAction(ProceedingJoinPoint thisJoinPoint) throws Throwable {
-		
-		Object[] args = thisJoinPoint.getArgs();
-		Object returnedObject = thisJoinPoint.proceed(args);
-		Object originalObject = thisJoinPoint.getThis();
-	    MethodSignature signature = (MethodSignature) thisJoinPoint.getSignature();
-	    Method method = signature.getMethod();
+		SetUp(thisJoinPoint);
 	    CreateComplaintBasedOnActionAnnotation createComplaintBasedOnAction = method.getAnnotation(CreateComplaintBasedOnActionAnnotation.class);
 		if(createComplaintBasedOnAction == null)
 		{

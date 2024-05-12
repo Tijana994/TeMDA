@@ -1,13 +1,11 @@
 package com.security.model.validation.aspects;
 
-import java.lang.reflect.Method;
 import java.util.Date;
 
 import org.aspectj.lang.ProceedingJoinPoint;
 import org.aspectj.lang.annotation.Around;
 import org.aspectj.lang.annotation.Aspect;
 import org.aspectj.lang.annotation.Pointcut;
-import org.aspectj.lang.reflect.MethodSignature;
 
 import com.security.model.validation.annotations.NotificationAnnotation;
 import com.security.model.validation.annotations.creators.CreateNotificationAnnotation;
@@ -22,17 +20,13 @@ import com.security.model.validation.models.CreationModel;
 import utility.PrivacyModelRepository;
 
 @Aspect
-public class CreateNotificationAspect {
+public class CreateNotificationAspect extends BaseAspect {
 
 	@Pointcut("execution(* *..*(..)) && @annotation(com.security.model.validation.annotations.creators.CreateNotificationAnnotation)")
 	void function() {}
 	@Around("function()")
 	public Object createNotification(ProceedingJoinPoint thisJoinPoint) throws Throwable {
-		Object[] args = thisJoinPoint.getArgs();
-		Object returnedObject = thisJoinPoint.proceed(args);
-		Object originalObject = thisJoinPoint.getThis();
-	    MethodSignature signature = (MethodSignature) thisJoinPoint.getSignature();
-	    Method method = signature.getMethod();
+		SetUp(thisJoinPoint);
 	    CreateNotificationAnnotation createNotification = method.getAnnotation(CreateNotificationAnnotation.class);
 		if(createNotification == null)
 		{

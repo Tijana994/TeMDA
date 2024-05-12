@@ -1,12 +1,9 @@
 package com.security.model.validation.aspects;
 
-import java.lang.reflect.Method;
-
 import org.aspectj.lang.ProceedingJoinPoint;
 import org.aspectj.lang.annotation.Around;
 import org.aspectj.lang.annotation.Aspect;
 import org.aspectj.lang.annotation.Pointcut;
-import org.aspectj.lang.reflect.MethodSignature;
 
 import com.security.model.validation.annotations.PrivacyDataAnnotation;
 import com.security.model.validation.annotations.creators.CreatePrivacyDataAnnotation;
@@ -17,18 +14,13 @@ import com.security.model.validation.models.CreationModel;
 import utility.PrivacyModelRepository;
 
 @Aspect
-public class CreatePrivacyDataAspect {
+public class CreatePrivacyDataAspect extends BaseAspect {
 
 	@Pointcut("execution(* *..*(..)) && @annotation(com.security.model.validation.annotations.creators.CreatePrivacyDataAnnotation)")
 	void function() {}
 	@Around("function()")
 	public Object createPrincipal(ProceedingJoinPoint thisJoinPoint) throws Throwable {
-		Object[] args = thisJoinPoint.getArgs();
-		Object returnedObject = thisJoinPoint.proceed(args);
-		Object originalObject = thisJoinPoint.getThis();
-		Class<? extends Object> originalObjectClass = originalObject.getClass();
-	    MethodSignature signature = (MethodSignature) thisJoinPoint.getSignature();
-	    Method method = signature.getMethod();
+		SetUp(thisJoinPoint);
 	    CreatePrivacyDataAnnotation createPrivacyData = method.getAnnotation(CreatePrivacyDataAnnotation.class);
 		if(createPrivacyData == null)
 		{

@@ -1,6 +1,5 @@
 package com.security.model.validation.aspects;
 
-import java.lang.reflect.Method;
 import java.time.LocalDate;
 import java.time.ZoneId;
 import java.util.Date;
@@ -9,7 +8,6 @@ import org.aspectj.lang.ProceedingJoinPoint;
 import org.aspectj.lang.annotation.Around;
 import org.aspectj.lang.annotation.Aspect;
 import org.aspectj.lang.annotation.Pointcut;
-import org.aspectj.lang.reflect.MethodSignature;
 
 import com.security.model.validation.annotations.PrincipalAnnotation;
 import com.security.model.validation.annotations.creators.CreatePrincipalAnnotation;
@@ -24,17 +22,13 @@ import privacyModel.Principal;
 import utility.PrivacyModelRepository;
 
 @Aspect
-public class CreatePrincipalAspect {
+public class CreatePrincipalAspect extends BaseAspect {
 
 	@Pointcut("execution(* *..*(..)) && @annotation(com.security.model.validation.annotations.creators.CreatePrincipalAnnotation)")
 	void function() {}
 	@Around("function()")
 	public Object createPrincipal(ProceedingJoinPoint thisJoinPoint) throws Throwable {
-		Object[] args = thisJoinPoint.getArgs();
-		Object returnedObject = thisJoinPoint.proceed(args);
-		Object originalObject = thisJoinPoint.getThis();
-	    MethodSignature signature = (MethodSignature) thisJoinPoint.getSignature();
-	    Method method = signature.getMethod();
+		SetUp(thisJoinPoint);
 		CreatePrincipalAnnotation createPrincipal = method.getAnnotation(CreatePrincipalAnnotation.class);
 		if(createPrincipal == null)
 		{

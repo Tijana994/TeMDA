@@ -1,12 +1,9 @@
 package com.security.model.validation.aspects;
 
-import java.lang.reflect.Method;
-
 import org.aspectj.lang.ProceedingJoinPoint;
 import org.aspectj.lang.annotation.Around;
 import org.aspectj.lang.annotation.Aspect;
 import org.aspectj.lang.annotation.Pointcut;
-import org.aspectj.lang.reflect.MethodSignature;
 
 import com.security.model.validation.annotations.PolicyStatementAnnotation;
 import com.security.model.validation.annotations.creators.CreatePolicyStatementAnnotation;
@@ -24,18 +21,13 @@ import com.security.model.validation.models.ParametersAnnotations;
 import utility.PrivacyModelRepository;
 
 @Aspect
-public class CreatePolicyStatementAspect {
+public class CreatePolicyStatementAspect extends BaseAspect {
 	
 	@Pointcut("execution(* *..*(..)) && @annotation(com.security.model.validation.annotations.creators.CreatePolicyStatementAnnotation)")
 	void function() {}
 	@Around("function()")
 	public Object createPolicyStatement(ProceedingJoinPoint thisJoinPoint) throws Throwable {
-		Object[] args = thisJoinPoint.getArgs();
-		Object returnedObject = thisJoinPoint.proceed(args);
-		Object originalObject = thisJoinPoint.getThis();
-		Class<? extends Object> originalObjectClass = originalObject.getClass();
-	    MethodSignature signature = (MethodSignature) thisJoinPoint.getSignature();
-	    Method method = signature.getMethod();
+		SetUp(thisJoinPoint);
 		CreatePolicyStatementAnnotation createPolicyStatement = method.getAnnotation(CreatePolicyStatementAnnotation.class);
 		if(createPolicyStatement == null)
 		{
