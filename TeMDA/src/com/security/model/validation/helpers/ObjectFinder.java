@@ -2,6 +2,8 @@ package com.security.model.validation.helpers;
 
 import java.util.Optional;
 
+import com.security.model.validation.helpers.interfaces.ILogger;
+
 import privacyModel.Complaint;
 import privacyModel.Consent;
 import privacyModel.Document;
@@ -13,8 +15,15 @@ import privacyModel.PrivacyPolicy;
 import privacyModel.SharedPrivacyData;
 
 public class ObjectFinder {
+	
+	private ILogger logger;
+	
+	public ObjectFinder(ILogger logger)
+	{
+		this.logger = logger;
+	}
 
-	public static Optional<Principal> checkIfPrincipalExists(String fieldId, PrivacyPolicy model) 
+	public Optional<Principal> checkIfPrincipalExists(String fieldId, PrivacyPolicy model) 
 	{
 		if(fieldId == null)
 		{
@@ -23,12 +32,12 @@ public class ObjectFinder {
 		var principal = findPrincipal(fieldId, model);
 		if(principal.isEmpty())
 		{
-			System.out.println("There is no prinipal with id " + fieldId);
+			logger.LogErrorMessage("There is no prinipal with id " + fieldId);
 		}
 		return principal;
 	}
 	
-	public static Optional<Location> checkIfLocationExists(String fieldId, PrivacyPolicy model) 
+	public Optional<Location> checkIfLocationExists(String fieldId, PrivacyPolicy model) 
 	{
 		if(fieldId == null)
 		{
@@ -37,12 +46,12 @@ public class ObjectFinder {
 		var location = findLocation(fieldId, model);
 		if(location.isEmpty())
 		{
-			System.out.println("There is no location with id " + fieldId);
+			logger.LogErrorMessage("There is no location with id " + fieldId);
 		}
 		return location;
 	}
 	
-	public static Optional<Consent> checkIfConsentExists(String fieldId, PrivacyPolicy model) 
+	public Optional<Consent> checkIfConsentExists(String fieldId, PrivacyPolicy model) 
 	{
 		if(fieldId == null)
 		{
@@ -51,12 +60,12 @@ public class ObjectFinder {
 		var consent = findConsent(fieldId, model);
 		if(consent.isEmpty())
 		{
-			System.out.println("There is no consent with id " + fieldId);
+			logger.LogErrorMessage("There is no consent with id " + fieldId);
 		}
 		return consent;
 	}
 	
-	public static Optional<PolicyStatement> checkIfPolicyStatementExists(String fieldId, PrivacyPolicy model) 
+	public Optional<PolicyStatement> checkIfPolicyStatementExists(String fieldId, PrivacyPolicy model) 
 	{
 		if(fieldId == null)
 		{
@@ -65,12 +74,12 @@ public class ObjectFinder {
 		var policyStatement = findPolicyStatement(fieldId, model);
 		if(policyStatement.isEmpty())
 		{
-			System.out.println("There is no policy statement with id " + fieldId);
+			logger.LogErrorMessage("There is no policy statement with id " + fieldId);
 		}
 		return policyStatement;
 	}
 	
-	public static Optional<SharedPrivacyData> checkIfSharedPrivacyDataExists(String fieldId, PrivacyPolicy model) 
+	public Optional<SharedPrivacyData> checkIfSharedPrivacyDataExists(String fieldId, PrivacyPolicy model) 
 	{
 		if(fieldId == null)
 		{
@@ -79,12 +88,12 @@ public class ObjectFinder {
 		var sharedPrivacyData = findSharedPrivacyData(fieldId, model);
 		if(sharedPrivacyData.isEmpty())
 		{
-			System.out.println("There is no shared privacy data with id " + fieldId);
+			logger.LogErrorMessage("There is no shared privacy data with id " + fieldId);
 		}
 		return sharedPrivacyData;
 	}
 	
-	public static Optional<PrivacyData> checkIfPrivacyDataExists(String fieldId, PrivacyPolicy model) 
+	public Optional<PrivacyData> checkIfPrivacyDataExists(String fieldId, PrivacyPolicy model) 
 	{
 		if(fieldId == null)
 		{
@@ -93,12 +102,12 @@ public class ObjectFinder {
 		var privacyData = findPrivacyData(fieldId, model);
 		if(privacyData.isEmpty())
 		{
-			System.out.println("There is no privacy data with id " + fieldId);
+			logger.LogErrorMessage("There is no privacy data with id " + fieldId);
 		}
 		return privacyData;
 	}
 	
-	public static Optional<Complaint> checkIfComplaintExists(String fieldId, PrivacyPolicy model) 
+	public Optional<Complaint> checkIfComplaintExists(String fieldId, PrivacyPolicy model) 
 	{
 		if(fieldId == null)
 		{
@@ -107,12 +116,12 @@ public class ObjectFinder {
 		var complaint = findComplaint(fieldId, model);
 		if(complaint.isEmpty())
 		{
-			System.out.println("There is no complaint with id " + fieldId);
+			logger.LogErrorMessage("There is no complaint with id " + fieldId);
 		}
 		return complaint;
 	}
 	
-	public static Optional<Document> checkIfDocumentExists(String fieldId, PrivacyPolicy model) 
+	public Optional<Document> checkIfDocumentExists(String fieldId, PrivacyPolicy model) 
 	{
 		if(fieldId == null)
 		{
@@ -121,7 +130,7 @@ public class ObjectFinder {
 		var document = findDocument(fieldId, model);
 		if(document.isEmpty())
 		{
-			System.out.println("There is no document with id " + fieldId);
+			logger.LogErrorMessage("There is no document with id " + fieldId);
 		}
 		return document;
 	}

@@ -13,9 +13,6 @@ import com.security.model.validation.annotations.PrincipalAnnotation;
 import com.security.model.validation.annotations.creators.CreatePrincipalAnnotation;
 import com.security.model.validation.annotations.enums.Constants;
 import com.security.model.validation.annotations.enums.ParametersObjectsLocation;
-import com.security.model.validation.helpers.FieldFinder;
-import com.security.model.validation.helpers.ObjectManager;
-import com.security.model.validation.helpers.ReadTypeByAttribute;
 import com.security.model.validation.models.CreationModel;
 
 import privacyModel.Principal;
@@ -32,20 +29,20 @@ public class CreatePrincipalAspect extends BaseAspect {
 		CreatePrincipalAnnotation createPrincipal = method.getAnnotation(CreatePrincipalAnnotation.class);
 		if(createPrincipal == null)
 		{
-			System.out.println("There is no create principal statement annotation");
+			Logger.LogErrorMessage("There is no create principal statement annotation");
 			return returnedObject;
 		}
 		CreationModel createdObjectModel = new CreationModel(returnedObject, thisJoinPoint, createPrincipal.createdObjectLocation(), ParametersObjectsLocation.Property);
 		createdObjectModel.setObject(FieldFinder.getCreatedObjectToReadFrom(createdObjectModel, originalObject, createPrincipal.name()));
 		if(createdObjectModel.getObject() == null)
 		{
-			System.out.println("Read from object is null = CreatePrincipalAspect");
+			Logger.LogErrorMessage("Read from object is null = CreatePrincipalAspect");
 			return returnedObject;
 		}
 		PrincipalAnnotation principal = createdObjectModel.getObjectClass().getAnnotation(PrincipalAnnotation.class);
 		if(principal == null)
 		{
-			System.out.println("There is no principal annotation");
+			Logger.LogErrorMessage("There is no principal annotation");
 			return returnedObject;
 		}
 
@@ -137,7 +134,7 @@ public class CreatePrincipalAspect extends BaseAspect {
 		}
 		catch(Exception ex)
 		{
-			System.out.println(ex);
+			Logger.LogExceptionMessage(ex);
 		}
 		
 		return returnedObject;

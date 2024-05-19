@@ -11,8 +11,6 @@ import com.security.model.validation.annotations.PaperAnnotation;
 import com.security.model.validation.annotations.creators.CreateDocumentAnnotation;
 import com.security.model.validation.annotations.enums.Constants;
 import com.security.model.validation.annotations.enums.ParametersObjectsLocation;
-import com.security.model.validation.helpers.FieldFinder;
-import com.security.model.validation.helpers.ObjectManager;
 import com.security.model.validation.models.CreationModel;
 
 import utility.PrivacyModelRepository;
@@ -28,20 +26,20 @@ public class CreateDocumentAspect extends BaseAspect {
 	    CreateDocumentAnnotation createDocument = method.getAnnotation(CreateDocumentAnnotation.class);
 		if(createDocument == null)
 		{
-			System.out.println("There is no create document statement annotation");
+			Logger.LogErrorMessage("There is no create document statement annotation");
 			return returnedObject;
 		}
 		CreationModel createdObjectModel = new CreationModel(returnedObject, thisJoinPoint, createDocument.createdObjectLocation(), ParametersObjectsLocation.Property);
 		createdObjectModel.setObject(FieldFinder.getCreatedObjectToReadFrom(createdObjectModel, originalObject, createDocument.name()));
 		if(createdObjectModel.getObject() == null)
 		{
-			System.out.println("Read from object is null - CreateDocumentAspect");
+			Logger.LogErrorMessage("Read from object is null - CreateDocumentAspect");
 			return returnedObject;
 		}
 		PaperAnnotation paper = createdObjectModel.getObjectClass().getAnnotation(PaperAnnotation.class);
 		if(paper == null)
 		{
-			System.out.println("There is no paper annotation");
+			Logger.LogErrorMessage("There is no paper annotation");
 			return returnedObject;
 		}
 		
@@ -87,7 +85,7 @@ public class CreateDocumentAspect extends BaseAspect {
 		}
 		catch(Exception ex)
 		{
-			System.out.println(ex);
+			Logger.LogExceptionMessage(ex);
 		}
 		
 		return returnedObject;

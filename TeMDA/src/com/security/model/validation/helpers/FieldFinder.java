@@ -8,17 +8,25 @@ import org.aspectj.lang.reflect.MethodSignature;
 import com.security.model.validation.annotations.enums.Constants;
 import com.security.model.validation.annotations.enums.CreatedObjectLocation;
 import com.security.model.validation.annotations.enums.ParametersObjectsLocation;
+import com.security.model.validation.helpers.interfaces.ILogger;
 import com.security.model.validation.models.CreationModel;
 
 public class FieldFinder {
+	
+	private ILogger logger;
+	
+	public FieldFinder(ILogger logger)
+	{
+		this.logger = logger;
+	}
 
-	public static Object getFieldValue(String fieldName, Object object, Class<? extends Object> objectClass)
+	public Object getFieldValue(String fieldName, Object object, Class<? extends Object> objectClass)
 	{
 		try 
 		{
 			if(fieldName.equals(Constants.Empty))
 			{
-				System.out.println("Parameter name is empty");
+				logger.LogErrorMessage("Parameter name is empty");
 				return null;
 			}
 			Field field = objectClass.getDeclaredField(fieldName);
@@ -27,13 +35,13 @@ public class FieldFinder {
 		}
 		catch(Exception ex)
 		{
-			System.out.println(ex);
+			logger.LogExceptionMessage(ex);
 		}
 		
 		return null;
 	}
 	
-	public static Object getCreatedObjectToReadFrom(CreationModel creationModel, Object object, String name)
+	public Object getCreatedObjectToReadFrom(CreationModel creationModel, Object object, String name)
 	{
 		Object retFromObj = null;
 		if(creationModel.getCreatedLocation() == CreatedObjectLocation.Return)
@@ -44,7 +52,7 @@ public class FieldFinder {
 		{
 			if(name.equals(Constants.Empty))
 			{
-				System.out.println("Property name is empty");
+				logger.LogErrorMessage("Property name is empty");
 				return retFromObj;
 			}
 			retFromObj = getFieldValue(name, object, object.getClass());
@@ -53,7 +61,7 @@ public class FieldFinder {
 		{
 			if(name.equals(Constants.Empty))
 			{
-				System.out.println("Parameter name is empty");
+				logger.LogErrorMessage("Parameter name is empty");
 				return retFromObj;
 			}
 			
@@ -73,19 +81,19 @@ public class FieldFinder {
 		return retFromObj;
 	}
 	
-	public static Optional<Object> getObjectToReadFrom(CreationModel creationModel, Class<? extends Object> objectClass, Object obj, String name)
+	public Optional<Object> getObjectToReadFrom(CreationModel creationModel, Class<? extends Object> objectClass, Object obj, String name)
 	{
 		if(creationModel.getParametersLocation() == ParametersObjectsLocation.Property)
 		{
 			if(name.equals(Constants.Empty))
 			{
-				System.out.println("Property name is empty");
+				logger.LogErrorMessage("Property name is empty");
 				return Optional.empty();
 			}
 			var value = getFieldValue(name, obj, objectClass);
 			if(value == null)
 			{
-				System.out.println("Property " + name + " should be instatiate");
+				logger.LogErrorMessage("Property " + name + " should be instatiate");
 				return Optional.empty();
 			}
 			return Optional.of(value);
@@ -94,7 +102,7 @@ public class FieldFinder {
 		{
 			if(name.equals(Constants.Empty))
 			{
-				System.out.println("Parameter name is empty");
+				logger.LogErrorMessage("Parameter name is empty");
 				return Optional.empty();
 			}
 			MethodSignature signature = (MethodSignature)creationModel.getJoinPoint().getSignature();
@@ -106,27 +114,27 @@ public class FieldFinder {
 				{
 					if(values[i] == null)
 					{
-						System.out.println("Parameter " + name + " should be instatiate");
+						logger.LogErrorMessage("Parameter " + name + " should be instatiate");
 						return Optional.empty();
 					}
 					return Optional.of(values[i]);
 				}
 			}
 
-			System.out.println("Parameter " + name + " does not exist.");
+	        logger.LogErrorMessage("Parameter " + name + " does not exist.");
 			return Optional.empty();
 		}
 		else if (creationModel.getParametersLocation() == ParametersObjectsLocation.PropertyInReturnedObject)
 		{
 			if(name.equals(Constants.Empty))
 			{
-				System.out.println("Property name is empty");
+				logger.LogErrorMessage("Property name is empty");
 				return Optional.empty();
 			}
 			var value = getFieldValue(name, creationModel.getReturnedObject(), creationModel.getReturnedObjectClass());
 			if(value == null)
 			{
-				System.out.println("Property " + name + " should be instatiate");
+				logger.LogErrorMessage("Property " + name + " should be instatiate");
 				return Optional.empty();
 			}
 			return Optional.of(value);

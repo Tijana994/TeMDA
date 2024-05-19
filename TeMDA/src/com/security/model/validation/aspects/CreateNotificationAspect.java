@@ -12,9 +12,6 @@ import com.security.model.validation.annotations.creators.CreateNotificationAnno
 import com.security.model.validation.annotations.enums.Constants;
 import com.security.model.validation.annotations.enums.ParametersObjectsLocation;
 import com.security.model.validation.annotations.enums.TargetType;
-import com.security.model.validation.helpers.FieldFinder;
-import com.security.model.validation.helpers.ObjectManager;
-import com.security.model.validation.helpers.ReadTypeByAttribute;
 import com.security.model.validation.models.CreationModel;
 
 import utility.PrivacyModelRepository;
@@ -30,20 +27,20 @@ public class CreateNotificationAspect extends BaseAspect {
 	    CreateNotificationAnnotation createNotification = method.getAnnotation(CreateNotificationAnnotation.class);
 		if(createNotification == null)
 		{
-			System.out.println("There is no create notification statement annotation");
+			Logger.LogErrorMessage("There is no create notification statement annotation");
 			return returnedObject;
 		}
 		CreationModel createdObjectModel = new CreationModel(returnedObject, thisJoinPoint, createNotification.createdObjectLocation(), ParametersObjectsLocation.Property);
 		createdObjectModel.setObject(FieldFinder.getCreatedObjectToReadFrom(createdObjectModel, originalObject, createNotification.name()));
 		if(createdObjectModel.getObject() == null)
 		{
-			System.out.println("Read from object is null = CreateNotificationAspect");
+			Logger.LogErrorMessage("Read from object is null = CreateNotificationAspect");
 			return returnedObject;
 		}
 		NotificationAnnotation notification = createdObjectModel.getObjectClass().getAnnotation(NotificationAnnotation.class);
 		if(notification == null)
 		{
-			System.out.println("There is no notification annotation");
+			Logger.LogErrorMessage("There is no notification annotation");
 			return returnedObject;
 		}
 
@@ -166,7 +163,7 @@ public class CreateNotificationAspect extends BaseAspect {
 		}
 		catch(Exception ex)
 		{
-			System.out.println(ex);
+			Logger.LogExceptionMessage(ex);
 		}
 		
 		return returnedObject;

@@ -20,12 +20,12 @@ public class WhereCreator {
 	}
 	
 	public static Where createWhere(CreationModel creationModel, CreatePolicyStatementAnnotation createPolicyStatement, 
-			PrivacyModelRepository repo, PrivacyPolicy model) {
+			PrivacyModelRepository repo, PrivacyPolicy model, ObjectManager objectManager) {
 		var where = repo.getFactory().createWhere();
 		
 		if(!createPolicyStatement.whereDestinationId().equals(Constants.Empty))
 		{
-			var location = ObjectManager.tryGetLocationById(creationModel, createPolicyStatement.whereDestinationId(), model);
+			var location = objectManager.tryGetLocationById(creationModel, createPolicyStatement.whereDestinationId(), model);
 			if(location.isPresent())
 			{
 				where.setDestination(location.get());
@@ -33,7 +33,7 @@ public class WhereCreator {
 		}
 		if(!createPolicyStatement.whereDestination().equals(Constants.Empty))
 		{
-			var location = ObjectManager.tryGetLocationFromObject(creationModel, createPolicyStatement.whereDestination(), model);
+			var location = objectManager.tryGetLocationFromObject(creationModel, createPolicyStatement.whereDestination(), model);
 			if(location.isPresent())
 			{
 				where.setDestination(location.get());
@@ -41,7 +41,7 @@ public class WhereCreator {
 		}
 		if(!createPolicyStatement.whereSourceId().equals(Constants.Empty))
 		{
-			var location = ObjectManager.tryGetLocationById(creationModel, createPolicyStatement.whereSourceId(), model);
+			var location = objectManager.tryGetLocationById(creationModel, createPolicyStatement.whereSourceId(), model);
 			if(location.isPresent())
 			{
 				where.setSource(location.get());
@@ -49,7 +49,7 @@ public class WhereCreator {
 		}
 		if(!createPolicyStatement.whereSource().equals(Constants.Empty))
 		{
-			var location = ObjectManager.tryGetLocationFromObject(creationModel, createPolicyStatement.whereSource(), model);
+			var location = objectManager.tryGetLocationFromObject(creationModel, createPolicyStatement.whereSource(), model);
 			if(location.isPresent())
 			{
 				where.setSource(location.get());

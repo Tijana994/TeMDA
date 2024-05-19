@@ -11,8 +11,6 @@ import com.security.model.validation.annotations.PaperAnnotation;
 import com.security.model.validation.annotations.creators.CreateConsentAnnotation;
 import com.security.model.validation.annotations.enums.Constants;
 import com.security.model.validation.annotations.enums.ParametersObjectsLocation;
-import com.security.model.validation.helpers.FieldFinder;
-import com.security.model.validation.helpers.ObjectManager;
 import com.security.model.validation.models.CreationModel;
 
 import utility.PrivacyModelRepository;
@@ -28,20 +26,20 @@ public class CreateConsentAspect extends BaseAspect {
 	    CreateConsentAnnotation createConsent = method.getAnnotation(CreateConsentAnnotation.class);
 		if(createConsent == null)
 		{
-			System.out.println("There is no create consent statement annotation");
+			Logger.LogErrorMessage("There is no create consent statement annotation");
 			return returnedObject;
 		}
 		CreationModel createdObjectModel = new CreationModel(returnedObject, thisJoinPoint, createConsent.createdObjectLocation(), ParametersObjectsLocation.Property);
 		createdObjectModel.setObject(FieldFinder.getCreatedObjectToReadFrom(createdObjectModel, originalObject, createConsent.name()));
 		if(createdObjectModel.getObject() == null)
 		{
-			System.out.println("Read from object is null - CreateConsentAspect");
+			Logger.LogErrorMessage("Read from object is null - CreateConsentAspect");
 			return returnedObject;
 		}
 		PaperAnnotation paper = createdObjectModel.getObjectClass().getAnnotation(PaperAnnotation.class);
 		if(paper == null)
 		{
-			System.out.println("There is no paper annotation");
+			Logger.LogErrorMessage("There is no paper annotation");
 			return returnedObject;
 		}
 
@@ -88,7 +86,7 @@ public class CreateConsentAspect extends BaseAspect {
 		}
 		catch(Exception ex)
 		{
-			System.out.println(ex);
+			Logger.LogExceptionMessage(ex);
 		}
 		
 		return returnedObject;

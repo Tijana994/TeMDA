@@ -6,6 +6,7 @@ import java.util.Optional;
 import com.security.model.validation.annotations.TimeStatementAnnotation;
 import com.security.model.validation.annotations.enums.ParametersObjectsLocation;
 import com.security.model.validation.helpers.FieldFinder;
+import com.security.model.validation.helpers.interfaces.ILogger;
 import com.security.model.validation.models.CreationModel;
 import com.security.model.validation.models.ParametersAnnotations;
 
@@ -14,28 +15,29 @@ import privacyModel.PrivacyModelFactory;
 import privacyModel.TimeStatement;
 
 public class WhenCreator {
-	public static AbstractTime createWhen(CreationModel creationModel, String when, PrivacyModelFactory factory, ParametersAnnotations parametersAnnotation)
+	public static AbstractTime createWhen(CreationModel creationModel, String when, PrivacyModelFactory factory, 
+			ParametersAnnotations parametersAnnotation, FieldFinder fieldFinder, ILogger logger)
 	{
 		try
 		{
 			var whens = when.split(",", 2);
 			if(whens.length == 1)
 			{
-				var time = FieldFinder.getObjectToReadFrom(creationModel, creationModel.getObjectClass(), creationModel.getObject(), whens[0]);
-				return createTimeStatement(time, factory, parametersAnnotation, creationModel.getParametersLocation(), whens[0]);
+				var time = fieldFinder.getObjectToReadFrom(creationModel, creationModel.getObjectClass(), creationModel.getObject(), whens[0]);
+				return createTimeStatement(time, factory, parametersAnnotation, creationModel.getParametersLocation(), whens[0], logger);
 			}
 			else if(whens.length == 2)
 			{
 				var interval = factory.createTimeInterval();
-				var start = FieldFinder.getObjectToReadFrom(creationModel, creationModel.getObjectClass(), creationModel.getObject(), whens[0]);
-				interval.setStart(createTimeStatement(start, factory, parametersAnnotation, creationModel.getParametersLocation(), whens[0]));
+				var start = fieldFinder.getObjectToReadFrom(creationModel, creationModel.getObjectClass(), creationModel.getObject(), whens[0]);
+				interval.setStart(createTimeStatement(start, factory, parametersAnnotation, creationModel.getParametersLocation(), whens[0], logger));
 				
-				var end = FieldFinder.getObjectToReadFrom(creationModel, creationModel.getObjectClass(), creationModel.getObject(), whens[1]);
-				interval.setEnd(createTimeStatement(end, factory, parametersAnnotation, creationModel.getParametersLocation(), whens[1]));
+				var end = fieldFinder.getObjectToReadFrom(creationModel, creationModel.getObjectClass(), creationModel.getObject(), whens[1]);
+				interval.setEnd(createTimeStatement(end, factory, parametersAnnotation, creationModel.getParametersLocation(), whens[1], logger));
 				
 				return interval;
 			}
-			System.out.println("When should have 1 or 2 parameters");
+			logger.LogErrorMessage("When should have 1 or 2 parameters");
 			return null;
 		}
 		catch(Exception e)
@@ -46,11 +48,11 @@ public class WhenCreator {
 	}
 	
 	private static TimeStatement createTimeStatement(Optional<Object> dateObject, PrivacyModelFactory factory, 
-			ParametersAnnotations parametersAnnotation, ParametersObjectsLocation parametersLocation, String propertyName)
+			ParametersAnnotations parametersAnnotation, ParametersObjectsLocation parametersLocation, String propertyName, ILogger logger)
 	{
 		if(dateObject.isEmpty() || !(dateObject.get() instanceof  Date))
 		{
-			System.out.println("When object is not instantiated.");
+			logger.LogErrorMessage("When object is not instantiated.");
 			return null;
 		}
 		TimeStatementAnnotation timeAnnotation = getTimeAnnotation(dateObject, parametersAnnotation, parametersLocation,

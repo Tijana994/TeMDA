@@ -10,6 +10,7 @@ import com.security.model.validation.annotations.PaperAnnotation;
 import com.security.model.validation.annotations.PolicyStatementAnnotation;
 import com.security.model.validation.annotations.PrincipalAnnotation;
 import com.security.model.validation.annotations.PrivacyDataAnnotation;
+import com.security.model.validation.helpers.interfaces.ILogger;
 import com.security.model.validation.models.CreationModel;
 
 import privacyModel.Document;
@@ -22,7 +23,18 @@ import privacyModel.SharedPrivacyData;
 
 public class ReadTypeByAttribute {
 
-	public static Optional<String> getPaperIdFromObject(CreationModel creationModel, String propertyName)
+	private ILogger logger;
+	private FieldFinder fieldFinder;
+	private ObjectFinder objectFinder;
+	
+	public ReadTypeByAttribute(ILogger logger, FieldFinder fieldFinder, ObjectFinder objectFinder)
+	{
+		this.logger = logger;
+		this.fieldFinder = fieldFinder;
+		this.objectFinder = objectFinder;
+	}
+	
+	public Optional<String> getPaperIdFromObject(CreationModel creationModel, String propertyName)
 	{
 		if(creationModel.getObject() == null)
 		{
@@ -31,7 +43,7 @@ public class ReadTypeByAttribute {
 		}
 		try
 		{
-			var value = FieldFinder.getObjectToReadFrom(creationModel, creationModel.getObjectClass(), creationModel.getObject(), propertyName);
+			var value = fieldFinder.getObjectToReadFrom(creationModel, creationModel.getObjectClass(), creationModel.getObject(), propertyName);
 			if(!value.isPresent())
 			{
 				return Optional.empty();
@@ -39,32 +51,32 @@ public class ReadTypeByAttribute {
 			PaperAnnotation paper = value.get().getClass().getAnnotation(PaperAnnotation.class);
 			if(paper == null)
 			{
-				System.out.println("There is no paper annotation");
+				logger.LogErrorMessage("There is no paper annotation");
 			}
 			else
 			{
-				var Id = (String)FieldFinder.getFieldValue(paper.id(), value.get(), value.get().getClass());
+				var Id = (String)fieldFinder.getFieldValue(paper.id(), value.get(), value.get().getClass());
 				return Optional.of(Id);
 			}
 		}
-		catch(Exception e)
+		catch(Exception ex)
 		{
-			System.out.println(e);
+			logger.LogExceptionMessage(ex);
 		}
 
 		return Optional.empty();
 	}
 	
-	public static Optional<String> getComplaintIdFromObject(CreationModel creationModel, String propertyName)
+	public Optional<String> getComplaintIdFromObject(CreationModel creationModel, String propertyName)
 	{
 		if(creationModel.getObject() == null)
 		{
-			System.out.println("Object is not instantiated.");
+			logger.LogErrorMessage("Object is not instantiated.");
 			return Optional.empty();
 		}
 		try
 		{
-			var value = FieldFinder.getObjectToReadFrom(creationModel, creationModel.getObjectClass(), creationModel.getObject(), propertyName);
+			var value = fieldFinder.getObjectToReadFrom(creationModel, creationModel.getObjectClass(), creationModel.getObject(), propertyName);
 			if(!value.isPresent())
 			{
 				return Optional.empty();
@@ -72,32 +84,32 @@ public class ReadTypeByAttribute {
 			ComplaintAnnotation complaint = value.get().getClass().getAnnotation(ComplaintAnnotation.class);
 			if(complaint == null)
 			{
-				System.out.println("There is no complaint annotation");
+				logger.LogErrorMessage("There is no complaint annotation");
 			}
 			else
 			{
-				var Id = (String)FieldFinder.getFieldValue(complaint.id(), value.get(), value.get().getClass());
+				var Id = (String)fieldFinder.getFieldValue(complaint.id(), value.get(), value.get().getClass());
 				return Optional.of(Id);
 			}
 		}
-		catch(Exception e)
+		catch(Exception ex)
 		{
-			System.out.println(e);
+			logger.LogExceptionMessage(ex);
 		}
 
 		return Optional.empty();
 	}
 	
-	public static Optional<String> getPolicyStatementIdFromObject(CreationModel creationModel, String propertyName)
+	public Optional<String> getPolicyStatementIdFromObject(CreationModel creationModel, String propertyName)
 	{
 		if(creationModel.getObject() == null)
 		{
-			System.out.println("Object is not instantiated.");
+			logger.LogErrorMessage("Object is not instantiated.");
 			return Optional.empty();
 		}
 		try
 		{
-			var value = FieldFinder.getObjectToReadFrom(creationModel, creationModel.getObjectClass(), creationModel.getObject(), propertyName);
+			var value = fieldFinder.getObjectToReadFrom(creationModel, creationModel.getObjectClass(), creationModel.getObject(), propertyName);
 			if(!value.isPresent())
 			{
 				return Optional.empty();
@@ -105,23 +117,23 @@ public class ReadTypeByAttribute {
 			PolicyStatementAnnotation policyStatement = value.get().getClass().getAnnotation(PolicyStatementAnnotation.class);
 			if(policyStatement == null)
 			{
-				System.out.println("There is no policy statement annotation");
+				logger.LogErrorMessage("There is no policy statement annotation");
 			}
 			else
 			{
-				var Id = (String)FieldFinder.getFieldValue(policyStatement.id(), value.get(), value.get().getClass());
+				var Id = (String)fieldFinder.getFieldValue(policyStatement.id(), value.get(), value.get().getClass());
 				return Optional.of(Id);
 			}
 		}
-		catch(Exception e)
+		catch(Exception ex)
 		{
-			System.out.println(e);
+			logger.LogExceptionMessage(ex);
 		}
 
 		return Optional.empty();
 	}
 	
-	public static Optional<String> getLocationIdFromObject(CreationModel creationModel, String propertyName)
+	public Optional<String> getLocationIdFromObject(CreationModel creationModel, String propertyName)
 	{
 		if(creationModel.getObject() == null)
 		{
@@ -130,7 +142,7 @@ public class ReadTypeByAttribute {
 		}
 		try
 		{
-			var value = FieldFinder.getObjectToReadFrom(creationModel, creationModel.getObjectClass(), creationModel.getObject(), propertyName);
+			var value = fieldFinder.getObjectToReadFrom(creationModel, creationModel.getObjectClass(), creationModel.getObject(), propertyName);
 			if(!value.isPresent())
 			{
 				return Optional.empty();
@@ -138,32 +150,32 @@ public class ReadTypeByAttribute {
 			LocationAnnotation location = value.get().getClass().getAnnotation(LocationAnnotation.class);
 			if(location == null)
 			{
-				System.out.println("There is no location annotation");
+				logger.LogErrorMessage("There is no location annotation");
 			}
 			else
 			{
-				var Id = (String)FieldFinder.getFieldValue(location.id(), value.get(), value.get().getClass());
+				var Id = (String)fieldFinder.getFieldValue(location.id(), value.get(), value.get().getClass());
 				return Optional.of(Id);
 			}
 		}
-		catch(Exception e)
+		catch(Exception ex)
 		{
-			System.out.println(e);
+			logger.LogExceptionMessage(ex);
 		}
 
 		return Optional.empty();
 	}
 	
-	public static Optional<String> getPrivacyDataIdFromObject(CreationModel creationModel, String propertyName)
+	public Optional<String> getPrivacyDataIdFromObject(CreationModel creationModel, String propertyName)
 	{
 		if(creationModel.getObject() == null)
 		{
-			System.out.println("Object is not instantiated.");
+			logger.LogErrorMessage("Object is not instantiated.");
 			return Optional.empty();
 		}
 		try
 		{
-			var value = FieldFinder.getObjectToReadFrom(creationModel, creationModel.getObjectClass(), creationModel.getObject(), propertyName);
+			var value = fieldFinder.getObjectToReadFrom(creationModel, creationModel.getObjectClass(), creationModel.getObject(), propertyName);
 			if(!value.isPresent())
 			{
 				return Optional.empty();
@@ -171,32 +183,32 @@ public class ReadTypeByAttribute {
 			PrivacyDataAnnotation privacyData = value.getClass().getAnnotation(PrivacyDataAnnotation.class);
 			if(privacyData == null)
 			{
-				System.out.println("There is no privacy data annotation");
+				logger.LogErrorMessage("There is no privacy data annotation");
 			}
 			else
 			{
-				var Id = (String)FieldFinder.getFieldValue(privacyData.id(), value, value.getClass());
+				var Id = (String)fieldFinder.getFieldValue(privacyData.id(), value, value.getClass());
 				return Optional.of(Id);
 			}
 		}
-		catch(Exception e)
+		catch(Exception ex)
 		{
-			System.out.println(e);
+			logger.LogExceptionMessage(ex);
 		}
 
 		return Optional.empty();
 	}
 	
-	public static Optional<String> getPrincipalIdFromObject(CreationModel creationModel, String propertyName)
+	public Optional<String> getPrincipalIdFromObject(CreationModel creationModel, String propertyName)
 	{
 		if(creationModel.getObject() == null)
 		{
-			System.out.println("Object is not instantiated.");
+			logger.LogErrorMessage("Object is not instantiated.");
 			return Optional.empty();
 		}
 		try
 		{
-			var value = FieldFinder.getObjectToReadFrom(creationModel, creationModel.getObjectClass(), creationModel.getObject(), propertyName);
+			var value = fieldFinder.getObjectToReadFrom(creationModel, creationModel.getObjectClass(), creationModel.getObject(), propertyName);
 			if(!value.isPresent())
 			{
 				return Optional.empty();
@@ -204,40 +216,40 @@ public class ReadTypeByAttribute {
 			PrincipalAnnotation principal = value.get().getClass().getAnnotation(PrincipalAnnotation.class);
 			if(principal == null)
 			{
-				System.out.println("There is no principal annotation");
+				logger.LogErrorMessage("There is no principal annotation");
 			}
 			else
 			{
-				var Id = (String)FieldFinder.getFieldValue(principal.id(), value.get(), value.get().getClass());
+				var Id = (String)fieldFinder.getFieldValue(principal.id(), value.get(), value.get().getClass());
 				return Optional.of(Id);
 			}
 		}
-		catch(Exception e)
+		catch(Exception ex)
 		{
-			System.out.println(e);
+			logger.LogExceptionMessage(ex);
 		}
 
 		return Optional.empty();
 	}
 	
-	public static List<Principal> getPrincipalsFromObject(CreationModel creationModel, String propertyName, PrivacyPolicy model)
+	public List<Principal> getPrincipalsFromObject(CreationModel creationModel, String propertyName, PrivacyPolicy model)
 	{
 		var principals = new ArrayList<Principal>();
 		if(creationModel.getObject() == null)
 		{
-			System.out.println("Object is not instantiated.");
+			logger.LogErrorMessage("Object is not instantiated.");
 			return principals;
 		}
 		try
 		{
-			var value = FieldFinder.getObjectToReadFrom(creationModel, creationModel.getObjectClass(), creationModel.getObject(), propertyName);
+			var value = fieldFinder.getObjectToReadFrom(creationModel, creationModel.getObjectClass(), creationModel.getObject(), propertyName);
 			if(!value.isPresent())
 			{
 				return principals;
 			}
 			if(!(value.get() instanceof List))
 			{
-				System.out.println("Property" + propertyName + "should be type of List.");
+				logger.LogErrorMessage("Property" + propertyName + "should be type of List.");
 				return principals;
 			}
 			var list = (List<?>) value.get();
@@ -246,11 +258,11 @@ public class ReadTypeByAttribute {
 				PrincipalAnnotation principal = principalObject.getClass().getAnnotation(PrincipalAnnotation.class);
 				if(principal == null)
 				{
-					System.out.println("There is no principal annotation");
+					logger.LogErrorMessage("There is no principal annotation");
 				}
 				else
 				{
-					var id = (String)FieldFinder.getFieldValue(principal.id(), principalObject, principalObject.getClass());
+					var id = (String)fieldFinder.getFieldValue(principal.id(), principalObject, principalObject.getClass());
 					if(id != null)
 					{
 						addPrincipalIfExists(model, principals, id);
@@ -260,25 +272,25 @@ public class ReadTypeByAttribute {
 			}
 			return principals;
 		}
-		catch(Exception e)
+		catch(Exception ex)
 		{
-			System.out.println(e);
+			logger.LogExceptionMessage(ex);
 		}
 
 		return principals;
 	}
 
-	public static List<Principal> getPrincipalsById(CreationModel creationModel, String propertyName, PrivacyPolicy model)
+	public List<Principal> getPrincipalsById(CreationModel creationModel, String propertyName, PrivacyPolicy model)
 	{
 		var principals = new ArrayList<Principal>();
-		var principalsIds = FieldFinder.getObjectToReadFrom(creationModel, creationModel.getObjectClass(), creationModel.getObject(), propertyName);
+		var principalsIds = fieldFinder.getObjectToReadFrom(creationModel, creationModel.getObjectClass(), creationModel.getObject(), propertyName);
 		if(!principalsIds.isPresent())
 		{
 			return principals;
 		}
 		if(!(principalsIds.get() instanceof List))
 		{
-			System.out.println("Property" + propertyName + "should be type of List.");
+			logger.LogErrorMessage("Property" + propertyName + "should be type of List.");
 			return principals;
 		}
 		var list = (List<?>) principalsIds.get();
@@ -289,12 +301,12 @@ public class ReadTypeByAttribute {
 		return principals;
 	}
 	
-	public static List<SharedPrivacyData> getSharedPrivacyDataById(String[] datasId, PrivacyPolicy model)
+	public List<SharedPrivacyData> getSharedPrivacyDataById(String[] datasId, PrivacyPolicy model)
 	{
 		var datas = new ArrayList<SharedPrivacyData>();
 		for(var dataId : datasId)
 		{
-			var data = ObjectFinder.checkIfSharedPrivacyDataExists(dataId, model);
+			var data = objectFinder.checkIfSharedPrivacyDataExists(dataId, model);
 			if(data.isPresent())
 			{
 				datas.add(data.get());
@@ -303,32 +315,32 @@ public class ReadTypeByAttribute {
 		return datas;
 	}
 	
-	private static void addPrincipalIfExists(PrivacyPolicy model, ArrayList<Principal> principals, String Id) {
-		var principal = ObjectFinder.checkIfPrincipalExists((String)Id, model);
+	private void addPrincipalIfExists(PrivacyPolicy model, ArrayList<Principal> principals, String Id) {
+		var principal = objectFinder.checkIfPrincipalExists((String)Id, model);
 		if(principal.isPresent())
 		{
 			principals.add(principal.get());
 		}
 	}
 	
-	public static List<PrivacyData> getPrivacyDatasFromObject(CreationModel creationModel, String propertyName, PrivacyPolicy model)
+	public List<PrivacyData> getPrivacyDatasFromObject(CreationModel creationModel, String propertyName, PrivacyPolicy model)
 	{
 		var datas = new ArrayList<PrivacyData>();
 		if(creationModel.getObject() == null)
 		{
-			System.out.println("Object is not instantiated.");
+			logger.LogErrorMessage("Object is not instantiated.");
 			return datas;
 		}
 		try
 		{
-			var value = FieldFinder.getObjectToReadFrom(creationModel, creationModel.getObjectClass(), creationModel.getObject(), propertyName);
+			var value = fieldFinder.getObjectToReadFrom(creationModel, creationModel.getObjectClass(), creationModel.getObject(), propertyName);
 			if(!value.isPresent())
 			{
 				return datas;
 			}
 			if(!(value.get() instanceof List))
 			{
-				System.out.println("Property" + propertyName + "should be type of List.");
+				logger.LogErrorMessage("Property" + propertyName + "should be type of List.");
 				return datas;
 			}
 			var list = (List<?>) value.get();
@@ -337,11 +349,11 @@ public class ReadTypeByAttribute {
 				PrivacyDataAnnotation privacyData = dataObject.getClass().getAnnotation(PrivacyDataAnnotation.class);
 				if(privacyData == null)
 				{
-					System.out.println("There is no privacy data annotation");
+					logger.LogErrorMessage("There is no privacy data annotation");
 				}
 				else
 				{
-					var Id = (String)FieldFinder.getFieldValue(privacyData.id(), dataObject, dataObject.getClass());
+					var Id = (String)fieldFinder.getFieldValue(privacyData.id(), dataObject, dataObject.getClass());
 					if(Id != null)
 					{
 						addPrivacyDataIfExists(model, datas, Id);
@@ -350,25 +362,25 @@ public class ReadTypeByAttribute {
 			}
 			return datas;
 		}
-		catch(Exception e)
+		catch(Exception ex)
 		{
-			System.out.println(e);
+			logger.LogExceptionMessage(ex);
 		}
 
 		return datas;
 	}
 
-	public static List<PrivacyData> getPrivacyDatasById(CreationModel creationModel, String propertyName, PrivacyPolicy model)
+	public List<PrivacyData> getPrivacyDatasById(CreationModel creationModel, String propertyName, PrivacyPolicy model)
 	{
 		var datas = new ArrayList<PrivacyData>();
-		var dataIds = FieldFinder.getObjectToReadFrom(creationModel, creationModel.getObjectClass(), creationModel.getObject(), propertyName);
+		var dataIds = fieldFinder.getObjectToReadFrom(creationModel, creationModel.getObjectClass(), creationModel.getObject(), propertyName);
 		if(!dataIds.isPresent())
 		{
 			return datas;
 		}
 		if(!(dataIds.get() instanceof List))
 		{
-			System.out.println("Property" + propertyName + "should be type of List.");
+			logger.LogErrorMessage("Property" + propertyName + "should be type of List.");
 			return datas;
 		}
 		var list = (List<?>) dataIds.get();
@@ -379,32 +391,32 @@ public class ReadTypeByAttribute {
 		return datas;
 	}
 	
-	private static void addPrivacyDataIfExists(PrivacyPolicy model, ArrayList<PrivacyData> datas, String Id) {
-		var data = ObjectFinder.checkIfPrivacyDataExists(Id, model);
+	private void addPrivacyDataIfExists(PrivacyPolicy model, ArrayList<PrivacyData> datas, String Id) {
+		var data = objectFinder.checkIfPrivacyDataExists(Id, model);
 		if(data.isPresent())
 		{
 			datas.add(data.get());
 		}
 	}
 	
-	public static List<Location> getLocationsFromObject(CreationModel creationModel, String propertyName, PrivacyPolicy model)
+	public List<Location> getLocationsFromObject(CreationModel creationModel, String propertyName, PrivacyPolicy model)
 	{
 		var locations = new ArrayList<Location>();
 		if(creationModel.getObject() == null)
 		{
-			System.out.println("Object is not instantiated.");
+			logger.LogErrorMessage("Object is not instantiated.");
 			return locations;
 		}
 		try
 		{
-			var value = FieldFinder.getObjectToReadFrom(creationModel, creationModel.getObjectClass(), creationModel.getObject(), propertyName);
+			var value = fieldFinder.getObjectToReadFrom(creationModel, creationModel.getObjectClass(), creationModel.getObject(), propertyName);
 			if(!value.isPresent())
 			{
 				return locations;
 			}
 			if(!(value.get() instanceof List))
 			{
-				System.out.println("Property" + propertyName + "should be type of List.");
+				logger.LogErrorMessage("Property" + propertyName + "should be type of List.");
 				return locations;
 			}
 			var list = (List<?>) value.get();
@@ -413,11 +425,11 @@ public class ReadTypeByAttribute {
 				LocationAnnotation location = locationObject.getClass().getAnnotation(LocationAnnotation.class);
 				if(location == null)
 				{
-					System.out.println("There is no location annotation");
+					logger.LogErrorMessage("There is no location annotation");
 				}
 				else
 				{
-					var id = (String)FieldFinder.getFieldValue(location.id(), locationObject, locationObject.getClass());
+					var id = (String)fieldFinder.getFieldValue(location.id(), locationObject, locationObject.getClass());
 					if(id != null)
 					{
 						addLocationIfExists(model, locations, id);
@@ -427,25 +439,25 @@ public class ReadTypeByAttribute {
 			}
 			return locations;
 		}
-		catch(Exception e)
+		catch(Exception ex)
 		{
-			System.out.println(e);
+			logger.LogExceptionMessage(ex);
 		}
 
 		return locations;
 	}
 	
-	public static List<Location> getLocationsById(CreationModel creationModel, String propertyName, PrivacyPolicy model)
+	public List<Location> getLocationsById(CreationModel creationModel, String propertyName, PrivacyPolicy model)
 	{
 		var locations = new ArrayList<Location>();
-		var locationIds = FieldFinder.getObjectToReadFrom(creationModel, creationModel.getObjectClass(), creationModel.getObject(), propertyName);
+		var locationIds = fieldFinder.getObjectToReadFrom(creationModel, creationModel.getObjectClass(), creationModel.getObject(), propertyName);
 		if(!locationIds.isPresent())
 		{
 			return locations;
 		}
 		if(!(locationIds.get() instanceof List))
 		{
-			System.out.println("Property" + propertyName + "should be type of List.");
+			logger.LogErrorMessage("Property" + propertyName + "should be type of List.");
 			return locations;
 		}
 		var list = (List<?>) locationIds.get();
@@ -456,33 +468,33 @@ public class ReadTypeByAttribute {
 		return locations;
 	}
 
-	private static void addLocationIfExists(PrivacyPolicy model, ArrayList<Location> locations, String id) {
-		var location = ObjectFinder.checkIfLocationExists(id, model);
+	private void addLocationIfExists(PrivacyPolicy model, ArrayList<Location> locations, String id) {
+		var location = objectFinder.checkIfLocationExists(id, model);
 		if(location.isPresent())
 		{
 			locations.add(location.get());
 		}
 	}
 	
-	public static List<PolicyStatement> getPolicyStatementsFromObject(CreationModel creationModel, String propertyName, 
+	public List<PolicyStatement> getPolicyStatementsFromObject(CreationModel creationModel, String propertyName, 
 			PrivacyPolicy model)
 	{
 		var policyStatments = new ArrayList<PolicyStatement>();
 		if(creationModel.getObject() == null)
 		{
-			System.out.println("Object is not instantiated.");
+			logger.LogErrorMessage("Object is not instantiated.");
 			return policyStatments;
 		}
 		try
 		{
-			var value = FieldFinder.getObjectToReadFrom(creationModel, creationModel.getObjectClass(), creationModel.getObject(), propertyName);
+			var value = fieldFinder.getObjectToReadFrom(creationModel, creationModel.getObjectClass(), creationModel.getObject(), propertyName);
 			if(!value.isPresent())
 			{
 				return policyStatments;
 			}
 			if(!(value.get() instanceof List))
 			{
-				System.out.println("Property" + propertyName + "should be type of List.");
+				logger.LogErrorMessage("Property" + propertyName + "should be type of List.");
 				return policyStatments;
 			}
 			var list = (List<?>) value.get();
@@ -491,11 +503,11 @@ public class ReadTypeByAttribute {
 				PolicyStatementAnnotation policyStatement = policyStatementObject.getClass().getAnnotation(PolicyStatementAnnotation.class);
 				if(policyStatement == null)
 				{
-					System.out.println("There is no policy statement annotation");
+					logger.LogErrorMessage("There is no policy statement annotation");
 				}
 				else
 				{
-					var id = (String)FieldFinder.getFieldValue(policyStatement.id(), policyStatementObject, policyStatementObject.getClass());
+					var id = (String)fieldFinder.getFieldValue(policyStatement.id(), policyStatementObject, policyStatementObject.getClass());
 					if(id != null)
 					{
 						addPolicyStatementIfExists(model, policyStatments, id);
@@ -505,25 +517,25 @@ public class ReadTypeByAttribute {
 			}
 			return policyStatments;
 		}
-		catch(Exception e)
+		catch(Exception ex)
 		{
-			System.out.println(e);
+			logger.LogExceptionMessage(ex);
 		}
 
 		return policyStatments;
 	}
 
-	public static List<PolicyStatement> getPolicyStatementsById(CreationModel creationModel, String propertyName, PrivacyPolicy model)
+	public List<PolicyStatement> getPolicyStatementsById(CreationModel creationModel, String propertyName, PrivacyPolicy model)
 	{
 		var policyStatments = new ArrayList<PolicyStatement>();
-		var policyStatmentIds = FieldFinder.getObjectToReadFrom(creationModel, creationModel.getObjectClass(), creationModel.getObject(), propertyName);
+		var policyStatmentIds = fieldFinder.getObjectToReadFrom(creationModel, creationModel.getObjectClass(), creationModel.getObject(), propertyName);
 		if(!policyStatmentIds.isPresent())
 		{
 			return policyStatments;
 		}
 		if(!(policyStatmentIds.get() instanceof List))
 		{
-			System.out.println("Property" + propertyName + "should be type of List.");
+			logger.LogErrorMessage("Property" + propertyName + "should be type of List.");
 			return policyStatments;
 		}
 		var list = (List<?>) policyStatmentIds.get();
@@ -534,33 +546,33 @@ public class ReadTypeByAttribute {
 		return policyStatments;
 	}
 	
-	private static void addPolicyStatementIfExists(PrivacyPolicy model, ArrayList<PolicyStatement> policyStatments,
+	private void addPolicyStatementIfExists(PrivacyPolicy model, ArrayList<PolicyStatement> policyStatments,
 			String Id) {
-		var policyStatement = ObjectFinder.checkIfPolicyStatementExists(Id, model);
+		var policyStatement = objectFinder.checkIfPolicyStatementExists(Id, model);
 		if(policyStatement.isPresent())
 		{
 			policyStatments.add(policyStatement.get());
 		}
 	}
 	
-	public static List<Document> getDocumentsFromObject(CreationModel creationModel, String propertyName, PrivacyPolicy model)
+	public List<Document> getDocumentsFromObject(CreationModel creationModel, String propertyName, PrivacyPolicy model)
 	{
 		var documents = new ArrayList<Document>();
 		if(creationModel.getObject() == null)
 		{
-			System.out.println("Object is not instantiated.");
+			logger.LogErrorMessage("Object is not instantiated.");
 			return documents;
 		}
 		try
 		{
-			var value = FieldFinder.getObjectToReadFrom(creationModel, creationModel.getObjectClass(), creationModel.getObject(), propertyName);
+			var value = fieldFinder.getObjectToReadFrom(creationModel, creationModel.getObjectClass(), creationModel.getObject(), propertyName);
 			if(!value.isPresent())
 			{
 				return documents;
 			}
 			if(!(value.get() instanceof List))
 			{
-				System.out.println("Property" + propertyName + "should be type of List.");
+				logger.LogErrorMessage("Property" + propertyName + "should be type of List.");
 				return documents;
 			}
 			var list = (List<?>) value.get();
@@ -569,11 +581,11 @@ public class ReadTypeByAttribute {
 				PaperAnnotation paper = documentObject.getClass().getAnnotation(PaperAnnotation.class);
 				if(paper == null)
 				{
-					System.out.println("There is no paper annotation");
+					logger.LogErrorMessage("There is no paper annotation");
 				}
 				else
 				{
-					var id = (String)FieldFinder.getFieldValue(paper.id(), documentObject, documentObject.getClass());
+					var id = (String)fieldFinder.getFieldValue(paper.id(), documentObject, documentObject.getClass());
 					if(id != null)
 					{
 						addDocumentIfExists(model, documents, id);
@@ -583,25 +595,25 @@ public class ReadTypeByAttribute {
 			}
 			return documents;
 		}
-		catch(Exception e)
+		catch(Exception ex)
 		{
-			System.out.println(e);
+			logger.LogExceptionMessage(ex);
 		}
 
 		return documents;
 	}
 	
-	public static List<Document> getDocumentsById(CreationModel creationModel, String propertyName, PrivacyPolicy model)
+	public List<Document> getDocumentsById(CreationModel creationModel, String propertyName, PrivacyPolicy model)
 	{
 		var documents = new ArrayList<Document>();
-		var documentIds = FieldFinder.getObjectToReadFrom(creationModel, creationModel.getObjectClass(), creationModel.getObject(), propertyName);
+		var documentIds = fieldFinder.getObjectToReadFrom(creationModel, creationModel.getObjectClass(), creationModel.getObject(), propertyName);
 		if(!documentIds.isPresent())
 		{
 			return documents;
 		}
 		if(!(documentIds.get() instanceof List))
 		{
-			System.out.println("Property " + propertyName + " should be type of List.");
+			logger.LogErrorMessage("Property " + propertyName + " should be type of List.");
 			return documents;
 		}
 		var list = (List<?>) documentIds.get();
@@ -612,8 +624,8 @@ public class ReadTypeByAttribute {
 		return documents;
 	}
 	
-	private static void addDocumentIfExists(PrivacyPolicy model, ArrayList<Document> documents, String id) {
-		var document = ObjectFinder.checkIfDocumentExists(id, model);
+	private void addDocumentIfExists(PrivacyPolicy model, ArrayList<Document> documents, String id) {
+		var document = objectFinder.checkIfDocumentExists(id, model);
 		if(document.isPresent())
 		{
 			documents.add(document.get());

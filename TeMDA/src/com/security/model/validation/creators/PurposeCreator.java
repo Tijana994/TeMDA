@@ -8,6 +8,7 @@ import java.util.Map;
 import com.security.model.validation.annotations.PurposeAnnotation;
 import com.security.model.validation.annotations.enums.Constants;
 import com.security.model.validation.helpers.FieldFinder;
+import com.security.model.validation.helpers.interfaces.ILogger;
 import com.security.model.validation.models.CreationModel;
 
 import privacyModel.PrivacyModelFactory;
@@ -32,15 +33,15 @@ public class PurposeCreator {
     }
 
 	public static Purpose createPurpose(CreationModel creationModel, Class<?> originalObjectClass, Object originalObject,
-			String propertyName, PrivacyModelFactory factory) {
+			String propertyName, PrivacyModelFactory factory, FieldFinder fieldFinder, ILogger logger) {
 		if(originalObject == null)
 		{
-			System.out.println("Object is not instantiated.");
+			logger.LogErrorMessage("Object is not instantiated.");
 			return null;
 		}
 		try
 		{
-			var purposeObject = FieldFinder.getObjectToReadFrom(creationModel, originalObjectClass, originalObject, propertyName);
+			var purposeObject = fieldFinder.getObjectToReadFrom(creationModel, originalObjectClass, originalObject, propertyName);
 			if(purposeObject.isEmpty())
 			{
 				return null;
@@ -48,12 +49,12 @@ public class PurposeCreator {
 			PurposeAnnotation purposeAnnotation = purposeObject.get().getClass().getAnnotation(PurposeAnnotation.class);
 			if(purposeAnnotation == null)
 			{
-				System.out.println("There is no purpose annotation");
+				logger.LogErrorMessage("There is no purpose annotation");
 				return null;
 			}
 			else
 			{
-				return readComplexType(purposeObject.get(), purposeAnnotation, factory);
+				return readComplexType(purposeObject.get(), purposeAnnotation, factory, fieldFinder, logger);
 			}
 		}
 		catch(Exception e)
@@ -64,21 +65,21 @@ public class PurposeCreator {
 	}
 
 	private static Purpose readComplexType(Object originalObject, 
-			PurposeAnnotation purposeAnnotation, PrivacyModelFactory factory)
+			PurposeAnnotation purposeAnnotation, PrivacyModelFactory factory, FieldFinder fieldFinder, ILogger logger)
 			throws NoSuchFieldException, IllegalAccessException {
-		String details = (String)FieldFinder.getFieldValue(purposeAnnotation.details(), originalObject, originalObject.getClass());
+		String details = (String)fieldFinder.getFieldValue(purposeAnnotation.details(), originalObject, originalObject.getClass());
 		var purposeObject = factory.createPurpose();
 		purposeObject.setDetails(details);
-		int reason = (int)FieldFinder.getFieldValue(purposeAnnotation.reason(), originalObject, originalObject.getClass());
+		int reason = (int)fieldFinder.getFieldValue(purposeAnnotation.reason(), originalObject, originalObject.getClass());
 		purposeObject.setProcessingReason(_reasons.getOrDefault(reason, null));
-		int reasonSubtype = (int)FieldFinder.getFieldValue(purposeAnnotation.reasonSubtype(), originalObject, originalObject.getClass());
+		int reasonSubtype = (int)fieldFinder.getFieldValue(purposeAnnotation.reasonSubtype(), originalObject, originalObject.getClass());
 		purposeObject.setProcessingReasonSubtype(_subtypes.getOrDefault(reasonSubtype, null));
 		if(purposeAnnotation.subPurposes().equals(Constants.Empty)) return purposeObject;
 		
 		Field sub = originalObject.getClass().getDeclaredField(purposeAnnotation.subPurposes());
 		if(!sub.getType().equals(List.class)) 
 		{
-			System.out.println("Subpurpose should be a list type.");
+			logger.LogErrorMessage("Subpurpose should be a list type.");
 			return purposeObject;
 		}
 
@@ -92,7 +93,7 @@ public class PurposeCreator {
 		for(var purpose : list)
 		{
 			PurposeAnnotation purposeAnnotation1 = purpose.getClass().getAnnotation(PurposeAnnotation.class);
-			var subPurposeObject = readComplexType(purpose, purposeAnnotation1, factory);
+			var subPurposeObject = readComplexType(purpose, purposeAnnotation1, factory, fieldFinder, logger);
 			purposeObject.getSubPurposes().add(subPurposeObject);
 		}
 		return purposeObject;

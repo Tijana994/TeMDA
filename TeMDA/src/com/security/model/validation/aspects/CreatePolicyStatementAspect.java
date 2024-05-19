@@ -13,8 +13,6 @@ import com.security.model.validation.creators.PurposeCreator;
 import com.security.model.validation.creators.WhatCreator;
 import com.security.model.validation.creators.WhenCreator;
 import com.security.model.validation.creators.WhereCreator;
-import com.security.model.validation.helpers.FieldFinder;
-import com.security.model.validation.helpers.ObjectManager;
 import com.security.model.validation.models.CreationModel;
 import com.security.model.validation.models.ParametersAnnotations;
 
@@ -31,14 +29,14 @@ public class CreatePolicyStatementAspect extends BaseAspect {
 		CreatePolicyStatementAnnotation createPolicyStatement = method.getAnnotation(CreatePolicyStatementAnnotation.class);
 		if(createPolicyStatement == null)
 		{
-			System.out.println("There is no create policy statement annotation");
+			Logger.LogErrorMessage("There is no create policy statement annotation");
 			return returnedObject;
 		}
 		CreationModel originalObjectModel = new CreationModel(returnedObject, originalObject, thisJoinPoint, createPolicyStatement.createdObjectLocation(), createPolicyStatement.parametersLocation());
 		Object createdObject = FieldFinder.getCreatedObjectToReadFrom(originalObjectModel, originalObject, createPolicyStatement.name());
 		if(createdObject == null)
 		{
-			System.out.println("Read from object is null = CreatePolicyStatementAspect");
+			Logger.LogErrorMessage("Read from object is null = CreatePolicyStatementAspect");
 			return returnedObject;
 		}
 		Class<? extends Object> createdObjectClass = createdObject.getClass();
@@ -46,7 +44,7 @@ public class CreatePolicyStatementAspect extends BaseAspect {
 		
 		if(policyStatement == null)
 		{
-			System.out.println("There is no policy statement annotation");
+			Logger.LogErrorMessage("There is no policy statement annotation");
 			return returnedObject;
 		}
 		
@@ -121,33 +119,33 @@ public class CreatePolicyStatementAspect extends BaseAspect {
 				}
 			}
 			
-			var purpose = PurposeCreator.createPurpose(originalObjectModel, originalObjectClass, originalObject, createPolicyStatement.why(), repo.getFactory());
+			var purpose = PurposeCreator.createPurpose(originalObjectModel, originalObjectClass, originalObject, createPolicyStatement.why(), repo.getFactory(), FieldFinder, Logger);
 			policyStatementObject.setWhy(purpose);
 			ParametersAnnotations annotations = new ParametersAnnotations(method.getParameterAnnotations(), signature.getParameterNames());
-			var when = WhenCreator.createWhen(originalObjectModel, createPolicyStatement.when(), repo.getFactory(), annotations);
+			var when = WhenCreator.createWhen(originalObjectModel, createPolicyStatement.when(), repo.getFactory(), annotations, FieldFinder, Logger);
 			policyStatementObject.setWhen(when);
 			
-		    var what = WhatCreator.createWhat(createPolicyStatement, repo, model);
+		    var what = WhatCreator.createWhat(createPolicyStatement, repo, model, ReadTypeByAttribute);
 		    policyStatementObject.setWhat(what);
 		    
 		    if(HowCreator.shouldCreate(createPolicyStatement))
 		    {
-			    var how = HowCreator.createHow(originalObjectModel, createPolicyStatement, repo, model);
+			    var how = HowCreator.createHow(originalObjectModel, createPolicyStatement, repo, model, ObjectManager, ReadTypeByAttribute);
 				policyStatementObject.setHow(how);
 		    }
 
 		    if(WhereCreator.shouldCreate(createPolicyStatement))
 		    {
-				var where = WhereCreator.createWhere(originalObjectModel, createPolicyStatement, repo, model);
+				var where = WhereCreator.createWhere(originalObjectModel, createPolicyStatement, repo, model, ObjectManager);
 				policyStatementObject.setWhere(where);
 		    }
 			
 			model.getPolicyStatements().add(policyStatementObject);
 			repo.saveModel(model);
 		}
-		catch(Exception e)
+		catch(Exception ex)
 		{
-			System.out.println(e);
+			Logger.LogExceptionMessage(ex);
 		}
 		
 		return returnedObject;

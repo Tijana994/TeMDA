@@ -10,9 +10,6 @@ import org.aspectj.lang.annotation.Pointcut;
 import com.security.model.validation.annotations.DenialAnnotation;
 import com.security.model.validation.annotations.creators.CreateDenialAnnotation;
 import com.security.model.validation.annotations.enums.Constants;
-import com.security.model.validation.helpers.FieldFinder;
-import com.security.model.validation.helpers.ObjectManager;
-import com.security.model.validation.helpers.ReadTypeByAttribute;
 import com.security.model.validation.models.CreationModel;
 
 import privacyModel.AbstractComplaint;
@@ -29,14 +26,14 @@ public class CreateDenialAspect extends BaseAspect{
 	    CreateDenialAnnotation createDenial = method.getAnnotation(CreateDenialAnnotation.class);
 		if(createDenial == null)
 		{
-			System.out.println("There is no create denial annotation");
+			Logger.LogErrorMessage("There is no create denial annotation");
 			return returnedObject;
 		}
 		CreationModel originalObjectModel = new CreationModel(returnedObject, originalObject, thisJoinPoint, createDenial.createdObjectLocation(), createDenial.parametersLocation());
 		Object createdObject = FieldFinder.getCreatedObjectToReadFrom(originalObjectModel, originalObject, createDenial.name());
 		if(createdObject == null)
 		{
-			System.out.println("Read from object is null - CreateDenialAspect");
+			Logger.LogErrorMessage("Read from object is null - CreateDenialAspect");
 			return returnedObject;
 		}
 		Class<? extends Object> createdObjectClass = createdObject.getClass();
@@ -44,7 +41,7 @@ public class CreateDenialAspect extends BaseAspect{
 		
 		if(denial == null)
 		{
-			System.out.println("There is no denial annotation");
+			Logger.LogErrorMessage("There is no denial annotation");
 			return returnedObject;
 		}
 
@@ -128,7 +125,7 @@ public class CreateDenialAspect extends BaseAspect{
 		}
 		catch(Exception ex)
 		{
-			System.out.println(ex);
+			Logger.LogExceptionMessage(ex);
 		}
 		
 		return returnedObject;

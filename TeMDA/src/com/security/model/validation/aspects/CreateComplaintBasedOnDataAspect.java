@@ -11,9 +11,6 @@ import com.security.model.validation.annotations.ComplaintAnnotation;
 import com.security.model.validation.annotations.creators.CreateComplaintBasedOnDataAnnotation;
 import com.security.model.validation.annotations.enums.Constants;
 import com.security.model.validation.annotations.enums.ParametersObjectsLocation;
-import com.security.model.validation.helpers.FieldFinder;
-import com.security.model.validation.helpers.ObjectManager;
-import com.security.model.validation.helpers.ReadTypeByAttribute;
 import com.security.model.validation.models.CreationModel;
 
 import utility.PrivacyModelRepository;
@@ -29,7 +26,7 @@ public class CreateComplaintBasedOnDataAspect extends BaseAspect {
 	    CreateComplaintBasedOnDataAnnotation createComplaintBasedOnData = method.getAnnotation(CreateComplaintBasedOnDataAnnotation.class);
 		if(createComplaintBasedOnData == null)
 		{
-			System.out.println("There is no create complaint based on data annotation");
+			Logger.LogErrorMessage("There is no create complaint based on data annotation");
 			return returnedObject;
 		}
 		CreationModel originalObjectModel = new CreationModel(returnedObject, originalObject, thisJoinPoint, createComplaintBasedOnData.createdObjectLocation(), createComplaintBasedOnData.parametersLocation());
@@ -37,13 +34,13 @@ public class CreateComplaintBasedOnDataAspect extends BaseAspect {
 		createdObjectModel.setObject(FieldFinder.getCreatedObjectToReadFrom(originalObjectModel, originalObject, createComplaintBasedOnData.name()));
 		if(createdObjectModel.getObject() == null)
 		{
-			System.out.println("Read from object is null - CreateComplaintBasedOnDataAspect");
+			Logger.LogErrorMessage("Read from object is null - CreateComplaintBasedOnDataAspect");
 			return returnedObject;
 		}
 		ComplaintAnnotation complaint = createdObjectModel.getObjectClass().getAnnotation(ComplaintAnnotation.class);
 		if(complaint == null)
 		{
-			System.out.println("There is no complaint annotation");
+			Logger.LogErrorMessage("There is no complaint annotation");
 			return returnedObject;
 		}
 		
@@ -114,7 +111,7 @@ public class CreateComplaintBasedOnDataAspect extends BaseAspect {
 		}
 		catch(Exception ex)
 		{
-			System.out.println(ex);
+			Logger.LogExceptionMessage(ex);
 		}
 		
 		return returnedObject;

@@ -8,7 +8,6 @@ import org.aspectj.lang.annotation.Pointcut;
 import com.security.model.validation.annotations.PrivacyDataAnnotation;
 import com.security.model.validation.annotations.creators.CreatePrivacyDataAnnotation;
 import com.security.model.validation.annotations.enums.Constants;
-import com.security.model.validation.helpers.FieldFinder;
 import com.security.model.validation.models.CreationModel;
 
 import utility.PrivacyModelRepository;
@@ -24,21 +23,21 @@ public class CreatePrivacyDataAspect extends BaseAspect {
 	    CreatePrivacyDataAnnotation createPrivacyData = method.getAnnotation(CreatePrivacyDataAnnotation.class);
 		if(createPrivacyData == null)
 		{
-			System.out.println("There is no create privacy data annotation");
+			Logger.LogErrorMessage("There is no create privacy data annotation");
 			return returnedObject;
 		}
 		CreationModel originalObjectModel = new CreationModel(returnedObject, originalObject, thisJoinPoint, createPrivacyData.createdObjectLocation(), createPrivacyData.parametersLocation());
 		Object createdObject = FieldFinder.getCreatedObjectToReadFrom(originalObjectModel, originalObject, createPrivacyData.name());
 		if(createdObject == null)
 		{
-			System.out.println("Read from object is null = CreatePrivacyDataAspect");
+			Logger.LogErrorMessage("Read from object is null = CreatePrivacyDataAspect");
 			return returnedObject;
 		}
 		Class<? extends Object> createdObjectClass = createdObject.getClass();
 		PrivacyDataAnnotation privacyData = createdObjectClass.getAnnotation(PrivacyDataAnnotation.class);
 		if(privacyData == null)
 		{
-			System.out.println("There is no principal annotation");
+			Logger.LogErrorMessage("There is no principal annotation");
 			return returnedObject;
 		}
 
@@ -71,7 +70,7 @@ public class CreatePrivacyDataAspect extends BaseAspect {
 		}
 		catch(Exception ex)
 		{
-			System.out.println(ex);
+			Logger.LogExceptionMessage(ex);
 		}
 		
 		return returnedObject;

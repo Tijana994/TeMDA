@@ -11,8 +11,6 @@ import com.security.model.validation.annotations.WithdrawAnnotation;
 import com.security.model.validation.annotations.creators.CreateWithdrawAnnotation;
 import com.security.model.validation.annotations.enums.Constants;
 import com.security.model.validation.annotations.enums.ParametersObjectsLocation;
-import com.security.model.validation.helpers.FieldFinder;
-import com.security.model.validation.helpers.ObjectManager;
 import com.security.model.validation.models.CreationModel;
 
 import utility.PrivacyModelRepository;
@@ -28,7 +26,7 @@ public class CreateWithdrawAspect extends BaseAspect {
 		CreateWithdrawAnnotation createWithdraw = method.getAnnotation(CreateWithdrawAnnotation.class);
 		if(createWithdraw == null)
 		{
-			System.out.println("There is no create withdraw statement annotation");
+			Logger.LogErrorMessage("There is no create withdraw statement annotation");
 			return returnedObject;
 		}
 		CreationModel originalObjectModel = new CreationModel(returnedObject, originalObject, thisJoinPoint, createWithdraw.createdObjectLocation(), createWithdraw.parametersLocation());
@@ -36,13 +34,13 @@ public class CreateWithdrawAspect extends BaseAspect {
 		createdObjectModel.setObject(FieldFinder.getCreatedObjectToReadFrom(originalObjectModel, originalObject, createWithdraw.name()));
 		if(createdObjectModel.getObject() == null)
 		{
-			System.out.println("Read from object is null = CreateWithdrawAspect");
+			Logger.LogErrorMessage("Read from object is null = CreateWithdrawAspect");
 			return returnedObject;
 		}
 		WithdrawAnnotation withdraw = createdObjectModel.getObjectClass().getAnnotation(WithdrawAnnotation.class);
 		if(withdraw == null)
 		{
-			System.out.println("There is no withdraw annotation");
+			Logger.LogErrorMessage("There is no withdraw annotation");
 			return returnedObject;
 		}
 		
@@ -96,7 +94,7 @@ public class CreateWithdrawAspect extends BaseAspect {
 		}
 		catch(Exception ex)
 		{
-			System.out.println(ex);
+			Logger.LogExceptionMessage(ex);
 		}
 		
 		return returnedObject;

@@ -11,8 +11,6 @@ import com.security.model.validation.annotations.ComplaintAnnotation;
 import com.security.model.validation.annotations.creators.CreateComplaintBasedOnActionAnnotation;
 import com.security.model.validation.annotations.enums.Constants;
 import com.security.model.validation.annotations.enums.ParametersObjectsLocation;
-import com.security.model.validation.helpers.FieldFinder;
-import com.security.model.validation.helpers.ObjectManager;
 import com.security.model.validation.models.CreationModel;
 
 import utility.PrivacyModelRepository;
@@ -28,7 +26,7 @@ public class CreateComplaintBasedOnActionAspect extends BaseAspect {
 	    CreateComplaintBasedOnActionAnnotation createComplaintBasedOnAction = method.getAnnotation(CreateComplaintBasedOnActionAnnotation.class);
 		if(createComplaintBasedOnAction == null)
 		{
-			System.out.println("There is no create complaint based on action annotation");
+			Logger.LogErrorMessage("There is no create complaint based on action annotation");
 			return returnedObject;
 		}
 		CreationModel originalObjectModel = new CreationModel(returnedObject, originalObject, thisJoinPoint, createComplaintBasedOnAction.createdObjectLocation(), createComplaintBasedOnAction.parametersLocation());
@@ -36,13 +34,13 @@ public class CreateComplaintBasedOnActionAspect extends BaseAspect {
 		createdObjectModel.setObject(FieldFinder.getCreatedObjectToReadFrom(originalObjectModel, originalObject, createComplaintBasedOnAction.name()));
 		if(createdObjectModel.getObject() == null)
 		{
-			System.out.println("Read from object is null - CreateComplaintBasedOnActionAspect");
+			Logger.LogErrorMessage("Read from object is null - CreateComplaintBasedOnActionAspect");
 			return returnedObject;
 		}
 		ComplaintAnnotation complaint = createdObjectModel.getObjectClass().getAnnotation(ComplaintAnnotation.class);
 		if(complaint == null)
 		{
-			System.out.println("There is no complaint annotation");
+			Logger.LogErrorMessage("There is no complaint annotation");
 			return returnedObject;
 		}
 		
@@ -98,7 +96,7 @@ public class CreateComplaintBasedOnActionAspect extends BaseAspect {
 		}
 		catch(Exception ex)
 		{
-			System.out.println(ex);
+			Logger.LogExceptionMessage(ex);
 		}
 		
 		return returnedObject;
