@@ -1,6 +1,9 @@
 package com.security.model.validation.helpers;
 
 import java.lang.reflect.Field;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 import java.util.Optional;
 
 import org.aspectj.lang.reflect.MethodSignature;
@@ -27,9 +30,14 @@ public class FieldFinder {
 				logger.LogErrorMessage("Parameter name is empty");
 				return null;
 			}
-			Field field = objectClass.getDeclaredField(fieldName);
-			field.setAccessible(true);
-			return field.get(object);
+			
+			var field = getAllFields(new ArrayList<Field>(), objectClass).stream()
+					   .filter(f -> f.getName().equals(fieldName)).findFirst();
+			if(field.isPresent())
+			{
+				field.get().setAccessible(true);
+				return field.get().get(object);
+			}
 		}
 		catch(Exception ex)
 		{
@@ -37,6 +45,16 @@ public class FieldFinder {
 		}
 		
 		return null;
+	}
+	
+	private List<Field> getAllFields(List<Field> fields, Class<?> type) {
+	    fields.addAll(Arrays.asList(type.getDeclaredFields()));
+
+	    if (type.getSuperclass() != null) {
+	        getAllFields(fields, type.getSuperclass());
+	    }
+
+	    return fields;
 	}
 	
 	public Object getCreatedObjectToReadFrom(CreationModel creationModel, Object object, String name)
