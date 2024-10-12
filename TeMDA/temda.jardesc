@@ -12,8 +12,10 @@
     </manifest>
     <selectedElements exportClassFiles="true" exportJavaFiles="true" exportOutputFolder="false">
         <file path="/TeMDA/.project"/>
+        <javaElement handleIdentifier="=PrivacyModel/META-INF"/>
         <folder path="/TeMDA/META-INF"/>
         <file path="/TeMDA/.classpath"/>
+        <javaElement handleIdentifier="=PrivacyModel/src-gen"/>
         <javaElement handleIdentifier="=TeMDA/src"/>
     </selectedElements>
 </jardesc>
