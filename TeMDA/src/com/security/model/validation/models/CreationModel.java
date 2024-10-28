@@ -16,7 +16,7 @@ public class CreationModel {
 			ParametersObjectsLocation parametersLocation) {
 		super();
 		this.returnedObject = returnedObject;
-		this.returnedObjectClass = returnedObject.getClass();
+		this.returnedObjectClass = returnedObject == null ? null :returnedObject.getClass();
 		this.joinPoint = joinPoint;
 		this.createdLocation = createdLocation;
 		this.parametersLocation = parametersLocation;
