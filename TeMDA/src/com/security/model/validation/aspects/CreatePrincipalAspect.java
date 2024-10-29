@@ -62,7 +62,14 @@ public class CreatePrincipalAspect extends BaseAspect {
 			}
 			if(!createPrincipal.shouldSetBirtday() && createPrincipal.isLegalAge())
 			{
-				principalObject.setAge(model.getOwner().getInhabits().getLegalAgeLimit());;
+				if(model.getOwner() != null)
+				{
+					principalObject.setAge(model.getOwner().getInhabits().getLegalAgeLimit());
+				}
+				else
+				{
+					principalObject.setAge(30);
+				}
 			}
 			if(!principal.parent().equals(Constants.Empty)) 
 			{
