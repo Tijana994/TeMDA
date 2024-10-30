@@ -16,6 +16,7 @@ import privacyModel.Action;
 public @interface CreatePolicyStatementAnnotation {
 	CreatedObjectLocation createdObjectLocation() default CreatedObjectLocation.Return;
 	String name() default Constants.Empty;
+	String systemActionId() default Constants.Empty;
 	String why();
 	String when();
 	Action[] actions();

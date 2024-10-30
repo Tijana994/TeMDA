@@ -33,27 +33,39 @@ public class CreatePolicyStatementAspect extends BaseAspect {
 			return returnedObject;
 		}
 		CreationModel originalObjectModel = new CreationModel(returnedObject, originalObject, thisJoinPoint, createPolicyStatement.createdObjectLocation(), createPolicyStatement.parametersLocation());
-		Object createdObject = FieldFinder.getCreatedObjectToReadFrom(originalObjectModel, originalObject, createPolicyStatement.name());
-		if(createdObject == null)
+		String logId = null;
+		if(createPolicyStatement.systemActionId().equals(Constants.Empty))
 		{
-			Logger.LogErrorMessage("Read from object is null = CreatePolicyStatementAspect");
-			return returnedObject;
+			Object createdObject = FieldFinder.getCreatedObjectToReadFrom(originalObjectModel, originalObject, createPolicyStatement.name());
+			if(createdObject == null)
+			{
+				Logger.LogErrorMessage("Read from object is null = CreatePolicyStatementAspect");
+				return returnedObject;
+			}
+			Class<? extends Object> createdObjectClass = createdObject.getClass();
+			PolicyStatementAnnotation policyStatement = createdObjectClass.getAnnotation(PolicyStatementAnnotation.class);
+			if(policyStatement == null)
+			{
+				Logger.LogErrorMessage("There is no policy statement annotation");
+				return returnedObject;
+			}
+			logId = (String)FieldFinder.getFieldValue(policyStatement.id(), returnedObject, createdObjectClass);
 		}
-		Class<? extends Object> createdObjectClass = createdObject.getClass();
-		PolicyStatementAnnotation policyStatement = createdObjectClass.getAnnotation(PolicyStatementAnnotation.class);
-		
-		if(policyStatement == null)
+		else
 		{
-			Logger.LogErrorMessage("There is no policy statement annotation");
-			return returnedObject;
+			var obj = FieldFinder.getObjectToReadFrom(originalObjectModel, originalObjectModel.getObjectClass(), originalObjectModel.getObject(), createPolicyStatement.systemActionId());
+			if(obj.isPresent())
+			{
+				logId = (String)obj.get();
+			}
 		}
-		
+
 		try
 		{
 			PrivacyModelRepository repo = new PrivacyModelRepository();
 			var model = repo.getModel();
 			var policyStatementObject = repo.getFactory().createPolicyStatement();
-			policyStatementObject.setName((String)FieldFinder.getFieldValue(policyStatement.id(), returnedObject, createdObjectClass));
+			policyStatementObject.setName(logId);
 			if(!createPolicyStatement.whoId().equals(Constants.Empty))
 			{
 				var who = ObjectManager.tryGetPrincipalByById(originalObjectModel, createPolicyStatement.whoId(), model);
