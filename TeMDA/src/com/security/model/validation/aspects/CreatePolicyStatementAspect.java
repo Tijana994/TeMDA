@@ -16,6 +16,7 @@ import com.security.model.validation.creators.WhereCreator;
 import com.security.model.validation.models.CreationModel;
 import com.security.model.validation.models.ParametersAnnotations;
 
+import privacyModel.Purpose;
 import utility.PrivacyModelRepository;
 
 @Aspect
@@ -57,6 +58,10 @@ public class CreatePolicyStatementAspect extends BaseAspect {
 			if(obj.isPresent())
 			{
 				logId = (String)obj.get();
+			}
+			else
+			{
+				return returnedObject;
 			}
 		}
 
@@ -131,8 +136,21 @@ public class CreatePolicyStatementAspect extends BaseAspect {
 				}
 			}
 			
-			var purpose = PurposeCreator.createPurpose(originalObjectModel, originalObjectClass, originalObject, createPolicyStatement.why(), repo.getFactory(), FieldFinder, Logger);
-			policyStatementObject.setWhy(purpose);
+			if(createPolicyStatement.isPurposeObject())
+			{
+				var purposeObject = FieldFinder.getObjectToReadFrom(originalObjectModel, originalObjectClass, originalObject, createPolicyStatement.why());
+				if(purposeObject.isEmpty())
+				{
+					return returnedObject;
+				}
+				policyStatementObject.setWhy((Purpose)purposeObject.get());
+			}
+			else
+			{
+				var purpose = PurposeCreator.createPurpose(originalObjectModel, originalObjectClass, originalObject, createPolicyStatement.why(), repo.getFactory(), FieldFinder, Logger);
+				policyStatementObject.setWhy(purpose);
+			}
+
 			ParametersAnnotations annotations = new ParametersAnnotations(method.getParameterAnnotations(), signature.getParameterNames());
 			var when = WhenCreator.createWhen(originalObjectModel, createPolicyStatement.when(), repo.getFactory(), annotations, FieldFinder, Logger);
 			policyStatementObject.setWhen(when);

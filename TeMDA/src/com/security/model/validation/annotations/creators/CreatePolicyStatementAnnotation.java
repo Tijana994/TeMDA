@@ -18,6 +18,7 @@ public @interface CreatePolicyStatementAnnotation {
 	String name() default Constants.Empty;
 	String systemActionId() default Constants.Empty;
 	String why();
+	boolean isPurposeObject() default false;
 	String when();
 	Action[] actions();
 	String[] datas();
