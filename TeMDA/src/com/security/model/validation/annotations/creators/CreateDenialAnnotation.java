@@ -15,6 +15,7 @@ public @interface CreateDenialAnnotation {
 	CreatedObjectLocation createdObjectLocation() default CreatedObjectLocation.Return;
 	String name() default Constants.Empty;
 	ParametersObjectsLocation parametersLocation() default ParametersObjectsLocation.Parameter;
+	String propertyObjectName() default Constants.Empty;
 	String basedOnStatements() default Constants.Empty;
 	String basedOnStatementsIds() default Constants.Empty;
 	String basedOnStatement() default Constants.Empty;

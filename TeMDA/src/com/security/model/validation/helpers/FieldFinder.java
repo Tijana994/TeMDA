@@ -148,6 +148,19 @@ public class FieldFinder {
 					return Optional.empty();
 				}
 				return Optional.of(valueProperty);
+		  case PropertyInParameterObject:
+				if(name.equals(Constants.Empty))
+				{
+					logger.LogErrorMessage("Property name is empty");
+					return Optional.empty();
+				}
+				var parameterProperty = getFieldValue(name, creationModel.getParameterObject(), creationModel.getParameterObjectClass());
+				if(parameterProperty == null)
+				{
+					logger.LogErrorMessage("Property " + name + " should be instatiate");
+					return Optional.empty();
+				}
+				return Optional.of(parameterProperty);
 		  default:
 			  return Optional.empty();
 		}

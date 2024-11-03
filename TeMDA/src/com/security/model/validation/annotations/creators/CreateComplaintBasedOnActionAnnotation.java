@@ -15,6 +15,7 @@ public @interface CreateComplaintBasedOnActionAnnotation {
 	CreatedObjectLocation createdObjectLocation() default CreatedObjectLocation.Return;
 	String name() default Constants.Empty;
 	ParametersObjectsLocation parametersLocation() default ParametersObjectsLocation.Parameter;
+	String propertyObjectName() default Constants.Empty;
 	String policyStatement() default Constants.Empty;
 	String policyStatementId() default Constants.Empty;
 }

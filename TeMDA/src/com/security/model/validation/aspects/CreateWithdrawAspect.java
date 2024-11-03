@@ -29,7 +29,8 @@ public class CreateWithdrawAspect extends BaseAspect {
 			Logger.LogErrorMessage("There is no create withdraw statement annotation");
 			return returnedObject;
 		}
-		CreationModel originalObjectModel = new CreationModel(returnedObject, originalObject, thisJoinPoint, createWithdraw.createdObjectLocation(), createWithdraw.parametersLocation());
+		CreationModel originalObjectModel = new CreationModel(returnedObject, originalObject, thisJoinPoint, createWithdraw.createdObjectLocation(), 
+				createWithdraw.parametersLocation(), createWithdraw.propertyObjectName());
 		CreationModel createdObjectModel = new CreationModel(returnedObject, thisJoinPoint, createWithdraw.createdObjectLocation(), ParametersObjectsLocation.Property);
 		createdObjectModel.setObject(FieldFinder.getCreatedObjectToReadFrom(originalObjectModel, originalObject, createWithdraw.name()));
 		if(createdObjectModel.getObject() == null)

@@ -29,7 +29,8 @@ public class CreateComplaintBasedOnDataAspect extends BaseAspect {
 			Logger.LogErrorMessage("There is no create complaint based on data annotation");
 			return returnedObject;
 		}
-		CreationModel originalObjectModel = new CreationModel(returnedObject, originalObject, thisJoinPoint, createComplaintBasedOnData.createdObjectLocation(), createComplaintBasedOnData.parametersLocation());
+		CreationModel originalObjectModel = new CreationModel(returnedObject, originalObject, thisJoinPoint, createComplaintBasedOnData.createdObjectLocation(), 
+				createComplaintBasedOnData.parametersLocation(), createComplaintBasedOnData.propertyObjectName());
 		CreationModel createdObjectModel = new CreationModel(returnedObject, thisJoinPoint, createComplaintBasedOnData.createdObjectLocation(), ParametersObjectsLocation.Property);
 		createdObjectModel.setObject(FieldFinder.getCreatedObjectToReadFrom(originalObjectModel, originalObject, createComplaintBasedOnData.name()));
 		if(createdObjectModel.getObject() == null)

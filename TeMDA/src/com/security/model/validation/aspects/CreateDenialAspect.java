@@ -29,7 +29,8 @@ public class CreateDenialAspect extends BaseAspect{
 			Logger.LogErrorMessage("There is no create denial annotation");
 			return returnedObject;
 		}
-		CreationModel originalObjectModel = new CreationModel(returnedObject, originalObject, thisJoinPoint, createDenial.createdObjectLocation(), createDenial.parametersLocation());
+		CreationModel originalObjectModel = new CreationModel(returnedObject, originalObject, thisJoinPoint, createDenial.createdObjectLocation(), 
+				createDenial.parametersLocation(), createDenial.propertyObjectName());
 		Object createdObject = FieldFinder.getCreatedObjectToReadFrom(originalObjectModel, originalObject, createDenial.name());
 		if(createdObject == null)
 		{

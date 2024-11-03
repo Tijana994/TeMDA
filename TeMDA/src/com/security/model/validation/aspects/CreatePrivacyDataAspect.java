@@ -26,7 +26,8 @@ public class CreatePrivacyDataAspect extends BaseAspect {
 			Logger.LogErrorMessage("There is no create privacy data annotation");
 			return returnedObject;
 		}
-		CreationModel originalObjectModel = new CreationModel(returnedObject, originalObject, thisJoinPoint, createPrivacyData.createdObjectLocation(), createPrivacyData.parametersLocation());
+		CreationModel originalObjectModel = new CreationModel(returnedObject, originalObject, thisJoinPoint, createPrivacyData.createdObjectLocation(),
+				createPrivacyData.parametersLocation(), createPrivacyData.propertyObjectName());
 		Object createdObject = FieldFinder.getCreatedObjectToReadFrom(originalObjectModel, originalObject, createPrivacyData.name());
 		if(createdObject == null)
 		{

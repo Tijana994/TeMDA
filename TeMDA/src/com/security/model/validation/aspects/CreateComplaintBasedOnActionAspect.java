@@ -29,7 +29,8 @@ public class CreateComplaintBasedOnActionAspect extends BaseAspect {
 			Logger.LogErrorMessage("There is no create complaint based on action annotation");
 			return returnedObject;
 		}
-		CreationModel originalObjectModel = new CreationModel(returnedObject, originalObject, thisJoinPoint, createComplaintBasedOnAction.createdObjectLocation(), createComplaintBasedOnAction.parametersLocation());
+		CreationModel originalObjectModel = new CreationModel(returnedObject, originalObject, thisJoinPoint, createComplaintBasedOnAction.createdObjectLocation(), 
+				createComplaintBasedOnAction.parametersLocation(), createComplaintBasedOnAction.propertyObjectName());
 		CreationModel createdObjectModel = new CreationModel(returnedObject, thisJoinPoint, createComplaintBasedOnAction.createdObjectLocation(), ParametersObjectsLocation.Property);
 		createdObjectModel.setObject(FieldFinder.getCreatedObjectToReadFrom(originalObjectModel, originalObject, createComplaintBasedOnAction.name()));
 		if(createdObjectModel.getObject() == null)

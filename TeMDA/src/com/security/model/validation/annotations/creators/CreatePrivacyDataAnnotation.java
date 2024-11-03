@@ -13,5 +13,6 @@ public @interface CreatePrivacyDataAnnotation {
 	boolean createSharedPrivacyData() default false;
 	boolean collectedFromSubject() default false;
 	ParametersObjectsLocation parametersLocation() default ParametersObjectsLocation.Parameter;
+	String propertyObjectName() default Constants.Empty;
 	String privacyDataSource() default Constants.Empty;
 }

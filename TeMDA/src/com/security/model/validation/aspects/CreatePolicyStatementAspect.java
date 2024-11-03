@@ -33,7 +33,8 @@ public class CreatePolicyStatementAspect extends BaseAspect {
 			Logger.LogErrorMessage("There is no create policy statement annotation");
 			return returnedObject;
 		}
-		CreationModel originalObjectModel = new CreationModel(returnedObject, originalObject, thisJoinPoint, createPolicyStatement.createdObjectLocation(), createPolicyStatement.parametersLocation());
+		CreationModel originalObjectModel = new CreationModel(returnedObject, originalObject, thisJoinPoint, createPolicyStatement.createdObjectLocation(),
+				createPolicyStatement.parametersLocation(), createPolicyStatement.propertyObjectName());
 		String logId = null;
 		if(createPolicyStatement.systemActionId().equals(Constants.Empty))
 		{

@@ -15,6 +15,7 @@ public @interface CreateWithdrawAnnotation {
 	CreatedObjectLocation createdObjectLocation() default CreatedObjectLocation.Return;
 	String name() default Constants.Empty;
 	ParametersObjectsLocation parametersLocation() default ParametersObjectsLocation.Parameter;
+	String propertyObjectName() default Constants.Empty;
 	String consent() default Constants.Empty;
 	String consentId() default Constants.Empty;
 }
