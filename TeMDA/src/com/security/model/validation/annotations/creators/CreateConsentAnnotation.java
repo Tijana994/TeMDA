@@ -7,6 +7,7 @@ import java.lang.annotation.Target;
 
 import com.security.model.validation.annotations.enums.Constants;
 import com.security.model.validation.annotations.enums.CreatedObjectLocation;
+import com.security.model.validation.annotations.enums.ParametersObjectsLocation;
 
 import privacyModel.ConsentFormat;
 import privacyModel.ConsentType;
@@ -18,4 +19,8 @@ public @interface CreateConsentAnnotation {
 	String name() default Constants.Empty;
 	ConsentFormat consentFormat();
 	ConsentType consentType();
+	ParametersObjectsLocation parametersLocation() default ParametersObjectsLocation.Parameter;
+	String propertyObjectName() default Constants.Empty;
+	String providedById() default Constants.Empty;
+	String providedBy() default Constants.Empty;
 }

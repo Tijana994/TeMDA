@@ -29,6 +29,8 @@ public class CreateConsentAspect extends BaseAspect {
 			Logger.LogErrorMessage("There is no create consent statement annotation");
 			return returnedObject;
 		}
+		CreationModel originalObjectModel = new CreationModel(returnedObject, originalObject, thisJoinPoint, createConsent.createdObjectLocation(), 
+				createConsent.parametersLocation(), createConsent.propertyObjectName());
 		CreationModel createdObjectModel = new CreationModel(returnedObject, thisJoinPoint, createConsent.createdObjectLocation(), ParametersObjectsLocation.Property);
 		createdObjectModel.setObject(FieldFinder.getCreatedObjectToReadFrom(createdObjectModel, originalObject, createConsent.name()));
 		if(createdObjectModel.getObject() == null)
@@ -76,6 +78,22 @@ public class CreateConsentAspect extends BaseAspect {
 			if(!paper.providedById().equals(Constants.Empty))
 			{
 				var principal = ObjectManager.tryGetPrincipalByById(createdObjectModel, paper.providedById(), model);
+				if(principal.isPresent())
+				{
+					consentObject.setProvidedBy(principal.get());
+				}
+			}
+			if(!createConsent.providedBy().equals(Constants.Empty)) 
+			{
+				var principal = ObjectManager.tryGetPrincipalByFromObject(originalObjectModel, createConsent.providedBy(), model);
+				if(principal.isPresent())
+				{
+					consentObject.setProvidedBy(principal.get());
+				}
+			}
+			if(!createConsent.providedById().equals(Constants.Empty))
+			{
+				var principal = ObjectManager.tryGetPrincipalByById(originalObjectModel, createConsent.providedById(), model);
 				if(principal.isPresent())
 				{
 					consentObject.setProvidedBy(principal.get());
