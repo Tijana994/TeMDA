@@ -103,20 +103,20 @@ public class CreatePrincipalAspect extends BaseAspect {
 					principalObject.getResponsiblePersons().addAll(parents);
 				}
 			}
-			if(!principal.childrens().equals(Constants.Empty))
+			if(!principal.children().equals(Constants.Empty))
 			{
-				var childrens = ReadTypeByAttribute.getPrincipalsFromObject(createdObjectModel, principal.childrens(), model);
-				if(!childrens.isEmpty())
+				var children = ReadTypeByAttribute.getPrincipalsFromObject(createdObjectModel, principal.children(), model);
+				if(!children.isEmpty())
 				{
-					principalObject.getSubPrincipals().addAll(childrens);
+					principalObject.getSubPrincipals().addAll(children);
 				}
 			}
-			if(!principal.childrensIds().equals(Constants.Empty))
+			if(!principal.childrenIds().equals(Constants.Empty))
 			{
-				var childrens = ReadTypeByAttribute.getPrincipalsById(createdObjectModel, principal.childrensIds(), model);
-				if(!childrens.isEmpty())
+				var children = ReadTypeByAttribute.getPrincipalsById(createdObjectModel, principal.childrenIds(), model);
+				if(!children.isEmpty())
 				{
-					principalObject.getSubPrincipals().addAll(childrens);
+					principalObject.getSubPrincipals().addAll(children);
 				}
 			}
 			if(!principal.inhabits().equals(Constants.Empty) && createPrincipal.shouldSetLocation()) 

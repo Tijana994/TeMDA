@@ -14,8 +14,8 @@ public @interface PrincipalAnnotation {
 	String birthday() default Constants.Empty;
 	String parent() default Constants.Empty;
 	String parentId() default Constants.Empty;
-	String childrens() default Constants.Empty;
-	String childrensIds() default Constants.Empty;
+	String children() default Constants.Empty;
+	String childrenIds() default Constants.Empty;
 	String inhabits() default Constants.Empty;
 	String inhabitsId() default Constants.Empty;
 	String responsiblePersons() default Constants.Empty;

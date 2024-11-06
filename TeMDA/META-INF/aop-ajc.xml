@@ -10,7 +10,9 @@
     <aspect name="com.security.model.validation.aspects.CreatePolicyStatementAspect"/>
     <aspect name="com.security.model.validation.aspects.CreatePrincipalAspect"/>
     <aspect name="com.security.model.validation.aspects.CreatePrivacyDataAspect"/>
-    <aspect name="com.security.model.validation.aspects.CreateWithdrawAspect"/>
+    <aspect name="com.security.model.validation.aspects.CreateWithdrawAspect"/><aspect
+    	name="com.security.model.validation.aspects.UpdateConsentAspect">
+</aspect>
   </aspects>
   <weaver options="-Xset:weaveJavaxPackages=true"/>
 </aspectj>
