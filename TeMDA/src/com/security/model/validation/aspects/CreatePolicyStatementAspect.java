@@ -41,14 +41,14 @@ public class CreatePolicyStatementAspect extends BaseAspect {
 			Object createdObject = FieldFinder.getCreatedObjectToReadFrom(originalObjectModel, originalObject, createPolicyStatement.name());
 			if(createdObject == null)
 			{
-				Logger.LogErrorMessage("Read from object is null = CreatePolicyStatementAspect");
+				Logger.LogErrorMessage("Read from object is null = CreatePolicyStatementAspect. Cannot create policy statement.");
 				return returnedObject;
 			}
 			Class<? extends Object> createdObjectClass = createdObject.getClass();
 			PolicyStatementAnnotation policyStatement = createdObjectClass.getAnnotation(PolicyStatementAnnotation.class);
 			if(policyStatement == null)
 			{
-				Logger.LogErrorMessage("There is no policy statement annotation");
+				Logger.LogErrorMessage("There is no policy statement annotation. Cannot create policy statement.");
 				return returnedObject;
 			}
 			logId = (String)FieldFinder.getFieldValue(policyStatement.id(), returnedObject, createdObjectClass);
