@@ -6,6 +6,7 @@ import com.security.model.validation.helpers.interfaces.ILogger;
 
 import privacyModel.Complaint;
 import privacyModel.Consent;
+import privacyModel.Contract;
 import privacyModel.Document;
 import privacyModel.Location;
 import privacyModel.PolicyStatement;
@@ -63,6 +64,20 @@ public class ObjectFinder {
 			logger.LogErrorMessage("There is no consent with id " + fieldId);
 		}
 		return consent;
+	}
+	
+	public Optional<Contract> checkIfContractExists(String fieldId, PrivacyPolicy model) 
+	{
+		if(fieldId == null)
+		{
+			return Optional.empty();
+		}
+		var contract = findContract(fieldId, model);
+		if(contract.isEmpty())
+		{
+			logger.LogErrorMessage("There is no contract with id " + fieldId);
+		}
+		return contract;
 	}
 	
 	public Optional<PolicyStatement> checkIfPolicyStatementExists(String fieldId, PrivacyPolicy model) 
@@ -151,6 +166,12 @@ public class ObjectFinder {
 	{
 		return model.getAllConsents().stream()
 		   .filter(consent -> consent.getName().equals(consentId)).findFirst();
+	}
+	
+	private static Optional<Contract> findContract(String contractId, PrivacyPolicy model)
+	{
+		return model.getAllContracts().stream()
+		   .filter(contract -> contract.getName().equals(contractId)).findFirst();
 	}
 	
 	private static Optional<PolicyStatement> findPolicyStatement(String policyStatementId, PrivacyPolicy model)

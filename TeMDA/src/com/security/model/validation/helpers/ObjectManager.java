@@ -6,6 +6,7 @@ import com.security.model.validation.models.CreationModel;
 
 import privacyModel.Complaint;
 import privacyModel.Consent;
+import privacyModel.Contract;
 import privacyModel.Document;
 import privacyModel.Location;
 import privacyModel.PolicyStatement;
@@ -130,6 +131,24 @@ public class ObjectManager {
 		if(consentId.isPresent())
 		{
 			return objectFinder.checkIfConsentExists((String)consentId.get(), model);
+		}
+		return Optional.empty();
+	}
+	
+	public Optional<Contract> tryGetContractFromObject(CreationModel creationModel, String propertyName, PrivacyPolicy model) {
+		var contractId = readTypeAttribute.getPaperIdFromObject(creationModel, propertyName);
+		if(contractId.isPresent())
+		{
+			return objectFinder.checkIfContractExists(contractId.get(), model);
+		}
+		return Optional.empty();
+	}
+	
+	public Optional<Contract> tryGetContractById(CreationModel creationModel, String propertyName, PrivacyPolicy model) {
+		var contractId = fieldFinder.getObjectToReadFrom(creationModel, creationModel.getObjectClass(), creationModel.getObject(), propertyName);
+		if(contractId.isPresent())
+		{
+			return objectFinder.checkIfContractExists((String)contractId.get(), model);
 		}
 		return Optional.empty();
 	}

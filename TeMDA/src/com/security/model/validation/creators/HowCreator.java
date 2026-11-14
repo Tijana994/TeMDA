@@ -18,6 +18,8 @@ public class HowCreator {
 				!createPolicyStatement.howDocumentsIds().equals(Constants.Empty) ||
 				!createPolicyStatement.howConsent().equals(Constants.Empty) ||
 				!createPolicyStatement.howConsentId().equals(Constants.Empty) ||
+				!createPolicyStatement.howContract().equals(Constants.Empty) ||
+				!createPolicyStatement.howContractId().equals(Constants.Empty) ||
 				!createPolicyStatement.howDocument().equals(Constants.Empty) ||
 				!createPolicyStatement.howDocumentId().equals(Constants.Empty);
 	}
@@ -72,6 +74,22 @@ public class HowCreator {
 			if(consent.isPresent())
 			{
 				how.setConsent(consent.get());
+			}
+		}
+		if(!createPolicyStatement.howContract().equals(Constants.Empty))
+		{
+			var contract = objectManager.tryGetContractFromObject(creationModel, createPolicyStatement.howContract(), model);
+			if(contract.isPresent())
+			{
+				how.setContract(contract.get());
+			}
+		}
+		if(!createPolicyStatement.howContractId().equals(Constants.Empty))
+		{
+			var contract = objectManager.tryGetContractById(creationModel, createPolicyStatement.howContractId(), model);
+			if(contract.isPresent())
+			{
+				how.setContract(contract.get());
 			}
 		}
 		return how;
