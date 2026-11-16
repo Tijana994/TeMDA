@@ -14,5 +14,6 @@ public @interface PurposeAnnotation {
 	String reason();
 	String reasonSubtype();
 	String subPurposes() default Constants.Empty;
+	String erasureDate() default Constants.Empty;
 }
 
