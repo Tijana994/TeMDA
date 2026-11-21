@@ -53,13 +53,13 @@ public class CreateContractAspect extends BaseAspect {
 			contractObject.setName((String)FieldFinder.getFieldValue(paper.id(), createdObjectModel.getObject(), createdObjectModel.getObjectClass()));
 			contractObject.setStartDate((Date)FieldFinder.getFieldValue(paper.startDate(), createdObjectModel.getObject(), createdObjectModel.getObjectClass()));
 			contractObject.setLocation((String)FieldFinder.getFieldValue(paper.location(), createdObjectModel.getObject(), createdObjectModel.getObjectClass()));
-			if(!paper.terminantionExplanation().equals(Constants.Empty))
+			if(!paper.terminationExplanation().equals(Constants.Empty))
 			{
-				contractObject.setTerminationExplanation((String)FieldFinder.getFieldValue(paper.terminantionExplanation(), createdObjectModel.getObject(), createdObjectModel.getObjectClass()));
+				contractObject.setTerminationExplanation((String)FieldFinder.getFieldValue(paper.terminationExplanation(), createdObjectModel.getObject(), createdObjectModel.getObjectClass()));
 			}
-			if(!paper.terminantionDate().equals(Constants.Empty))
+			if(!paper.terminationDate().equals(Constants.Empty))
 			{
-				contractObject.setTerminationDate((Date)FieldFinder.getFieldValue(paper.terminantionDate(), createdObjectModel.getObject(), createdObjectModel.getObjectClass()));
+				contractObject.setTerminationDate((Date)FieldFinder.getFieldValue(paper.terminationDate(), createdObjectModel.getObject(), createdObjectModel.getObjectClass()));
 			}
 			if(!paper.description().equals(Constants.Empty))
 			{

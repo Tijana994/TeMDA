@@ -52,13 +52,13 @@ public class CreateDocumentAspect extends BaseAspect {
 			documentObject.setDocumentType(createDocument.documentType());
 			documentObject.setStartDate((Date)FieldFinder.getFieldValue(paper.startDate(), createdObjectModel.getObject(), createdObjectModel.getObjectClass()));
 			documentObject.setLocation((String)FieldFinder.getFieldValue(paper.location(), createdObjectModel.getObject(), createdObjectModel.getObjectClass()));
-			if(!paper.terminantionExplanation().equals(Constants.Empty))
+			if(!paper.terminationExplanation().equals(Constants.Empty))
 			{
-				documentObject.setTerminationExplanation((String)FieldFinder.getFieldValue(paper.terminantionExplanation(), createdObjectModel.getObject(), createdObjectModel.getObjectClass()));
+				documentObject.setTerminationExplanation((String)FieldFinder.getFieldValue(paper.terminationExplanation(), createdObjectModel.getObject(), createdObjectModel.getObjectClass()));
 			}
-			if(!paper.terminantionDate().equals(Constants.Empty))
+			if(!paper.terminationDate().equals(Constants.Empty))
 			{
-				documentObject.setTerminationDate((Date)FieldFinder.getFieldValue(paper.terminantionDate(), createdObjectModel.getObject(), createdObjectModel.getObjectClass()));
+				documentObject.setTerminationDate((Date)FieldFinder.getFieldValue(paper.terminationDate(), createdObjectModel.getObject(), createdObjectModel.getObjectClass()));
 			}
 			if(!paper.description().equals(Constants.Empty))
 			{

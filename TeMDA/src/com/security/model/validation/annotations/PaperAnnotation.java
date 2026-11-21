@@ -11,9 +11,9 @@ import com.security.model.validation.annotations.enums.Constants;
 @Target(ElementType.TYPE)
 public @interface PaperAnnotation{
 	String id();
-	String terminantionExplanation() default Constants.Empty;
+	String terminationExplanation() default Constants.Empty;
 	String startDate();
-	String terminantionDate() default Constants.Empty;
+	String terminationDate() default Constants.Empty;
 	String location();
 	String description() default Constants.Empty;
 	String providedBy() default Constants.Empty;

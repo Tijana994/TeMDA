@@ -54,13 +54,13 @@ public class CreatePrincipalAspect extends BaseAspect {
 			principalObject.setName((String)FieldFinder.getFieldValue(principal.id(), createdObjectModel.getObject(), createdObjectModel.getObjectClass()));
 			principalObject.setScope(createPrincipal.scope());
 			principalObject.setType(createPrincipal.type());
-			if(!principal.birthday().equals(Constants.Empty) && createPrincipal.shouldSetBirtday())
+			if(!principal.birthday().equals(Constants.Empty) && createPrincipal.shouldSetBirthday())
 			{
 				var birthday = (Date)FieldFinder.getFieldValue(principal.birthday(), createdObjectModel.getObject(), createdObjectModel.getObjectClass());
 				principalObject.setBirthdate(birthday);
 		        calculateAge(principalObject, birthday);
 			}
-			if(!createPrincipal.shouldSetBirtday() && createPrincipal.isLegalAge())
+			if(!createPrincipal.shouldSetBirthday() && createPrincipal.isLegalAge())
 			{
 				if(model.getOwner() != null)
 				{

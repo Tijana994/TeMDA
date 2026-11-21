@@ -18,7 +18,7 @@ public @interface CreatePrincipalAnnotation {
 	String name() default Constants.Empty;
 	PrincipalScope scope();
 	PrincipalType type();
-	boolean shouldSetBirtday() default false;
+	boolean shouldSetBirthday() default false;
 	boolean shouldSetLocation() default false;
 	boolean isLegalAge() default false;
 }
