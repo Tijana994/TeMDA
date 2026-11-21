@@ -50,6 +50,7 @@ public class CreateComplaintBasedOnActionAspect extends BaseAspect {
 			PrivacyModelRepository repo = new PrivacyModelRepository();
 			var model = repo.getModel();
 			var complaintTypeObject = repo.getFactory().createComplaintBasedOnAction();
+			complaintTypeObject.setType(createComplaintBasedOnAction.type());
 			var complaintObject = repo.getFactory().createComplaint();
 			complaintObject.setName((String)FieldFinder.getFieldValue(complaint.id(), createdObjectModel.getObject(), createdObjectModel.getObjectClass()));
 			complaintObject.setWhen((Date)FieldFinder.getFieldValue(complaint.when(), createdObjectModel.getObject(), createdObjectModel.getObjectClass()));

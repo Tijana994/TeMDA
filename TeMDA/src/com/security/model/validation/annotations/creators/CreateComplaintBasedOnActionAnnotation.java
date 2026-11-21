@@ -9,6 +9,8 @@ import com.security.model.validation.annotations.enums.Constants;
 import com.security.model.validation.annotations.enums.CreatedObjectLocation;
 import com.security.model.validation.annotations.enums.ParametersObjectsLocation;
 
+import privacyModel.ComplaintBasedOnActionType;
+
 @Retention(RetentionPolicy.RUNTIME)
 @Target(ElementType.METHOD)
 public @interface CreateComplaintBasedOnActionAnnotation {
@@ -18,4 +20,5 @@ public @interface CreateComplaintBasedOnActionAnnotation {
 	String propertyObjectName() default Constants.Empty;
 	String policyStatement() default Constants.Empty;
 	String policyStatementId() default Constants.Empty;
+	ComplaintBasedOnActionType type() default ComplaintBasedOnActionType.OBJECTION;
 }
