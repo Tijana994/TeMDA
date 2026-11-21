@@ -54,7 +54,7 @@ public class CreatePrivacyDataAspect extends BaseAspect {
 			{
 				var sharedPrivacyDataObject = repo.getFactory().createSharedPrivacyData();
 				sharedPrivacyDataObject.setName(privacyDataObject.getName());
-				sharedPrivacyDataObject.setCollectedFromSubject(createPrivacyData.collectedFromSubject());
+				sharedPrivacyDataObject.setOrigin(createPrivacyData.origin());
 				if(!createPrivacyData.privacyDataSource().equals(Constants.Empty))
 				{
 					var privacyDataSource = FieldFinder.getObjectToReadFrom(originalObjectModel, originalObjectClass, originalObject, createPrivacyData.privacyDataSource());

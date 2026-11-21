@@ -4,6 +4,7 @@ import com.security.model.validation.annotations.enums.Constants;
 import com.security.model.validation.annotations.enums.CreatedObjectLocation;
 import com.security.model.validation.annotations.enums.ParametersObjectsLocation;
 
+import privacyModel.DataOrigin;
 import privacyModel.DataType;
 
 public @interface CreatePrivacyDataAnnotation {
@@ -11,7 +12,7 @@ public @interface CreatePrivacyDataAnnotation {
 	String name() default Constants.Empty;
 	DataType type();
 	boolean createSharedPrivacyData() default false;
-	boolean collectedFromSubject() default false;
+	DataOrigin origin() default DataOrigin.DATA_SUBJECT;
 	ParametersObjectsLocation parametersLocation() default ParametersObjectsLocation.Parameter;
 	String propertyObjectName() default Constants.Empty;
 	String privacyDataSource() default Constants.Empty;
