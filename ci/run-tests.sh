@@ -56,6 +56,7 @@ set -e
 
 if [ -n "$JACOCO" ] && [ -f "$BUILD/jacoco.exec" ]; then
   echo "== Coverage report"
+  mkdir -p "$BUILD/coverage"
   java -jar "$JACOCO/lib/jacococli.jar" report "$BUILD/jacoco.exec" \
     --classfiles "$BUILD/main" --sourcefiles "$PROJECT/src" \
     --xml "$BUILD/coverage/jacoco.xml" --csv "$BUILD/coverage/jacoco.csv" --html "$BUILD/coverage/html" --name TeMDA
