@@ -50,14 +50,14 @@ public class FieldFinderTest {
 	}
 
 	@Test
-	public void getFieldValue_FieldNameNotExistsInClass_LoggedException()
+	public void getFieldValue_FieldNameNotExistsInClass_ReturnsNull()
 	{
 		var logger = Mockito.mock(ILogger.class);
 		var fieldFinder = new FieldFinder(logger);
 		
 		var result = fieldFinder.getFieldValue(test, getClass(), getClass());
 		
-		verify(logger).LogExceptionMessage(any(Exception.class));
+		verify(logger, never()).LogExceptionMessage(any(Exception.class));
 		assertNull(result);
 	}
 	
@@ -113,7 +113,7 @@ public class FieldFinderTest {
 		
 		var result = fieldFinder.getCreatedObjectToReadFrom(creationModel, testModel, test);
 		
-		verify(logger).LogExceptionMessage(any(Exception.class));
+		verify(logger, never()).LogExceptionMessage(any(Exception.class));
 		assertNull(result);
 	}
 	

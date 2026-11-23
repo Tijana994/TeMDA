@@ -1,5 +1,8 @@
 # TeMDA
 
+[![Tests](https://github.com/Tijana994/TeMDA/actions/workflows/tests.yml/badge.svg)](https://github.com/Tijana994/TeMDA/actions/workflows/tests.yml) ![Coverage](.github/badges/jacoco.svg) ![Branches](.github/badges/branches.svg)
+
+
 TeMDA (Themis - Greek goddess of justice, MDA - Model Driven Approach) presents a DSL based on aspect oriented language implemented as annotations for Java language. TeMDA provides an automated GDPR violation check.
 
 The user should integrate their business logic with TeMDA annotations, enabling the TeMDA Framework to generate a model at runtime. This process includes the provision of error messages if the business model is found to be non-compliant with GDPR regulations. This ensures that discrepancies are identified and addressed promptly, maintaining alignment with legal requirements throughout the operational lifecycle of the software.
