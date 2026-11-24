@@ -180,14 +180,14 @@ public class ReadTypeByAttribute {
 			{
 				return Optional.empty();
 			}
-			PrivacyDataAnnotation privacyData = value.getClass().getAnnotation(PrivacyDataAnnotation.class);
+			PrivacyDataAnnotation privacyData = value.get().getClass().getAnnotation(PrivacyDataAnnotation.class);
 			if(privacyData == null)
 			{
 				logger.LogErrorMessage("There is no privacy data annotation");
 			}
 			else
 			{
-				var Id = (String)fieldFinder.getFieldValue(privacyData.id(), value, value.getClass());
+				var Id = (String)fieldFinder.getFieldValue(privacyData.id(), value.get(), value.get().getClass());
 				return Optional.of(Id);
 			}
 		}

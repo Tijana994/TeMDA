@@ -13,6 +13,7 @@ public class CreationModel {
 			ParametersObjectsLocation parametersLocation, String parameterObjectName){
 		this(returnedObject, joinPoint, createdLocation, parametersLocation);
 		this.object = object;
+		this.objectClass = object == null ? null : object.getClass();
 		if(parametersLocation == ParametersObjectsLocation.PropertyInParameterObject)
 		{
 			parameterObject = readObject(parameterObjectName);

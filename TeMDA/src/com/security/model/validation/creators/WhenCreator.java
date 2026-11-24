@@ -77,13 +77,13 @@ public class WhenCreator {
 		TimeStatementAnnotation timeAnnotation = null;
 		if(creationModel.getParametersLocation().equals(ParametersObjectsLocation.Property))
 		{
-			timeAnnotation = dateObject.get().getClass().getAnnotation(TimeStatementAnnotation.class);
+			timeAnnotation = getFieldAnnotation(creationModel.getObjectClass(), propertyName);
 		}
 		else if(creationModel.getParametersLocation().equals(ParametersObjectsLocation.Parameter))
 		{
 			for(int i = 0; i < parametersAnnotation.getParameterNames().length; i++)
 			{
-				if(parametersAnnotation.getParameterNames()[i].equals(propertyName))
+				if(parametersAnnotation.getParameterNames()[i].equalsIgnoreCase(propertyName))
 				{
 					for(int column = 0; column < parametersAnnotation.getAnnotations()[i].length; column++)
 					{
@@ -116,5 +116,20 @@ public class WhenCreator {
 	        }
 		}
 		return timeAnnotation;
+	}
+
+	/** Finds @TimeStatementAnnotation on the field with the given name, also in superclasses. */
+	private static TimeStatementAnnotation getFieldAnnotation(Class<?> type, String propertyName) {
+		for(Class<?> current = type; current != null; current = current.getSuperclass())
+		{
+			for(Field field : current.getDeclaredFields())
+			{
+				if(field.getName().equals(propertyName))
+				{
+					return field.getAnnotation(TimeStatementAnnotation.class);
+				}
+			}
+		}
+		return null;
 	}
 }
