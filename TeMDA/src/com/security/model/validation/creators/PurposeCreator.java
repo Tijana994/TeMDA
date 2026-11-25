@@ -1,7 +1,6 @@
 package com.security.model.validation.creators;
 
 import java.lang.reflect.Field;
-import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -75,10 +74,6 @@ public class PurposeCreator {
 		purposeObject.setProcessingReason(_reasons.getOrDefault(reason, null));
 		int reasonSubtype = (int)fieldFinder.getFieldValue(purposeAnnotation.reasonSubtype(), originalObject, originalObject.getClass());
 		purposeObject.setProcessingReasonSubtype(_subtypes.getOrDefault(reasonSubtype, null));
-		if(!purposeAnnotation.erasureDate().equals(Constants.Empty))
-		{
-			purposeObject.setErasureDate((Date)fieldFinder.getFieldValue(purposeAnnotation.erasureDate(), originalObject, originalObject.getClass()));
-		}
 		if(purposeAnnotation.subPurposes().equals(Constants.Empty)) return purposeObject;
 		
 		Field sub = originalObject.getClass().getDeclaredField(purposeAnnotation.subPurposes());
