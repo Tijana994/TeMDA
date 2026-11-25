@@ -59,6 +59,10 @@ public class CreateComplaintBasedOnActionAspect extends BaseAspect {
 			{
 				complaintObject.setReason((String)FieldFinder.getFieldValue(complaint.reason(), createdObjectModel.getObject(), createdObjectModel.getObjectClass()));
 			}
+			if(!complaint.responseDeadline().equals(Constants.Empty))
+			{
+				complaintObject.setResponseDeadline((Date)FieldFinder.getFieldValue(complaint.responseDeadline(), createdObjectModel.getObject(), createdObjectModel.getObjectClass()));
+			}
 			if(!createComplaintBasedOnAction.policyStatement().equals(Constants.Empty))
 			{
 				var policyStatement = ObjectManager.tryGetPolicyStatementFromObject(originalObjectModel,  

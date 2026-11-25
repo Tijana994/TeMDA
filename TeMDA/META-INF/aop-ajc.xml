@@ -14,6 +14,7 @@
     <aspect name="com.security.model.validation.aspects.CreateWithdrawAspect"/><aspect
     	name="com.security.model.validation.aspects.UpdateConsentAspect">
 </aspect>
+    <aspect name="com.security.model.validation.aspects.UpdateComplaintAspect"/>
   </aspects>
   <weaver options="-Xset:weaveJavaxPackages=true"/>
 </aspectj>

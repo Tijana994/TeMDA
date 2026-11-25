@@ -58,6 +58,10 @@ public class CreateComplaintBasedOnDataAspect extends BaseAspect {
 			{
 				complaintObject.setReason((String)FieldFinder.getFieldValue(complaint.reason(), createdObjectModel.getObject(), createdObjectModel.getObjectClass()));
 			}
+			if(!complaint.responseDeadline().equals(Constants.Empty))
+			{
+				complaintObject.setResponseDeadline((Date)FieldFinder.getFieldValue(complaint.responseDeadline(), createdObjectModel.getObject(), createdObjectModel.getObjectClass()));
+			}
 			if(!createComplaintBasedOnData.subjects().equals(Constants.Empty))
 			{
 				var datas = ReadTypeByAttribute.getPrivacyDatasFromObject(originalObjectModel, createComplaintBasedOnData.subjects(), model);
