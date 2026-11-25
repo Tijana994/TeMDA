@@ -104,12 +104,11 @@ public class Fixtures {
 	}
 
 	@PurposeAnnotation(details = "details", reason = "reason", reasonSubtype = "subtype",
-			subPurposes = "subPurposes", erasureDate = "erasure")
+			subPurposes = "subPurposes")
 	public static class ComplexPurpose {
 		public String details = "main";
 		public int reason;
 		public int subtype;
-		public Date erasure;
 		public List<SimplePurpose> subPurposes;
 	}
 

@@ -7,7 +7,6 @@ import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.verify;
 
 import java.util.Arrays;
-import java.util.Date;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -52,7 +51,6 @@ public class PurposeCreatorTest {
 		assertEquals(ProcessingReason.MARKETING, purpose.getProcessingReason());
 		assertEquals(ProcessingReasonSubtype.NONE, purpose.getProcessingReasonSubtype());
 		assertEquals("Newsletter", purpose.getDetails());
-		assertNull(purpose.getErasureDate());
 		assertTrue(purpose.getSubPurposes().isEmpty());
 	}
 
@@ -76,11 +74,10 @@ public class PurposeCreatorTest {
 	}
 
 	@Test
-	public void createPurpose_WithSubPurposesAndErasureDate() {
+	public void createPurpose_WithSubPurposes() {
 		var complex = new ComplexPurpose();
 		complex.reason = ProcessingReason.RESEARCH_VALUE;
 		complex.subtype = ProcessingReasonSubtype.SCIENTIFIC_VALUE;
-		complex.erasure = new Date(1_700_000_000_000L);
 		complex.subPurposes = Arrays.asList(
 				new SimplePurpose("Stats", ProcessingReason.STATISTICAL_PURPOSES_VALUE, ProcessingReasonSubtype.NONE_VALUE),
 				new SimplePurpose("Ads", ProcessingReason.MARKETING_VALUE, ProcessingReasonSubtype.NONE_VALUE));
@@ -89,7 +86,6 @@ public class PurposeCreatorTest {
 
 		assertEquals(ProcessingReason.RESEARCH, purpose.getProcessingReason());
 		assertEquals(ProcessingReasonSubtype.SCIENTIFIC, purpose.getProcessingReasonSubtype());
-		assertEquals(complex.erasure, purpose.getErasureDate());
 		assertEquals(2, purpose.getSubPurposes().size());
 		assertEquals(ProcessingReason.STATISTICAL_PURPOSES, purpose.getSubPurposes().get(0).getProcessingReason());
 		assertEquals("Ads", purpose.getSubPurposes().get(1).getDetails());
