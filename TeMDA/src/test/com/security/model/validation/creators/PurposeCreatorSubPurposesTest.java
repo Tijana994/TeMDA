@@ -1,4 +1,4 @@
-package com.security.model.validation.creators;
+package test.com.security.model.validation.creators;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
@@ -14,6 +14,7 @@ import org.junit.Test;
 import com.security.model.validation.annotations.PurposeAnnotation;
 import com.security.model.validation.annotations.enums.CreatedObjectLocation;
 import com.security.model.validation.annotations.enums.ParametersObjectsLocation;
+import com.security.model.validation.creators.PurposeCreator;
 import com.security.model.validation.helpers.FieldFinder;
 import com.security.model.validation.helpers.interfaces.ILogger;
 import com.security.model.validation.models.CreationModel;
