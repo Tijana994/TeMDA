@@ -1,6 +1,5 @@
 package com.security.model.validation.creators;
 
-import java.lang.reflect.Field;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -65,8 +64,7 @@ public class PurposeCreator {
 	}
 
 	private static Purpose readComplexType(Object originalObject, 
-			PurposeAnnotation purposeAnnotation, PrivacyModelFactory factory, FieldFinder fieldFinder, ILogger logger)
-			throws NoSuchFieldException, IllegalAccessException {
+			PurposeAnnotation purposeAnnotation, PrivacyModelFactory factory, FieldFinder fieldFinder, ILogger logger) {
 		String details = (String)fieldFinder.getFieldValue(purposeAnnotation.details(), originalObject, originalObject.getClass());
 		var purposeObject = factory.createPurpose();
 		purposeObject.setDetails(details);
@@ -76,24 +74,28 @@ public class PurposeCreator {
 		purposeObject.setProcessingReasonSubtype(_subtypes.getOrDefault(reasonSubtype, null));
 		if(purposeAnnotation.subPurposes().equals(Constants.Empty)) return purposeObject;
 		
-		Field sub = originalObject.getClass().getDeclaredField(purposeAnnotation.subPurposes());
-		if(!sub.getType().equals(List.class)) 
-		{
-			logger.LogErrorMessage("Subpurpose should be a list type.");
-			return purposeObject;
-		}
-
-		Object value = sub.get(originalObject);
+		// The field is read as the other annotated fields, so it may be private, inherited, and of any List type.
+		Object value = fieldFinder.getFieldValue(purposeAnnotation.subPurposes(), originalObject, originalObject.getClass());
 		if(value == null)
 		{
 			return purposeObject;
 		}
-		var list = (List<?>) value;
-		
-		for(var purpose : list)
+		if(!(value instanceof List<?>))
 		{
-			PurposeAnnotation purposeAnnotation1 = purpose.getClass().getAnnotation(PurposeAnnotation.class);
-			var subPurposeObject = readComplexType(purpose, purposeAnnotation1, factory, fieldFinder, logger);
+			logger.LogErrorMessage("Subpurpose should be a list type.");
+			return purposeObject;
+		}
+		
+		for(var purpose : (List<?>) value)
+		{
+			if(purpose == null) continue;
+			PurposeAnnotation subPurposeAnnotation = purpose.getClass().getAnnotation(PurposeAnnotation.class);
+			if(subPurposeAnnotation == null)
+			{
+				logger.LogErrorMessage("There is no purpose annotation on the sub-purpose " + purpose.getClass().getName());
+				continue;
+			}
+			var subPurposeObject = readComplexType(purpose, subPurposeAnnotation, factory, fieldFinder, logger);
 			purposeObject.getSubPurposes().add(subPurposeObject);
 		}
 		return purposeObject;
