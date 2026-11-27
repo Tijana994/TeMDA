@@ -11,6 +11,7 @@ import com.security.model.validation.annotations.ComplaintAnnotation;
 import com.security.model.validation.annotations.creators.CreateComplaintBasedOnDataAnnotation;
 import com.security.model.validation.annotations.enums.Constants;
 import com.security.model.validation.annotations.enums.ParametersObjectsLocation;
+import com.security.model.validation.helpers.ResponseDeadline;
 import com.security.model.validation.models.CreationModel;
 
 import utility.PrivacyModelRepository;
@@ -61,6 +62,10 @@ public class CreateComplaintBasedOnDataAspect extends BaseAspect {
 			if(!complaint.responseDeadline().equals(Constants.Empty))
 			{
 				complaintObject.setResponseDeadline((Date)FieldFinder.getFieldValue(complaint.responseDeadline(), createdObjectModel.getObject(), createdObjectModel.getObjectClass()));
+			}
+			if(complaintObject.getResponseDeadline() == null && complaintObject.getWhen() != null)
+			{
+				complaintObject.setResponseDeadline(ResponseDeadline.defaultFor(complaintObject.getWhen()));
 			}
 			if(!createComplaintBasedOnData.subjects().equals(Constants.Empty))
 			{
