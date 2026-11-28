@@ -18,4 +18,8 @@ public @interface CreateContractAnnotation {
 	String propertyObjectName() default Constants.Empty;
 	String providedById() default Constants.Empty;
 	String providedBy() default Constants.Empty;
+	String provider() default Constants.Empty;
+	String providerId() default Constants.Empty;
+	String documents() default Constants.Empty;
+	String documentsIds() default Constants.Empty;
 }

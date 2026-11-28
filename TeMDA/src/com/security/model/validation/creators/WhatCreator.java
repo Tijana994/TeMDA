@@ -21,6 +21,9 @@ public class WhatCreator {
 
 		var datas = readTypeByAttribute.getSharedPrivacyDataById(createPolicyStatement.datas(), model);
 		what.getDatas().addAll(datas);
+
+		var providers = readTypeByAttribute.getProvidersById(createPolicyStatement.providers(), model);
+		what.getProviders().addAll(providers);
 		return what;
 	}
 }

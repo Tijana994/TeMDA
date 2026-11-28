@@ -13,6 +13,7 @@ import privacyModel.PolicyStatement;
 import privacyModel.Principal;
 import privacyModel.PrivacyData;
 import privacyModel.PrivacyPolicy;
+import privacyModel.Provider;
 
 public class ObjectManager {
 	
@@ -167,6 +168,19 @@ public class ObjectManager {
 		if(documentId.isPresent())
 		{
 			return objectFinder.checkIfDocumentExists((String)documentId.get(), model);
+		}
+		return Optional.empty();
+	}
+	
+	public Optional<Provider> tryGetProvider(String providerName, PrivacyPolicy model) {
+		return objectFinder.checkIfProviderExists(providerName, model);
+	}
+	
+	public Optional<Provider> tryGetProviderById(CreationModel creationModel, String propertyName, PrivacyPolicy model) {
+		var providerId = fieldFinder.getObjectToReadFrom(creationModel, creationModel.getObjectClass(), creationModel.getObject(), propertyName);
+		if(providerId.isPresent())
+		{
+			return objectFinder.checkIfProviderExists((String)providerId.get(), model);
 		}
 		return Optional.empty();
 	}

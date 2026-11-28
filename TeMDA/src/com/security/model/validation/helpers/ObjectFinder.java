@@ -13,6 +13,7 @@ import privacyModel.PolicyStatement;
 import privacyModel.Principal;
 import privacyModel.PrivacyData;
 import privacyModel.PrivacyPolicy;
+import privacyModel.Provider;
 import privacyModel.SharedPrivacyData;
 
 public class ObjectFinder {
@@ -150,6 +151,20 @@ public class ObjectFinder {
 		return document;
 	}
 	
+	public Optional<Provider> checkIfProviderExists(String fieldId, PrivacyPolicy model) 
+	{
+		if(fieldId == null)
+		{
+			return Optional.empty();
+		}
+		var provider = findProvider(fieldId, model);
+		if(provider.isEmpty())
+		{
+			logger.LogErrorMessage("There is no provider with id " + fieldId);
+		}
+		return provider;
+	}
+	
 	private static Optional<Principal> findPrincipal(String principalId, PrivacyPolicy model)
 	{
 		return model.getAllPrincipals().stream()
@@ -202,5 +217,11 @@ public class ObjectFinder {
 	{
 		return model.getAllDocuments().stream()
 		   .filter(complaint -> complaint.getName().equals(documentId)).findFirst();
+	}
+	
+	private static Optional<Provider> findProvider(String providerId, PrivacyPolicy model)
+	{
+		return model.getAllProviders().stream()
+		   .filter(provider -> provider.getName().equals(providerId)).findFirst();
 	}
 }

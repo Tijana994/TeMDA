@@ -19,6 +19,7 @@ import privacyModel.PolicyStatement;
 import privacyModel.Principal;
 import privacyModel.PrivacyData;
 import privacyModel.PrivacyPolicy;
+import privacyModel.Provider;
 import privacyModel.SharedPrivacyData;
 
 public class ReadTypeByAttribute {
@@ -313,6 +314,20 @@ public class ReadTypeByAttribute {
 			}
 		}
 		return datas;
+	}
+	
+	public List<Provider> getProvidersById(String[] providersId, PrivacyPolicy model)
+	{
+		var providers = new ArrayList<Provider>();
+		for(var providerId : providersId)
+		{
+			var provider = objectFinder.checkIfProviderExists(providerId, model);
+			if(provider.isPresent())
+			{
+				providers.add(provider.get());
+			}
+		}
+		return providers;
 	}
 	
 	private void addPrincipalIfExists(PrivacyPolicy model, ArrayList<Principal> principals, String Id) {

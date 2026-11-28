@@ -22,6 +22,7 @@ public @interface CreatePolicyStatementAnnotation {
 	String when();
 	Action[] actions();
 	String[] datas();
+	String[] providers() default {};
 	ParametersObjectsLocation parametersLocation() default ParametersObjectsLocation.Parameter;
 	String propertyObjectName() default Constants.Empty;
 	String whereSource() default Constants.Empty;

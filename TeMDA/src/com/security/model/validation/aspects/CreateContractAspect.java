@@ -97,6 +97,34 @@ public class CreateContractAspect extends BaseAspect {
 					contractObject.setProvidedBy(principal.get());
 				}
 			}
+			if(!createContract.provider().equals(Constants.Empty))
+			{
+				var provider = ObjectManager.tryGetProvider(createContract.provider(), model);
+				if(provider.isPresent())
+				{
+					contractObject.setProvider(provider.get());
+				}
+			}
+			if(!createContract.providerId().equals(Constants.Empty))
+			{
+				var provider = ObjectManager.tryGetProviderById(originalObjectModel, createContract.providerId(), model);
+				if(provider.isPresent())
+				{
+					contractObject.setProvider(provider.get());
+				}
+			}
+			if(!createContract.documents().equals(Constants.Empty))
+			{
+				contractObject.getDocuments().addAll(ReadTypeByAttribute.getDocumentsFromObject(originalObjectModel, createContract.documents(), model));
+			}
+			if(!createContract.documentsIds().equals(Constants.Empty))
+			{
+				contractObject.getDocuments().addAll(ReadTypeByAttribute.getDocumentsById(originalObjectModel, createContract.documentsIds(), model));
+			}
+			if(contractObject.getProvidedBy() == null && contractObject.getProvider() == null)
+			{
+				Logger.LogErrorMessage("Contract " + contractObject.getName() + " has neither a principal nor a provider as a party");
+			}
 			model.getAllContracts().add(contractObject);
 			repo.saveModel(model);
 		}
