@@ -39,7 +39,7 @@ public class ReadTypeByAttribute {
 	{
 		if(creationModel.getObject() == null)
 		{
-			System.out.println("Object is not instantiated.");
+			logger.LogErrorMessage("Object is not instantiated.");
 			return Optional.empty();
 		}
 		try
@@ -138,7 +138,7 @@ public class ReadTypeByAttribute {
 	{
 		if(creationModel.getObject() == null)
 		{
-			System.out.println("Object is not instantiated.");
+			logger.LogErrorMessage("Object is not instantiated.");
 			return Optional.empty();
 		}
 		try

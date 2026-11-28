@@ -43,7 +43,7 @@ public class WhenCreator {
 		}
 		catch(Exception e)
 		{
-			System.out.println(e);
+			logger.LogExceptionMessage(e);
 		}
 		return null;
 	}
@@ -61,7 +61,7 @@ public class WhenCreator {
 				creationModel, propertyName);
 		if(timeAnnotation == null)
 		{
-			System.out.println("There is no time statement annotation");
+			logger.LogErrorMessage("There is no time statement annotation");
 			return null;
 		}
 		var time = factory.createTimeStatement();

@@ -31,7 +31,7 @@ public class BaseAspect {
 		originalObjectClass = originalObject.getClass();
 	    signature = (MethodSignature) thisJoinPoint.getSignature();
 	    method = signature.getMethod();
-	    Logger = new ConsoleLogger();
+	    Logger = new TemdaLogger();
 	    FieldFinder = new FieldFinder(Logger);
 	    objectFinder = new ObjectFinder(Logger);
 	    ReadTypeByAttribute = new ReadTypeByAttribute(Logger, FieldFinder, objectFinder);

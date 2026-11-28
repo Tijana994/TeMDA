@@ -58,7 +58,7 @@ public class PurposeCreator {
 		}
 		catch(Exception e)
 		{
-			System.out.println("Field with name " + propertyName + " in purpose attribute caused an exception " + e);
+			logger.LogErrorMessage("Field with name " + propertyName + " in purpose attribute caused an exception " + e);
 		}
 		return null;
 	}
